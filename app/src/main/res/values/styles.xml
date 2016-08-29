@@ -1,0 +1,21 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="Video_Trim_SeekBar" parent="@android:style/Widget.SeekBar">
+        <item name="android:maxHeight">20.0dip</item>
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:indeterminateDrawable">@android:drawable/progress_indeterminate_horizontal</item>
+        <item name="android:progressDrawable">@null</item>
+        <item name="android:minHeight">20.0dip</item>
+        <item name="android:thumb">@drawable/icon_seek_bar</item>
+        <item name="android:thumbOffset">4dip</item>
+    </style>
+
+</resources>
