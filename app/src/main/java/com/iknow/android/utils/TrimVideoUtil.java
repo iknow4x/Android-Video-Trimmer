@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.util.Log;
 
 import com.coremedia.iso.boxes.Container;
 import com.googlecode.mp4parser.FileDataSourceViaHeapImpl;
@@ -46,7 +45,6 @@ public class TrimVideoUtil {
 
         File file = new File(filePath);
         file.getParentFile().mkdirs();
-        Log.d(TAG, "Generated file path " + filePath);
         genVideoUsingMp4Parser(src, file, startMs, endMs, callback);
     }
 

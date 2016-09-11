@@ -7,9 +7,8 @@
     android:layout_height="match_parent"
     tools:context="com.iknow.android.TrimmerActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"/>
+    <com.iknow.android.view.VideoTrimmerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </RelativeLayout>

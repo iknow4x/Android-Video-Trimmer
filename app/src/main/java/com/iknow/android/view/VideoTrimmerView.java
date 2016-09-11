@@ -422,11 +422,7 @@ public class VideoTrimmerView extends FrameLayout {
     private void onSaveClicked() {
         if (mEndPosition/1000 - mStartPosition/1000 < MIN_TIME_FRAME) {
             Toast.makeText(mContext, "视频长不足5秒,无法上传", Toast.LENGTH_SHORT).show();
-        }
-//        else if(mStartPosition == 0 && mEndPosition == mDuration){
-//            mOnTrimVideoListener.onFinish(Uri.parse(mSrc.getPath()));
-//        }
-        else{
+        }else{
             mVideoView.pause();
             final File file = new File(mSrc.getPath());
             mOnTrimVideoListener.onStartTrim();
@@ -434,7 +430,7 @@ public class VideoTrimmerView extends FrameLayout {
                    @Override
                    public void execute() {
                        try {
-                           TrimVideoUtil.startTrim(file, getDestinationPath(), mStartPosition, mEndPosition, mOnTrimVideoListener);
+                           TrimVideoUtil.startTrim(file, getTrimmedVideoPath(), mStartPosition, mEndPosition, mOnTrimVideoListener);
                        } catch (final Throwable e) {
                            Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e);
                        }
@@ -444,10 +440,11 @@ public class VideoTrimmerView extends FrameLayout {
         }
     }
 
-    private String getDestinationPath() {
+    private String getTrimmedVideoPath() {
         if (mFinalPath == null) {
-            mFinalPath = FileUtils.genShortVideoFilePath();
-            Log.d(TAG, "Using default path " + mFinalPath);
+            File file = mContext.getExternalCacheDir();
+            if(file != null)
+                mFinalPath = file.getAbsolutePath();
         }
         return mFinalPath;
     }
@@ -486,11 +483,11 @@ public class VideoTrimmerView extends FrameLayout {
     }
 
 
-    public boolean getRestoreState() {
+    private boolean getRestoreState() {
         return isFromRestore;
     }
 
-    public void setRestoreState(boolean fromRestore) {
+    private void setRestoreState(boolean fromRestore) {
         isFromRestore = fromRestore;
     }
 
