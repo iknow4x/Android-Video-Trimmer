@@ -1,9 +1,12 @@
 package com.iknow.android.utils;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.provider.MediaStore;
 
 import com.coremedia.iso.boxes.Container;
 import com.googlecode.mp4parser.FileDataSourceViaHeapImpl;
@@ -12,6 +15,7 @@ import com.googlecode.mp4parser.authoring.Track;
 import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.googlecode.mp4parser.authoring.tracks.CroppedTrack;
+import com.iknow.android.models.VideoInfo;
 import com.iknow.android.interfaces.OnTrimVideoListener;
 
 import java.io.File;
@@ -204,5 +208,37 @@ public class TrimVideoUtil {
                }
         );
 
+    }
+
+    /**
+     * 需要设计成异步的
+     *
+     * @param mContext
+     * @return
+     */
+    public static ArrayList<VideoInfo> getAllVideoFiles(Context mContext) {
+        VideoInfo video;
+        ArrayList<VideoInfo> videos = new ArrayList<>();
+        ContentResolver contentResolver = mContext.getContentResolver();
+        try {
+            Cursor cursor = contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null,
+                    null, null, MediaStore.Video.Media.DATE_MODIFIED + " desc");
+            while (cursor.moveToNext()) {
+                video = new VideoInfo();
+
+                if (cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)) != 0) {
+                    video.setDuration(cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)));
+                    video.setVideoPath(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)));
+                    video.setCreateTime(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED)));
+                    video.setVideoName(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)));
+                    videos.add(video);
+                }
+            }
+
+            cursor.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return videos;
     }
 }

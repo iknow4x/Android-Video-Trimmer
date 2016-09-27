@@ -39,7 +39,7 @@
             android:textColor="#444444"
             android:textSize="12dp" />
 
-        <com.ctrip.gs.video.widget.VideoThumbHorizontalListView
+        <com.iknow.android.widget.VideoThumbHorizontalListView
             android:id="@+id/video_thumb_listview"
             android:layout_width="match_parent"
             android:layout_height="60dp"
@@ -61,7 +61,7 @@
             android:progressDrawable="@android:color/transparent"
             android:secondaryProgress="0" />
 
-        <com.ctrip.gs.video.widget.RangeSeekBarView
+        <com.iknow.android.widget.RangeSeekBarView
             android:id="@+id/timeLineBar"
             android:layout_width="match_parent"
             android:layout_height="120dp"

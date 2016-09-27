@@ -1,16 +1,108 @@
 package com.iknow.android;
 
+import android.content.Intent;
+import android.databinding.DataBindingUtil;
+import android.net.Uri;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import com.iknow.android.R;
+import com.iknow.android.databinding.ActivityTrimmerBinding;
+import com.iknow.android.interfaces.OnTrimVideoListener;
 
-public class TrimmerActivity extends AppCompatActivity {
+import java.io.File;
 
+public class TrimmerActivity extends AppCompatActivity implements OnTrimVideoListener{
 
+    private static final String TAG = "jason";
+    private static final String STATE_IS_PAUSED = "isPaused";
+    public static final int VIDEO_TRIM_REQUEST_CODE = 0x001;
+    private static final int VIDEO_MAX_DURATION = 15;// 15秒
+    private File tempFile;
+    private ActivityTrimmerBinding binding;
+
+    public static void go(FragmentActivity from, String videoPath){
+        if(!TextUtils.isEmpty(videoPath)) {
+            Bundle bundle = new Bundle();
+            bundle.putString("path", videoPath);
+            Intent intent = new Intent(from,TrimmerActivity.class);
+            intent.putExtras(bundle);
+            from.startActivityForResult(intent,VIDEO_TRIM_REQUEST_CODE);
+        }
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_trimmer);
+    protected void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+        binding = DataBindingUtil.setContentView(this,R.layout.activity_trimmer);
+        Bundle bd = getIntent().getExtras();
+        String path = "";
+        if(bd != null)
+            path = bd.getString("path");
+
+        if (binding.trimmerView != null) {
+            binding.trimmerView.setMaxDuration(VIDEO_MAX_DURATION);
+            binding.trimmerView.setOnTrimVideoListener(this);
+            binding.trimmerView.setVideoURI(Uri.parse(path));
+        }
+
+//        FileUtils.createVideoTempFolder();//Create temp file folder
+    }
+
+    private String path;
+
+    private File saveTmpVideoFile(Uri uri) {
+        File tmp = null;
+        if (uri != null) {
+
+            try {
+                String displayName = uri.getPathSegments().get(uri.getPathSegments().size()-1);//get the file name
+//                tmp = FileUtils.saveTempFile(displayName, this, uri);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        return tmp;
+    }
+
+    private void deleteTempFile(){
+        if(tempFile != null && tempFile.exists()){
+            tempFile.delete();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        binding.trimmerView.onPause();
+        binding.trimmerView.setRestoreState(true);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        binding.trimmerView.destroy();
+    }
+
+    @Override
+    public void onStartTrim() {
+
+    }
+
+    @Override
+    public void onFinishTrim(Uri uri) {
+
+    }
+
+    @Override
+    public void onCancel() {
+
     }
 }

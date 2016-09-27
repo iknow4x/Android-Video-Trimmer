@@ -487,7 +487,7 @@ public class VideoTrimmerView extends FrameLayout {
         return isFromRestore;
     }
 
-    private void setRestoreState(boolean fromRestore) {
+    public void setRestoreState(boolean fromRestore) {
         isFromRestore = fromRestore;
     }
 

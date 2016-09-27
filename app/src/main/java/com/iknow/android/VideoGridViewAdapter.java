@@ -9,6 +9,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.iknow.android.models.VideoInfo;
+
 import java.util.ArrayList;
 import iknow.android.utils.DateUtil;
 import iknow.android.utils.DeviceUtil;

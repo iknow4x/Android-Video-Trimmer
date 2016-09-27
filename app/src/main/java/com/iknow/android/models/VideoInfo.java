@@ -1,4 +1,4 @@
-package com.iknow.android;
+package com.iknow.android.models;
 
 import android.content.Context;
 import android.media.MediaMetadataRetriever;

@@ -36,7 +36,7 @@
                 android:textColor="#666666"
                 android:ellipsize="end"
                 android:gravity="center"
-                android:singleLine="true"
+                android:maxLines="1"
                 android:textStyle="bold"
                 android:text="所有视频" />
 
@@ -44,6 +44,7 @@
                 android:id="@+id/video_shoot"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:visibility="invisible"
                 android:layout_marginRight="10dp"
                 android:layout_centerVertical="true"
                 android:contentDescription="@null"
