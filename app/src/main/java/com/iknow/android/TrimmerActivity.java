@@ -3,14 +3,15 @@ package com.iknow.android;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
+import android.os.Looper;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.widget.Toast;
 import com.iknow.android.R;
 import com.iknow.android.databinding.ActivityTrimmerBinding;
 import com.iknow.android.interfaces.OnTrimVideoListener;
-
 import java.io.File;
 
 public class TrimmerActivity extends AppCompatActivity implements OnTrimVideoListener{
@@ -46,31 +47,6 @@ public class TrimmerActivity extends AppCompatActivity implements OnTrimVideoLis
             binding.trimmerView.setOnTrimVideoListener(this);
             binding.trimmerView.setVideoURI(Uri.parse(path));
         }
-
-//        FileUtils.createVideoTempFolder();//Create temp file folder
-    }
-
-    private String path;
-
-    private File saveTmpVideoFile(Uri uri) {
-        File tmp = null;
-        if (uri != null) {
-
-            try {
-                String displayName = uri.getPathSegments().get(uri.getPathSegments().size()-1);//get the file name
-//                tmp = FileUtils.saveTempFile(displayName, this, uri);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-
-        return tmp;
-    }
-
-    private void deleteTempFile(){
-        if(tempFile != null && tempFile.exists()){
-            tempFile.delete();
-        }
     }
 
     @Override
@@ -93,16 +69,17 @@ public class TrimmerActivity extends AppCompatActivity implements OnTrimVideoLis
 
     @Override
     public void onStartTrim() {
-
     }
 
     @Override
     public void onFinishTrim(Uri uri) {
-
+        Looper.prepare();
+        finish();
     }
 
     @Override
     public void onCancel() {
-
+        binding.trimmerView.destroy();
+        finish();
     }
 }

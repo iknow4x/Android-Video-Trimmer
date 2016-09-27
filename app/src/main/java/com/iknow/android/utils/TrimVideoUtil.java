@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 
 import com.coremedia.iso.boxes.Container;
 import com.googlecode.mp4parser.FileDataSourceViaHeapImpl;
@@ -240,5 +241,19 @@ public class TrimVideoUtil {
             e.printStackTrace();
         }
         return videos;
+    }
+
+    public static String getVideoFilePath(String url) {
+
+        if (TextUtils.isEmpty(url) || url.length() < 5) {
+            return "";
+        }
+
+        if (url.substring(0, 4).equalsIgnoreCase("http")) {
+
+        } else {
+            url = "file://" + url;
+        }
+        return url;
     }
 }

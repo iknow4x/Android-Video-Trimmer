@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.iknow.android.models.VideoInfo;
+import com.iknow.android.utils.TrimVideoUtil;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 import iknow.android.utils.DateUtil;
@@ -51,15 +53,7 @@ public class VideoGridViewAdapter extends RecyclerView.Adapter<VideoGridViewAdap
 
         VideoInfo video = videoListData.get(position);
         holder.durationTv.setText(DateUtil.convertSecondsToTime(video.getDuration() / 1000));
-//        ImageLoaderHelper.displayImage(VideoUtil.getVideoFilePath(video.getVideoPath()), holder.videoCover,
-//                AsyncImageLoaderHelper.getCtripDisplayImageOptionWithOutDisc(),
-//                new GSImageLoadingListener() {
-//                    @Override
-//                    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-//                        ImageView imageView = (ImageView) view;
-//                        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//                    }
-//                });
+        ImageLoader.getInstance().displayImage(TrimVideoUtil.getVideoFilePath(video.getVideoPath()),holder.videoCover);
     }
 
     @Override
