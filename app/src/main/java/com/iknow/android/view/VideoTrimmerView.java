@@ -220,19 +220,14 @@ public class VideoTrimmerView extends FrameLayout {
         int screenHeight = mLinearVideo.getHeight();
         float screenProportion = (float) screenWidth / (float) screenHeight;
 
-//        if (videoProportion > screenProportion) {
-//            lp.width = screenWidth;
-//            lp.height = (int) ((float) screenWidth / videoProportion);
-//        } else {
-//            lp.width = (int) (videoProportion * (float) screenHeight);
-//            lp.height = screenHeight;
-//        }
-
-//        {
-//            lp.width = videoWidth;
-//            lp.height = videoHeight;
-//        }
-//        mVideoView.setLayoutParams(lp);
+        if (videoProportion > screenProportion) {
+            lp.width = screenWidth;
+            lp.height = (int) ((float) screenWidth / videoProportion);
+        } else {
+            lp.width = (int) (videoProportion * (float) screenHeight);
+            lp.height = screenHeight;
+        }
+        mVideoView.setLayoutParams(lp);
 
         mDuration = (mVideoView.getDuration() / 1000) * 1000;
         if(!getRestoreState())
