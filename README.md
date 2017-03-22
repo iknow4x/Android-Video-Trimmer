@@ -14,4 +14,6 @@
 ### 功能扩展思考
 视频裁剪功能之后往往涉及到视频的压缩和上传,每一个功能都是Android开发中的高阶内容,比如说视频的压缩,压缩库其实开源的有一些,
 但是能达到压缩比高、压缩速度快,同时又保证视频的质量,这样的开源库还是比较少的,后续的替代方案可以采用FFmpeg来处理视频的压缩。
+
+
 <img src="https://github.com/iknow4/iknow.Images/blob/master/gif/videoTrim.gif?raw=true" width="400" height="700" alt="VideoTrim"/>
