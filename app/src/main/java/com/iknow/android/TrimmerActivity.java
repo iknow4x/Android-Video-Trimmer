@@ -12,6 +12,8 @@ import android.widget.Toast;
 import com.iknow.android.R;
 import com.iknow.android.databinding.ActivityTrimmerBinding;
 import com.iknow.android.interfaces.OnTrimVideoListener;
+import com.iknow.android.utils.TrimVideoUtil;
+
 import java.io.File;
 
 public class TrimmerActivity extends AppCompatActivity implements OnTrimVideoListener{
@@ -19,7 +21,6 @@ public class TrimmerActivity extends AppCompatActivity implements OnTrimVideoLis
     private static final String TAG = "jason";
     private static final String STATE_IS_PAUSED = "isPaused";
     public static final int VIDEO_TRIM_REQUEST_CODE = 0x001;
-    private static final int VIDEO_MAX_DURATION = 15;// 15秒
     private File tempFile;
     private ActivityTrimmerBinding binding;
 
@@ -43,7 +44,7 @@ public class TrimmerActivity extends AppCompatActivity implements OnTrimVideoLis
             path = bd.getString("path");
 
         if (binding.trimmerView != null) {
-            binding.trimmerView.setMaxDuration(VIDEO_MAX_DURATION);
+            binding.trimmerView.setMaxDuration(TrimVideoUtil.VIDEO_MAX_DURATION);
             binding.trimmerView.setOnTrimVideoListener(this);
             binding.trimmerView.setVideoURI(Uri.parse(path));
         }
