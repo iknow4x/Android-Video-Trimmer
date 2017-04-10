@@ -45,6 +45,7 @@ public class RangeSeekBarView extends View {
     private final Paint mLine = new Paint();
     private final Paint mTextPaintL = new Paint();
     private final Paint mTextPaintR = new Paint();
+    private int thumbMargin = UnitConverter.dpToPx(3);
 
     public RangeSeekBarView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -85,7 +86,6 @@ public class RangeSeekBarView extends View {
         mTextPaintL.setColor(Color.parseColor("#444444"));
         mTextPaintL.setTextAlign(Paint.Align.LEFT);
 
-
         mTextPaintR.setStrokeWidth(3);
         mTextPaintR.setARGB(255, 51, 51, 51);
         mTextPaintR.setTextSize(28);
@@ -102,7 +102,6 @@ public class RangeSeekBarView extends View {
 
     public void initMaxWidth() {
         mMaxWidth = mThumbs.get(1).getPos() - mThumbs.get(0).getPos();
-
         onSeekStop(this, 0, mThumbs.get(0).getVal());
         onSeekStop(this, 1, mThumbs.get(1).getVal());
     }
@@ -123,7 +122,6 @@ public class RangeSeekBarView extends View {
         int viewHeight = resolveSizeAndState(minH, heightMeasureSpec, 1);
 
         setMeasuredDimension(mViewWidth, viewHeight);
-
         mPixelRangeMin = 0;
     }
 
@@ -157,13 +155,13 @@ public class RangeSeekBarView extends View {
                     } else if (mPixelRangeMax >= deviceWidth)
                         mRect = new Rect((int) x, paddingTop, (int) (deviceWidth + shadowMargin), mHeightTimeLine + paddingTop);
 
-                    canvas.drawRect(mRect, mShadow);
+                    if (mRect != null) canvas.drawRect(mRect, mShadow);
 
                 }
             }
         }
     }
-    private int thumbMargin = UnitConverter.dpToPx(3);
+
     private void drawThumbs(Canvas canvas) {
         if (!mThumbs.isEmpty()) {
             for (Thumb th : mThumbs) {
@@ -190,12 +188,13 @@ public class RangeSeekBarView extends View {
     }
 
     private int textPosMargin = UnitConverter.dpToPx(6);
+
     private void drawVideoTime(Canvas canvas) {
 
         String leftThumbsTime = DateUtil.convertSecondsToTime(mStartPosition);
         String rightThumbsTime = DateUtil.convertSecondsToTime(mEndPosition);
 
-        canvas.drawText(leftThumbsTime, getThumbs().get(0).getPos()+ textPosMargin, TextPostionX, mTextPaintL);
+        canvas.drawText(leftThumbsTime, getThumbs().get(0).getPos() + textPosMargin, TextPostionX, mTextPaintL);
         canvas.drawText(rightThumbsTime, getThumbs().get(1).getPos() + textPosMargin, TextPostionX, mTextPaintR);
     }
 
@@ -314,11 +313,10 @@ public class RangeSeekBarView extends View {
     }
 
     private float pixelToScale(int index, float pixelValue) {
-        float scale = pixelValue;
         if (index == 0) {
-            return scale;
+            return pixelValue;
         } else {
-            return scale;
+            return pixelValue;
         }
     }
 

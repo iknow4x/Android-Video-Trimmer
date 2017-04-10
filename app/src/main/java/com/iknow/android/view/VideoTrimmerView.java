@@ -52,7 +52,6 @@ public class VideoTrimmerView extends FrameLayout {
     private static final int margin = UnitConverter.dpToPx(6);
     private static final int SCREEN_WIDTH = (DeviceUtil.getDeviceWidth() - margin * 2);
     private static final int SCREEN_WIDTH_FULL = DeviceUtil.getDeviceWidth();
-    private static final int MIN_TIME_FRAME = 5;
     private static final int SHOW_PROGRESS = 2;
 
     private Context mContext;
@@ -415,7 +414,7 @@ public class VideoTrimmerView extends FrameLayout {
     }
 
     private void onSaveClicked() {
-        if (mEndPosition/1000 - mStartPosition/1000 < MIN_TIME_FRAME) {
+        if (mEndPosition/1000 - mStartPosition/1000 < TrimVideoUtil.MIN_TIME_FRAME) {
             Toast.makeText(mContext, "视频长不足5秒,无法上传", Toast.LENGTH_SHORT).show();
         }else{
             mVideoView.pause();

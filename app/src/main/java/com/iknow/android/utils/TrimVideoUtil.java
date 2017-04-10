@@ -40,6 +40,7 @@ public class TrimVideoUtil {
 
     private static final String TAG = TrimVideoUtil.class.getSimpleName();
     public static final int VIDEO_MAX_DURATION = 15;// 15秒
+    public static final int MIN_TIME_FRAME = 5;
     private static final int thumb_Width = (DeviceUtil.getDeviceWidth() - UnitConverter.dpToPx(20)) / VIDEO_MAX_DURATION;
     private static final int thumb_Height = UnitConverter.dpToPx(60);
     private static final long one_frame_time = 1000000;

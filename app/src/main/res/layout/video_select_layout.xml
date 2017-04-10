@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,7 +11,7 @@
             android:id="@+id/title_layout"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@android:color/white" >
+            android:background="@android:color/white">
 
             <ImageView
                 android:id="@+id/mBtnBack"
@@ -24,7 +24,7 @@
                 android:paddingLeft="10dp"
                 android:paddingRight="5dp"
                 android:paddingTop="14dp"
-                android:src="@drawable/icon_back_drawable" />
+                android:src="@drawable/icon_back_drawable"/>
 
             <TextView
                 android:id="@+id/mTitlebarText"
@@ -32,27 +32,27 @@
                 android:layout_height="match_parent"
                 android:layout_toLeftOf="@+id/video_shoot"
                 android:layout_toRightOf="@+id/mBtnBack"
-                android:textSize="18dp"
-                android:textColor="#666666"
                 android:ellipsize="end"
                 android:gravity="center"
                 android:maxLines="1"
-                android:textStyle="bold"
-                android:text="所有视频" />
+                android:text="所有视频"
+                android:textColor="#666666"
+                android:textSize="18dp"
+                android:textStyle="bold"/>
 
             <ImageView
                 android:id="@+id/video_shoot"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:visibility="invisible"
-                android:layout_marginRight="10dp"
+                android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
                 android:contentDescription="@null"
                 android:paddingBottom="8dp"
                 android:paddingLeft="8dp"
                 android:paddingTop="8dp"
                 android:src="@drawable/icon_recoder"
-                android:layout_alignParentRight="true" />
+                android:visibility="visible"/>
         </RelativeLayout>
 
         <android.support.v7.widget.RecyclerView
@@ -78,12 +78,12 @@
             android:id="@+id/next_step"
             android:layout_width="match_parent"
             android:layout_height="60dp"
+            android:layout_centerInParent="true"
             android:background="@android:color/white"
+            android:gravity="center"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
-            android:textSize="16dp"
-            android:layout_centerInParent="true"
-            android:gravity="center"
-            android:text="下一步"/>
+            android:text="下一步"
+            android:textSize="16dp"/>
     </LinearLayout>
 </layout>
