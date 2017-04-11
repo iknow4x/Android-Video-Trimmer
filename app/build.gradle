@@ -31,4 +31,5 @@ dependencies {
     compile 'com.googlecode.mp4parser:isoparser:1.1.20'
     compile 'org.aspectj:aspectjrt:1.8.9'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+    compile 'com.writingminds:FFmpegAndroid:0.3.2'
 }
