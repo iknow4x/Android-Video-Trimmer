@@ -3,6 +3,9 @@ package com.iknow.android;
 import android.app.Application;
 import android.content.Context;
 
+import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
+import com.github.hiteshsondhi88.libffmpeg.LoadBinaryResponseHandler;
+import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegNotSupportedException;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.LRULimitedMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -23,6 +26,7 @@ public class ZApplication extends Application {
         super.onCreate();
         BaseUtils.init(this);
         initImageLoader(this);
+        initFFmpegBinary(this);
     }
 
     public static void initImageLoader(Context context) {
@@ -34,5 +38,19 @@ public class ZApplication extends Application {
                 .build();
         // Initialize ImageLoader with configuration.
         ImageLoader.getInstance().init(config);
+    }
+
+    private void initFFmpegBinary(Context context) {
+
+        try {
+            FFmpeg.getInstance(context).loadBinary(new LoadBinaryResponseHandler() {
+                @Override
+                public void onFailure() {
+                }
+            });
+
+        } catch (FFmpegNotSupportedException e) {
+            e.printStackTrace();
+        }
     }
 }

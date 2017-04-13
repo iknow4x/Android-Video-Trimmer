@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,6 +52,13 @@ public class TrimVideoUtil {
         File file = new File(filePath);
         file.getParentFile().mkdirs();
         genVideoUsingMp4Parser(src, file, startMs, endMs, callback);
+    }
+
+    private String cmd;
+    private static void trimVideoUsingFFmpeg(File src, File dst, long startMs, long endMs){
+
+
+
     }
 
     private static void genVideoUsingMp4Parser(File src, File dst, long startMs, long endMs, OnTrimVideoListener callback) throws IOException {
@@ -136,35 +142,6 @@ public class TrimVideoUtil {
         fc.close();
         fos.close();
         callback.onFinishTrim(Uri.parse(dst.toString()));
-    }
-
-    private static double correctTimeToSyncSample(Track track, double cutHere, boolean next) {
-        double[] timeOfSyncSamples = new double[track.getSyncSamples().length];
-        long currentSample = 0;
-        double currentTime = 0;
-        for (int i = 0; i < track.getSampleDurations().length; i++) {
-            long delta = track.getSampleDurations()[i];
-
-            if (Arrays.binarySearch(track.getSyncSamples(), currentSample + 1) >= 0) {
-                // samples always start with 1 but we start with zero therefore +1
-                timeOfSyncSamples[Arrays.binarySearch(track.getSyncSamples(), currentSample + 1)] = currentTime;
-            }
-            currentTime += (double) delta / (double) track.getTrackMetaData().getTimescale();
-            currentSample++;
-
-        }
-        double previous = 0;
-        for (double timeOfSyncSample : timeOfSyncSamples) {
-            if (timeOfSyncSample > cutHere) {
-                if (next) {
-                    return timeOfSyncSample;
-                } else {
-                    return previous;
-                }
-            }
-            previous = timeOfSyncSample;
-        }
-        return timeOfSyncSamples[timeOfSyncSamples.length - 1];
     }
 
     public static void backgroundShootVideoThumb(final Context context, final Uri videoUri, final SingleCallback<ArrayList<Bitmap>, Integer> callback) {
