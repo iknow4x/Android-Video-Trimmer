@@ -10,14 +10,17 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 
 import com.coremedia.iso.boxes.Container;
+import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
+import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
+import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
 import com.googlecode.mp4parser.FileDataSourceViaHeapImpl;
 import com.googlecode.mp4parser.authoring.Movie;
 import com.googlecode.mp4parser.authoring.Track;
 import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.googlecode.mp4parser.authoring.tracks.CroppedTrack;
-import com.iknow.android.models.VideoInfo;
 import com.iknow.android.interfaces.OnTrimVideoListener;
+import com.iknow.android.models.VideoInfo;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -30,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import iknow.android.utils.DateUtil;
 import iknow.android.utils.DeviceUtil;
 import iknow.android.utils.UnitConverter;
 import iknow.android.utils.callback.SingleCallback;
@@ -44,21 +48,48 @@ public class TrimVideoUtil {
     private static final int thumb_Height = UnitConverter.dpToPx(60);
     private static final long one_frame_time = 1000000;
 
+    public static void trimVideo(Context context, String inputFile, String outputFile, long startMs, long endMs, final OnTrimVideoListener callback) {
+        final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        final String outputName = "trimmedVideo_" + timeStamp + ".mp4";
+
+        String sTime = convertSecondsToTime(startMs/1000);
+        String eTime = convertSecondsToTime(endMs/1000);
+
+        String cmd = "-ss " + sTime + " -t " + eTime + " -i " + inputFile + " -vcodec copy -acodec copy " + outputFile + "/" + outputName;
+        String[] command = cmd.split(" ");
+        try {
+            FFmpeg.getInstance(context).execute(command, new ExecuteBinaryResponseHandler() {
+                @Override
+                public void onFailure(String s) {
+                }
+
+                @Override
+                public void onSuccess(String s) {
+                    callback.onFinishTrim(null);
+                }
+
+                @Override
+                public void onStart() {
+                    callback.onStartTrim();
+                }
+
+                @Override
+                public void onFinish() {
+                }
+            });
+        } catch (FFmpegCommandAlreadyRunningException e) {
+            // do nothing for now
+        }
+    }
+
     public static void startTrim(File src, String dst, long startMs, long endMs, OnTrimVideoListener callback) throws IOException {
-        final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
+        final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         final String fileName = "trimmedVideo_" + timeStamp + ".mp4";
         final String filePath = dst + fileName;
 
         File file = new File(filePath);
         file.getParentFile().mkdirs();
         genVideoUsingMp4Parser(src, file, startMs, endMs, callback);
-    }
-
-    private String cmd;
-    private static void trimVideoUsingFFmpeg(File src, File dst, long startMs, long endMs){
-
-
-
     }
 
     private static void genVideoUsingMp4Parser(File src, File dst, long startMs, long endMs, OnTrimVideoListener callback) throws IOException {
@@ -94,11 +125,11 @@ public class TrimVideoUtil {
 //            }
 //        }
 
-        if(startTime1 == 0)
-            startTime1 = startMs/1000;
+        if (startTime1 == 0)
+            startTime1 = startMs / 1000;
 
-        if(endTime1 == 0)
-            endTime1 = endMs/1000;
+        if (endTime1 == 0)
+            endTime1 = endMs / 1000;
 
         for (Track track : tracks) {
             long currentSample = 0;
@@ -149,43 +180,43 @@ public class TrimVideoUtil {
         final ArrayList<Bitmap> thumbnailList = new ArrayList<>();
 
         BackgroundExecutor.execute(new BackgroundExecutor.Task("", 0L, "") {
-                   @Override
-                   public void execute() {
-                       try {
-                           MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-                           mediaMetadataRetriever.setDataSource(context, videoUri);
+               @Override
+               public void execute() {
+                   try {
+                       MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
+                       mediaMetadataRetriever.setDataSource(context, videoUri);
 
-                           // Retrieve media data use microsecond
-                           long videoLengthInMs = Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)) * 1000;
+                       // Retrieve media data use microsecond
+                       long videoLengthInMs = Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)) * 1000;
 
-                           long  numThumbs = videoLengthInMs < one_frame_time? 1 : (videoLengthInMs / one_frame_time);
+                       long numThumbs = videoLengthInMs < one_frame_time ? 1 : (videoLengthInMs / one_frame_time);
 
-                           final long interval = videoLengthInMs / numThumbs;
+                       final long interval = videoLengthInMs / numThumbs;
 
-                           //每次截取到3帧之后上报
-                           for (long i = 0; i < numThumbs; ++i) {
-                               Bitmap bitmap = mediaMetadataRetriever.getFrameAtTime(i * interval, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
-                               try {
-                                   bitmap = Bitmap.createScaledBitmap(bitmap, thumb_Width, thumb_Height, false);
-                               } catch (Exception e) {
-                                   e.printStackTrace();
-                               }
-                               thumbnailList.add(bitmap);
-                                if(thumbnailList.size() == 3) {
-                                    callback.onSingleCallback((ArrayList<Bitmap>)thumbnailList.clone(), (int) interval);
-                                    thumbnailList.clear();
-                                }
+                       //每次截取到3帧之后上报
+                       for (long i = 0; i < numThumbs; ++i) {
+                           Bitmap bitmap = mediaMetadataRetriever.getFrameAtTime(i * interval, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+                           try {
+                               bitmap = Bitmap.createScaledBitmap(bitmap, thumb_Width, thumb_Height, false);
+                           } catch (Exception e) {
+                               e.printStackTrace();
                            }
-                           if(thumbnailList.size() > 0) {
+                           thumbnailList.add(bitmap);
+                           if (thumbnailList.size() == 3) {
                                callback.onSingleCallback((ArrayList<Bitmap>) thumbnailList.clone(), (int) interval);
                                thumbnailList.clear();
                            }
-                           mediaMetadataRetriever.release();
-                       } catch (final Throwable e) {
-                           Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e);
                        }
+                       if (thumbnailList.size() > 0) {
+                           callback.onSingleCallback((ArrayList<Bitmap>) thumbnailList.clone(), (int) interval);
+                           thumbnailList.clear();
+                       }
+                       mediaMetadataRetriever.release();
+                   } catch (final Throwable e) {
+                       Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e);
                    }
                }
+           }
         );
 
     }
@@ -234,5 +265,38 @@ public class TrimVideoUtil {
             url = "file://" + url;
         }
         return url;
+    }
+
+    private static String convertSecondsToTime(long seconds) {
+        String timeStr = null;
+        int hour = 0;
+        int minute = 0;
+        int second = 0;
+        if (seconds <= 0)
+            return "00:00";
+        else {
+            minute = (int)seconds / 60;
+            if (minute < 60) {
+                second = (int)seconds % 60;
+                timeStr = "00:" + unitFormat(minute) + ":" + unitFormat(second);
+            } else {
+                hour = minute / 60;
+                if (hour > 99)
+                    return "99:59:59";
+                minute = minute % 60;
+                second = (int)(seconds - hour * 3600 - minute * 60);
+                timeStr = unitFormat(hour) + ":" + unitFormat(minute) + ":" + unitFormat(second);
+            }
+        }
+        return timeStr;
+    }
+
+    private static String unitFormat(int i) {
+        String retStr = null;
+        if (i >= 0 && i < 10)
+            retStr = "0" + Integer.toString(i);
+        else
+            retStr = "" + i;
+        return retStr;
     }
 }

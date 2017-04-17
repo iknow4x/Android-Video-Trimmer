@@ -20,6 +20,9 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
+import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
+import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
 import com.iknow.android.R;
 import com.iknow.android.interfaces.OnProgressVideoListener;
 import com.iknow.android.interfaces.OnRangeSeekBarListener;
@@ -418,19 +421,7 @@ public class VideoTrimmerView extends FrameLayout {
             Toast.makeText(mContext, "视频长不足5秒,无法上传", Toast.LENGTH_SHORT).show();
         }else{
             mVideoView.pause();
-            final File file = new File(mSrc.getPath());
-            mOnTrimVideoListener.onStartTrim();
-            BackgroundExecutor.execute(new BackgroundExecutor.Task("", 0L, "") {
-                   @Override
-                   public void execute() {
-                       try {
-                           TrimVideoUtil.startTrim(file, getTrimmedVideoPath(), mStartPosition, mEndPosition, mOnTrimVideoListener);
-                       } catch (final Throwable e) {
-                           Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e);
-                       }
-                   }
-               }
-            );
+            TrimVideoUtil.trimVideo(mContext, mSrc.getPath(), getTrimmedVideoPath(), mStartPosition, mEndPosition, mOnTrimVideoListener);
         }
     }
 
