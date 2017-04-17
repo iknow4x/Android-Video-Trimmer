@@ -52,10 +52,17 @@ public class TrimVideoUtil {
         final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         final String outputName = "trimmedVideo_" + timeStamp + ".mp4";
 
-        String sTime = convertSecondsToTime(startMs/1000);
-        String eTime = convertSecondsToTime(endMs/1000);
+        String start = convertSecondsToTime(startMs/1000);
+        String duration = convertSecondsToTime((endMs - startMs)/1000);
 
-        String cmd = "-ss " + sTime + " -t " + eTime + " -i " + inputFile + " -vcodec copy -acodec copy " + outputFile + "/" + outputName;
+        /**ffmpeg -ss START -t DURATION -i INPUT -vcodec copy -acodec copy OUTPUT
+         -ss 开始时间，如： 00:00:20，表示从20秒开始；
+         -t 时长，如： 00:00:10，表示截取10秒长的视频；
+         -i 输入，后面是空格，紧跟着就是输入视频文件；
+         -vcodec copy 和 -acodec copy 表示所要使用的视频和音频的编码格式，这里指定为copy表示原样拷贝；
+         INPUT，输入视频文件；
+         OUTPUT，输出视频文件*/
+        String cmd = "-ss " + start + " -t " + duration + " -i " + inputFile + " -vcodec copy -acodec copy " + outputFile + "/" + outputName;
         String[] command = cmd.split(" ");
         try {
             FFmpeg.getInstance(context).execute(command, new ExecuteBinaryResponseHandler() {
