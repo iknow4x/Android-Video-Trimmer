@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -52,8 +53,8 @@ public class TrimVideoUtil {
         final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         final String outputName = "trimmedVideo_" + timeStamp + ".mp4";
 
-        String start = convertSecondsToTime(startMs/1000);
-        String duration = convertSecondsToTime((endMs - startMs)/1000);
+        String start = convertSecondsToTime(startMs / 1000);
+        String duration = convertSecondsToTime((endMs - startMs) / 1000);
 
         /**ffmpeg -ss START -t DURATION -i INPUT -vcodec copy -acodec copy OUTPUT
          -ss 开始时间，如： 00:00:20，表示从20秒开始；
@@ -85,119 +86,21 @@ public class TrimVideoUtil {
                 }
             });
         } catch (FFmpegCommandAlreadyRunningException e) {
-            // do nothing for now
+            e.printStackTrace();
         }
-    }
-
-    public static void startTrim(File src, String dst, long startMs, long endMs, OnTrimVideoListener callback) throws IOException {
-        final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        final String fileName = "trimmedVideo_" + timeStamp + ".mp4";
-        final String filePath = dst + fileName;
-
-        File file = new File(filePath);
-        file.getParentFile().mkdirs();
-        genVideoUsingMp4Parser(src, file, startMs, endMs, callback);
-    }
-
-    private static void genVideoUsingMp4Parser(File src, File dst, long startMs, long endMs, OnTrimVideoListener callback) throws IOException {
-
-        // NOTE: Switched to using FileDataSourceViaHeapImpl since it does not use memory mapping (VM).
-        // Otherwise we get OOM with large movie files.
-        Movie movie = MovieCreator.build(new FileDataSourceViaHeapImpl(src.getAbsolutePath()));
-
-        List<Track> tracks = movie.getTracks();
-        movie.setTracks(new LinkedList<Track>());
-        // remove all tracks we will create new tracks from the old
-
-        double startTime1 = startMs / 1000;
-        double endTime1 = endMs / 1000;
-
-        boolean timeCorrected = false;
-
-        // Here we try to find a track that has sync samples. Since we can only start decoding
-        // at such a sample we SHOULD make sure that the start of the new fragment is exactly
-        // such a frame
-//        for (Track track : tracks) {
-//            if (track.getSyncSamples() != null && track.getSyncSamples().length > 0) {
-//                if (timeCorrected) {
-//                    // This exception here could be a false positive in case we have multiple tracks
-//                    // with sync samples at exactly the same positions. E.g. a single movie containing
-//                    // multiple qualities of the same video (Microsoft Smooth Streaming file)
-//
-//                    throw new RuntimeException("The startTime has already been corrected by another track with SyncSample. Not Supported.");
-//                }
-//                startTime1 = correctTimeToSyncSample(track, startTime1, false);
-//                endTime1 = correctTimeToSyncSample(track, endTime1, true);
-//                timeCorrected = true;
-//            }
-//        }
-
-        if (startTime1 == 0)
-            startTime1 = startMs / 1000;
-
-        if (endTime1 == 0)
-            endTime1 = endMs / 1000;
-
-        for (Track track : tracks) {
-            long currentSample = 0;
-            double currentTime = 0;
-            double lastTime = -1;
-            long startSample1 = -1;
-            long endSample1 = -1;
-
-            for (int i = 0; i < track.getSampleDurations().length; i++) {
-                long delta = track.getSampleDurations()[i];
-
-
-                if (currentTime > lastTime && currentTime <= startTime1) {
-                    // current sample is still before the new starttime
-                    startSample1 = currentSample;
-                }
-                if (currentTime > lastTime && currentTime <= endTime1) {
-                    // current sample is after the new start time and still before the new endtime
-                    endSample1 = currentSample;
-                }
-                lastTime = currentTime;
-                currentTime += (double) delta / (double) track.getTrackMetaData().getTimescale();
-                currentSample++;
-            }
-//            movie.addTrack(new AppendTrack(new CroppedTrack(track, startSample1, endSample1)));
-            movie.addTrack(new CroppedTrack(track, startSample1, endSample1));
-        }
-
-        dst.getParentFile().mkdirs();
-
-        if (!dst.exists()) {
-            dst.createNewFile();
-        }
-
-        Container out = new DefaultMp4Builder().build(movie);
-
-        FileOutputStream fos = new FileOutputStream(dst);
-        FileChannel fc = fos.getChannel();
-        out.writeContainer(fc);
-
-        fc.close();
-        fos.close();
-        callback.onFinishTrim(Uri.parse(dst.toString()));
     }
 
     public static void backgroundShootVideoThumb(final Context context, final Uri videoUri, final SingleCallback<ArrayList<Bitmap>, Integer> callback) {
-
         final ArrayList<Bitmap> thumbnailList = new ArrayList<>();
-
         BackgroundExecutor.execute(new BackgroundExecutor.Task("", 0L, "") {
                @Override
                public void execute() {
                    try {
                        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
                        mediaMetadataRetriever.setDataSource(context, videoUri);
-
                        // Retrieve media data use microsecond
                        long videoLengthInMs = Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)) * 1000;
-
                        long numThumbs = videoLengthInMs < one_frame_time ? 1 : (videoLengthInMs / one_frame_time);
-
                        final long interval = videoLengthInMs / numThumbs;
 
                        //每次截取到3帧之后上报
@@ -230,9 +133,6 @@ public class TrimVideoUtil {
 
     /**
      * 需要设计成异步的
-     *
-     * @param mContext
-     * @return
      */
     public static ArrayList<VideoInfo> getAllVideoFiles(Context mContext) {
         VideoInfo video;
@@ -240,20 +140,20 @@ public class TrimVideoUtil {
         ContentResolver contentResolver = mContext.getContentResolver();
         try {
             Cursor cursor = contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null,
-                    null, null, MediaStore.Video.Media.DATE_MODIFIED + " desc");
-            while (cursor.moveToNext()) {
-                video = new VideoInfo();
-
-                if (cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)) != 0) {
-                    video.setDuration(cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)));
-                    video.setVideoPath(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)));
-                    video.setCreateTime(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED)));
-                    video.setVideoName(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)));
-                    videos.add(video);
+                            null, null, MediaStore.Video.Media.DATE_MODIFIED + " desc");
+            if(cursor != null) {
+                while (cursor.moveToNext()) {
+                    video = new VideoInfo();
+                    if (cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)) != 0) {
+                        video.setDuration(cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)));
+                        video.setVideoPath(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)));
+                        video.setCreateTime(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED)));
+                        video.setVideoName(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)));
+                        videos.add(video);
+                    }
                 }
+                cursor.close();
             }
-
-            cursor.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -262,15 +162,13 @@ public class TrimVideoUtil {
 
     public static String getVideoFilePath(String url) {
 
-        if (TextUtils.isEmpty(url) || url.length() < 5) {
+        if (TextUtils.isEmpty(url) || url.length() < 5)
             return "";
-        }
 
         if (url.substring(0, 4).equalsIgnoreCase("http")) {
-
-        } else {
+        } else
             url = "file://" + url;
-        }
+
         return url;
     }
 
@@ -282,16 +180,16 @@ public class TrimVideoUtil {
         if (seconds <= 0)
             return "00:00";
         else {
-            minute = (int)seconds / 60;
+            minute = (int) seconds / 60;
             if (minute < 60) {
-                second = (int)seconds % 60;
+                second = (int) seconds % 60;
                 timeStr = "00:" + unitFormat(minute) + ":" + unitFormat(second);
             } else {
                 hour = minute / 60;
                 if (hour > 99)
                     return "99:59:59";
                 minute = minute % 60;
-                second = (int)(seconds - hour * 3600 - minute * 60);
+                second = (int) (seconds - hour * 3600 - minute * 60);
                 timeStr = unitFormat(hour) + ":" + unitFormat(minute) + ":" + unitFormat(second);
             }
         }

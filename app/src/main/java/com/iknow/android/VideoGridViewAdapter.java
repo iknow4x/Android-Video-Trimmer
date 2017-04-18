@@ -14,6 +14,7 @@ import com.iknow.android.utils.TrimVideoUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
+
 import iknow.android.utils.DateUtil;
 import iknow.android.utils.DeviceUtil;
 import iknow.android.utils.callback.SingleCallback;
@@ -54,6 +55,8 @@ public class VideoGridViewAdapter extends RecyclerView.Adapter<VideoGridViewAdap
         VideoInfo video = videoListData.get(position);
         holder.durationTv.setText(DateUtil.convertSecondsToTime(video.getDuration() / 1000));
         ImageLoader.getInstance().displayImage(TrimVideoUtil.getVideoFilePath(video.getVideoPath()),holder.videoCover);
+//        Bitmap bitmap = createVideoThumbnail(ImageDownloader.Scheme.FILE.crop(TrimVideoUtil.getVideoFilePath(video.getVideoPath())), MediaStore.Images.Thumbnails.MICRO_KIND);
+//        holder.videoCover.setImageBitmap(bitmap);
     }
 
     @Override
