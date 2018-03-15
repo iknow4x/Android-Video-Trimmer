@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">视频裁剪</string>
+    <string name="trimmed_done">视频裁剪完成！</string>
 </resources>
