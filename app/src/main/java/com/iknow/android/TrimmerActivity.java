@@ -73,7 +73,7 @@ public class TrimmerActivity extends AppCompatActivity implements OnTrimVideoLis
 
     @Override
     public void onFinishTrim(Uri uri) {
-        Looper.prepare();
+        //TODO: please handle your trimmed video url here!!!
         finish();
     }
 
