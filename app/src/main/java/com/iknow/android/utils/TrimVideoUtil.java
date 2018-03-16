@@ -11,7 +11,7 @@ import android.text.TextUtils;
 import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
 import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
 import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
-import com.iknow.android.interfaces.OnTrimVideoListener;
+import com.iknow.android.interfaces.TrimVideoListener;
 import com.iknow.android.models.VideoInfo;
 import iknow.android.utils.DeviceUtil;
 import iknow.android.utils.UnitConverter;
@@ -31,9 +31,10 @@ public class TrimVideoUtil {
     private static final int thumb_Height = UnitConverter.dpToPx(60);
     private static final long one_frame_time = 1000000;
 
-    public static void trimVideo(Context context, String inputFile, String outputFile, long startMs, long endMs, final OnTrimVideoListener callback) {
+    public static void trim(Context context, String inputFile, String outputFile, long startMs, long endMs, final TrimVideoListener callback) {
         final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         final String outputName = "trimmedVideo_" + timeStamp + ".mp4";
+        outputFile = outputFile + "/" + outputName;
 
         String start = convertSecondsToTime(startMs / 1000);
         String duration = convertSecondsToTime((endMs - startMs) / 1000);
@@ -47,9 +48,10 @@ public class TrimVideoUtil {
          INPUT，输入视频文件；
          OUTPUT，输出视频文件
         */
-        String cmd = "-ss " + start + " -t " + duration + " -i " + inputFile + " -vcodec copy -acodec copy " + outputFile + "/" + outputName;
+        String cmd = "-ss " + start + " -t " + duration + " -i " + inputFile + " -vcodec copy -acodec copy " + outputFile;
         String[] command = cmd.split(" ");
         try {
+            final String tempOutFile = outputFile;
             FFmpeg.getInstance(context).execute(command, new ExecuteBinaryResponseHandler() {
                 @Override
                 public void onFailure(String s) {
@@ -57,7 +59,7 @@ public class TrimVideoUtil {
 
                 @Override
                 public void onSuccess(String s) {
-                    callback.onFinishTrim(null);
+                    callback.onFinishTrim(tempOutFile);
                 }
 
                 @Override

@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">视频裁剪</string>
     <string name="trimmed_done">视频裁剪完成！</string>
+    <string name="trimming">正在裁剪视频...</string>
+    <string name="compressing">正在压缩视频...</string>
+    <string name="compressed_done">视频压缩完成！</string>
 </resources>

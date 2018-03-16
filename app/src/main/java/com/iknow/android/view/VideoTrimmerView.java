@@ -20,13 +20,10 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
-import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
-import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
 import com.iknow.android.R;
-import com.iknow.android.interfaces.OnProgressVideoListener;
-import com.iknow.android.interfaces.OnRangeSeekBarListener;
-import com.iknow.android.interfaces.OnTrimVideoListener;
+import com.iknow.android.interfaces.ProgressVideoListener;
+import com.iknow.android.interfaces.RangeSeekBarListener;
+import com.iknow.android.interfaces.TrimVideoListener;
 import com.iknow.android.utils.TrimVideoUtil;
 import com.iknow.android.widget.RangeSeekBarView;
 import com.iknow.android.widget.Thumb;
@@ -69,9 +66,9 @@ public class VideoTrimmerView extends FrameLayout {
     private String mFinalPath;
 
     private long mMaxDuration;
-    private OnProgressVideoListener mListeners;
+    private ProgressVideoListener mListeners;
 
-    private OnTrimVideoListener mOnTrimVideoListener;
+    private TrimVideoListener mOnTrimVideoListener;
     private int mDuration = 0;
     private long mTimeVideo = 0;
     private long mStartPosition = 0,mEndPosition = 0;
@@ -297,7 +294,7 @@ public class VideoTrimmerView extends FrameLayout {
         mSeekBarView.setMax((int)(mEndPosition - mStartPosition));
     }
 
-    public void setOnTrimVideoListener(OnTrimVideoListener onTrimVideoListener) {
+    public void setOnTrimVideoListener(TrimVideoListener onTrimVideoListener) {
         mOnTrimVideoListener = onTrimVideoListener;
     }
 
@@ -314,7 +311,7 @@ public class VideoTrimmerView extends FrameLayout {
     }
 
     private void setUpListeners() {
-        mListeners = new OnProgressVideoListener() {
+        mListeners = new ProgressVideoListener() {
             @Override
             public void updateProgress(int time, int max, float scale) {
                 updateVideoProgress(time);
@@ -339,7 +336,7 @@ public class VideoTrimmerView extends FrameLayout {
                 }
         );
 
-        mRangeSeekBarView.addOnRangeSeekBarListener(new OnRangeSeekBarListener() {
+        mRangeSeekBarView.addOnRangeSeekBarListener(new RangeSeekBarListener() {
             @Override
             public void onCreate(RangeSeekBarView rangeSeekBarView, int index, float value) {
             }
@@ -421,7 +418,7 @@ public class VideoTrimmerView extends FrameLayout {
             Toast.makeText(mContext, "视频长不足5秒,无法上传", Toast.LENGTH_SHORT).show();
         }else{
             mVideoView.pause();
-            TrimVideoUtil.trimVideo(mContext, mSrc.getPath(), getTrimmedVideoPath(), mStartPosition, mEndPosition, mOnTrimVideoListener);
+            TrimVideoUtil.trim(mContext, mSrc.getPath(), getTrimmedVideoPath(), mStartPosition, mEndPosition, mOnTrimVideoListener);
         }
     }
 

@@ -10,7 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.iknow.android.R;
-import com.iknow.android.interfaces.OnRangeSeekBarListener;
+import com.iknow.android.interfaces.RangeSeekBarListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class RangeSeekBarView extends View {
     private static final int deviceWidth = DeviceUtil.getDeviceWidth() - UnitConverter.dpToPx(12);
     private int mHeightTimeLine;
     private List<Thumb> mThumbs;
-    private List<OnRangeSeekBarListener> mListeners;
+    private List<RangeSeekBarListener> mListeners;
     private float mMaxWidth;
     private float mThumbWidth;
     private float mThumbHeight;
@@ -375,7 +375,7 @@ public class RangeSeekBarView extends View {
         return closest;
     }
 
-    public void addOnRangeSeekBarListener(OnRangeSeekBarListener listener) {
+    public void addOnRangeSeekBarListener(RangeSeekBarListener listener) {
 
         if (mListeners == null) {
             mListeners = new ArrayList<>();
@@ -388,7 +388,7 @@ public class RangeSeekBarView extends View {
         if (mListeners == null)
             return;
 
-        for (OnRangeSeekBarListener item : mListeners) {
+        for (RangeSeekBarListener item : mListeners) {
             item.onCreate(rangeSeekBarView, index, value);
         }
     }
@@ -397,7 +397,7 @@ public class RangeSeekBarView extends View {
         if (mListeners == null)
             return;
 
-        for (OnRangeSeekBarListener item : mListeners) {
+        for (RangeSeekBarListener item : mListeners) {
             item.onSeek(rangeSeekBarView, index, value);
         }
     }
@@ -406,7 +406,7 @@ public class RangeSeekBarView extends View {
         if (mListeners == null)
             return;
 
-        for (OnRangeSeekBarListener item : mListeners) {
+        for (RangeSeekBarListener item : mListeners) {
             item.onSeekStart(rangeSeekBarView, index, value);
         }
     }
@@ -415,7 +415,7 @@ public class RangeSeekBarView extends View {
         if (mListeners == null)
             return;
 
-        for (OnRangeSeekBarListener item : mListeners) {
+        for (RangeSeekBarListener item : mListeners) {
             item.onSeekStop(rangeSeekBarView, index, value);
         }
     }
