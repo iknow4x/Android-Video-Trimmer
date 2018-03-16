@@ -25,7 +25,7 @@
 
 ### License
 
-See the [LICENSE](https://github.com/iknow4/Android-Video-Trimmer/blob/master/gradlew/LICENSE) file.
+See the [LICENSE](https://github.com/iknow4/Android-Video-Trimmer/blob/master/LICENSE) file.
 
 
 <img src="https://github.com/iknow4/iknow.Images/blob/master/gif/videoTrim.gif?raw=true" width="400" height="700" alt="VideoTrim"/>
