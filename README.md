@@ -17,5 +17,9 @@
 但是能达到压缩比高、压缩速度快,同时又保证视频的质量,这样的开源库还是比较少的。在这个项目中没有涉及到视频的压缩逻辑，
 但是目前已经集成了FFmpeg库，大家可以很方便的使用FFmpeg来处理视频裁剪之后的视频压缩。
 
+###其他
+视频裁剪完成，会将裁剪好的视频输出保存至应用的Android->data->包名->cache文件夹中
+欢迎star、fork和issues.
+
 
 <img src="https://github.com/iknow4/iknow.Images/blob/master/gif/videoTrim.gif?raw=true" width="400" height="700" alt="VideoTrim"/>
