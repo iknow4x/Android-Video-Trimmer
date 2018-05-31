@@ -17,7 +17,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".TrimmerActivity"/>
+        <activity android:name=".VideoTrimmerActivity"/>
     </application>
 
 </manifest>

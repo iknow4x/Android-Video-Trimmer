@@ -22,54 +22,49 @@ import iknow.android.utils.callback.SingleCallback;
  */
 public class VideoSelectActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private VideoSelectLayoutBinding binding;
-    private ArrayList<VideoInfo> allVideos = new ArrayList<>();
-    private String videoPath;
+  private VideoSelectLayoutBinding binding;
+  private ArrayList<VideoInfo> allVideos = new ArrayList<>();
+  private String videoPath;
 
-    @Override
-    protected void onCreate(Bundle bundle) {
-        super.onCreate(bundle);
-        binding = DataBindingUtil.setContentView(this, R.layout.video_select_layout);
+  @Override protected void onCreate(Bundle bundle) {
+    super.onCreate(bundle);
+    binding = DataBindingUtil.setContentView(this, R.layout.video_select_layout);
 
-        allVideos = TrimVideoUtil.getAllVideoFiles(this);
-        GridLayoutManager manager = new GridLayoutManager(this, 4);
-        binding.videoSelectRecyclerview.addItemDecoration(new SpacesItemDecoration(5));
-        binding.videoSelectRecyclerview.setHasFixedSize(true);
-        VideoGridViewAdapter videoGridViewAdapter;
-        binding.videoSelectRecyclerview.setAdapter(videoGridViewAdapter = new VideoGridViewAdapter(this, allVideos));
-        binding.videoSelectRecyclerview.setLayoutManager(manager);
+    allVideos = TrimVideoUtil.getAllVideoFiles(this);
+    GridLayoutManager manager = new GridLayoutManager(this, 4);
+    binding.videoSelectRecyclerview.addItemDecoration(new SpacesItemDecoration(5));
+    binding.videoSelectRecyclerview.setHasFixedSize(true);
+    VideoGridViewAdapter videoGridViewAdapter;
+    binding.videoSelectRecyclerview.setAdapter(videoGridViewAdapter = new VideoGridViewAdapter(this, allVideos));
+    binding.videoSelectRecyclerview.setLayoutManager(manager);
 
-        binding.videoShoot.setOnClickListener(this);
-        binding.mBtnBack.setOnClickListener(this);
-        binding.nextStep.setOnClickListener(this);
+    binding.videoShoot.setOnClickListener(this);
+    binding.mBtnBack.setOnClickListener(this);
+    binding.nextStep.setOnClickListener(this);
 
-        binding.nextStep.setTextAppearance(this, R.style.gray_text_18_style);
-        binding.nextStep.setEnabled(false);
+    binding.nextStep.setTextAppearance(this, R.style.gray_text_18_style);
+    binding.nextStep.setEnabled(false);
 
-        videoGridViewAdapter.setItemClickCallback(new SingleCallback<Boolean, VideoInfo>() {
-            @Override
-            public void onSingleCallback(Boolean isSelected, VideoInfo video) {
-                if (video != null)
-                    videoPath = video.getVideoPath();
-                binding.nextStep.setEnabled(isSelected);
-                binding.nextStep.setTextAppearance(VideoSelectActivity.this, isSelected ? R.style.blue_text_18_style : R.style.gray_text_18_style);
-            }
-        });
-//        FileUtils.createVideoTempFolder();//Create temp file folder
+    videoGridViewAdapter.setItemClickCallback(new SingleCallback<Boolean, VideoInfo>() {
+      @Override public void onSingleCallback(Boolean isSelected, VideoInfo video) {
+        if (video != null) videoPath = video.getVideoPath();
+        binding.nextStep.setEnabled(isSelected);
+        binding.nextStep.setTextAppearance(VideoSelectActivity.this, isSelected ? R.style.blue_text_18_style : R.style.gray_text_18_style);
+      }
+    });
+    //FileUtils.createVideoTempFolder();//Create temp file folder
+  }
+
+  @Override protected void onDestroy() {
+    super.onDestroy();
+    allVideos = null;
+  }
+
+  @Override public void onClick(View v) {
+    if (v.getId() == binding.mBtnBack.getId()) {
+      finish();
+    } else if (v.getId() == binding.nextStep.getId()) {
+      VideoTrimmerActivity.call(VideoSelectActivity.this, videoPath);
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        allVideos = null;
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == binding.mBtnBack.getId()) {
-            finish();
-        } else if (v.getId() == binding.nextStep.getId()) {
-            TrimmerActivity.go(VideoSelectActivity.this, videoPath);
-        }
-    }
+  }
 }

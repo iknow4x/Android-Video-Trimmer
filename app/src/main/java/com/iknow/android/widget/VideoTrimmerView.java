@@ -1,4 +1,4 @@
-package com.iknow.android.view;
+package com.iknow.android.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -25,9 +25,6 @@ import com.iknow.android.interfaces.ProgressVideoListener;
 import com.iknow.android.interfaces.RangeSeekBarListener;
 import com.iknow.android.interfaces.TrimVideoListener;
 import com.iknow.android.utils.TrimVideoUtil;
-import com.iknow.android.widget.RangeSeekBarView;
-import com.iknow.android.widget.Thumb;
-import com.iknow.android.widget.VideoThumbHorizontalListView;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
