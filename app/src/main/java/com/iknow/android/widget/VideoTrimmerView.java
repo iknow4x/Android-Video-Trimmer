@@ -133,19 +133,19 @@ public class VideoTrimmerView extends FrameLayout {
         mVideoView.setVideoURI(mSrc);
         mVideoView.requestFocus();
 
-        TrimVideoUtil.backgroundShootVideoThumb(mContext, mSrc, new SingleCallback<ArrayList<Bitmap>, Integer>() {
-            @Override
-            public void onSingleCallback(final ArrayList<Bitmap> bitmap, final Integer interval) {
-                UiThreadExecutor.runTask("", new Runnable() {
-                    @Override
-                    public void run() {
-                        videoThumbAdapter.addAll(bitmap);
-                        videoThumbAdapter.notifyDataSetChanged();
-                    }
-                }, 0L);
-
-            }
-        });
+        //TrimVideoUtil.backgroundShootVideoThumb(mContext, mSrc, new SingleCallback<ArrayList<Bitmap>, Integer>() {
+        //    @Override
+        //    public void onSingleCallback(final ArrayList<Bitmap> bitmap, final Integer interval) {
+        //        UiThreadExecutor.runTask("", new Runnable() {
+        //            @Override
+        //            public void run() {
+        //                videoThumbAdapter.addAll(bitmap);
+        //                videoThumbAdapter.notifyDataSetChanged();
+        //            }
+        //        }, 0L);
+        //
+        //    }
+        //});
     }
 
     private void initSeekBarPosition() {

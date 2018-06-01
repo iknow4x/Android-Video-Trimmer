@@ -1,12 +1,14 @@
 package com.iknow.android;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * author : J.Chou
@@ -16,11 +18,10 @@ import android.widget.LinearLayout;
  * description:
  */
 public class VideoTrimmerAdapter extends RecyclerView.Adapter {
-
+  private List<Bitmap> bitmaps = new ArrayList<>();
   private LayoutInflater inflater;
   private int itemW;
   private Context context;
-
 
   public VideoTrimmerAdapter(Context context) {
     this.context = context;
@@ -33,21 +34,26 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
   }
 
   @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
+    ((TrimmerViewHolder)holder).thumbImageView.setImageBitmap(bitmaps.get(position));
   }
 
   @Override public int getItemCount() {
-    return 0;
+    return bitmaps.size();
+  }
+
+  public void addBitmaps(ArrayList<Bitmap> maps) {
+    bitmaps.addAll(maps);
+    notifyDataSetChanged();
   }
 
   private final class TrimmerViewHolder extends RecyclerView.ViewHolder {
-    public ImageView img;
+    public ImageView thumbImageView;
     TrimmerViewHolder(View itemView) {
       super(itemView);
-      img = itemView.findViewById(R.id.thumb);
-      LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) img.getLayoutParams();
-      layoutParams.width = itemW;
-      img.setLayoutParams(layoutParams);
+      thumbImageView = itemView.findViewById(R.id.thumb);
+      //LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) img.getLayoutParams();
+      //layoutParams.width = itemW;
+      //img.setLayoutParams(layoutParams);
     }
   }
 

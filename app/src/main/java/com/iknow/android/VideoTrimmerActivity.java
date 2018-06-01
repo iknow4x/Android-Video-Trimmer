@@ -47,7 +47,7 @@ public class VideoTrimmerActivity extends AppCompatActivity implements TrimVideo
     if (binding.trimmerView != null) {
       binding.trimmerView.setMaxDuration(TrimVideoUtil.VIDEO_MAX_DURATION);
       binding.trimmerView.setOnTrimVideoListener(this);
-      binding.trimmerView.iniVideoByURI(Uri.parse(path));
+      binding.trimmerView.initVideoByURI(Uri.parse(path));
     }
   }
 

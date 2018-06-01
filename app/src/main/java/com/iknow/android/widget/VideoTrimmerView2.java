@@ -75,7 +75,7 @@ public class VideoTrimmerView2 extends FrameLayout {
   private TrimVideoListener mOnTrimVideoListener;
   private int mDuration = 0;
   private long mTimeVideo = 0;
-  private long mStartPosition = 0, mEndPosition = 0;
+  private int mStartPosition = 0, mEndPosition = 0;
 
   private VideoTrimmerAdapter mVideoThumbAdapter;
   private long pixelRangeMax;
@@ -90,6 +90,7 @@ public class VideoTrimmerView2 extends FrameLayout {
   private int lastScrollX;
   private boolean isSeeking;
   private boolean isOverScaledTouchSlop;
+  private int mTotalThumbsCount;
 
   private final MessageHandler mMessageHandler = new MessageHandler(this);
 
@@ -115,25 +116,22 @@ public class VideoTrimmerView2 extends FrameLayout {
     mVideoThumbRecyclerView.setAdapter(mVideoThumbAdapter);
     mVideoThumbRecyclerView.addOnScrollListener(mOnScrollListener);
     setUpListeners();
-    initRangeSeekBarView();
   }
 
   private void initRangeSeekBarView() {
-    long startPosition = 0;
     long endPosition = mDuration;
-    int thumbnailsCount;
     int rangeWidth;
     boolean isOver_60_s;
     if (endPosition <= MAX_CUT_DURATION) {
       isOver_60_s = false;
-      thumbnailsCount = MAX_COUNT_RANGE;
+      mTotalThumbsCount = MAX_COUNT_RANGE;
       rangeWidth = mMaxWidth;
     } else {
       isOver_60_s = true;
-      thumbnailsCount = (int) (endPosition * 1.0f / (MAX_CUT_DURATION * 1.0f) * MAX_COUNT_RANGE);
-      rangeWidth = mMaxWidth / MAX_COUNT_RANGE * thumbnailsCount;
+      mTotalThumbsCount = (int) (endPosition * 1.0f / (MAX_CUT_DURATION * 1.0f) * MAX_COUNT_RANGE);
+      rangeWidth = mMaxWidth / MAX_COUNT_RANGE * mTotalThumbsCount;
     }
-    mVideoThumbRecyclerView.addItemDecoration(new SpacesItemDecoration2(UnitConverter.dpToPx(35), thumbnailsCount));
+    mVideoThumbRecyclerView.addItemDecoration(new SpacesItemDecoration2(UnitConverter.dpToPx(35), mTotalThumbsCount));
     mSeekBarLayout = findViewById(R.id.seekBarLayout);
     mPositionIcon = findViewById(R.id.positionIcon);
     if (isOver_60_s) {
@@ -145,10 +143,12 @@ public class VideoTrimmerView2 extends FrameLayout {
       mRangeSeekBarView.setSelectedMinValue(0L);
       mRangeSeekBarView.setSelectedMaxValue(endPosition);
     }
-    mRangeSeekBarView.setMin_cut_time(MIN_CUT_DURATION);//设置最小裁剪时间
+    mRangeSeekBarView.setMin_cut_time(MIN_CUT_DURATION);
     mRangeSeekBarView.setNotifyWhileDragging(true);
     mRangeSeekBarView.setOnRangeSeekBarChangeListener(mOnRangeSeekBarChangeListener);
     mSeekBarLayout.addView(mRangeSeekBarView);
+
+    averageMsPx = mDuration * 1.0f / rangeWidth * 1.0f;
     //init pos icon start
     leftProgress = 0;
     if (isOver_60_s) {
@@ -159,17 +159,18 @@ public class VideoTrimmerView2 extends FrameLayout {
     averagePxMs = (mMaxWidth * 1.0f / (rightProgress - leftProgress));
   }
 
-  public void iniVideoByURI(final Uri videoURI) {
+  public void initVideoByURI(final Uri videoURI) {
     mSrc = videoURI;
     mVideoView.setVideoURI(mSrc);
     mVideoView.requestFocus();
+  }
 
-    TrimVideoUtil.backgroundShootVideoThumb(mContext, mSrc, new SingleCallback<ArrayList<Bitmap>, Integer>() {
-      @Override public void onSingleCallback(final ArrayList<Bitmap> bitmap, final Integer interval) {
+  private void startShootVideoThumbs(final Context context, final Uri videoUri, int totalThumbsCount, long startPosition, long endPosition) {
+    TrimVideoUtil.backgroundShootVideoThumb(context, videoUri, totalThumbsCount, startPosition, endPosition, new SingleCallback<ArrayList<Bitmap>, Integer>() {
+      @Override public void onSingleCallback(final ArrayList<Bitmap> bitmaps, final Integer interval) {
         UiThreadExecutor.runTask("", new Runnable() {
           @Override public void run() {
-
-            mVideoThumbAdapter.notifyDataSetChanged();
+            mVideoThumbAdapter.addBitmaps(bitmaps);
           }
         }, 0L);
       }
@@ -207,14 +208,17 @@ public class VideoTrimmerView2 extends FrameLayout {
       lp.height = screenHeight;
     }
     mVideoView.setLayoutParams(lp);
-
-    mDuration = (mVideoView.getDuration() / 1000) * 1000;
+    mDuration = mVideoView.getDuration();
     if (!getRestoreState()) {
       //initSeekBarPosition();
+      mVideoView.seekTo(mStartPosition);
     } else {
       setRestoreState(false);
       //initSeekBarFromRestore();
     }
+    initRangeSeekBarView();
+    startShootVideoThumbs(mContext, mSrc, mTotalThumbsCount, 0, mDuration);
+
   }
 
   private void onVideoCompleted() {
@@ -258,7 +262,6 @@ public class VideoTrimmerView2 extends FrameLayout {
         updateVideoProgress(time);
       }
     };
-
     findViewById(R.id.cancelBtn).setOnClickListener(new OnClickListener() {
       @Override public void onClick(View view) {
         onCancelClicked();
@@ -270,19 +273,16 @@ public class VideoTrimmerView2 extends FrameLayout {
         onSaveClicked();
       }
     });
-
     mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
       @Override public void onPrepared(MediaPlayer mp) {
         onVideoPrepared(mp);
       }
     });
-
     mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
       @Override public void onCompletion(MediaPlayer mp) {
         onVideoCompleted();
       }
     });
-
     mPlayView.setOnClickListener(new OnClickListener() {
       @Override public void onClick(View v) {
         onClickVideoPlayPause();
@@ -313,7 +313,7 @@ public class VideoTrimmerView2 extends FrameLayout {
       mMessageHandler.removeMessages(SHOW_PROGRESS);
     } else {
       mVideoView.start();
-      mMessageHandler.sendEmptyMessage(SHOW_PROGRESS);
+      //mMessageHandler.sendEmptyMessage(SHOW_PROGRESS);
     }
 
     setPlayPauseViewIcon(mVideoView.isPlaying());

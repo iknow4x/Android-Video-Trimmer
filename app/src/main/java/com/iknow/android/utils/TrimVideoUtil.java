@@ -25,11 +25,10 @@ import java.util.Locale;
 public class TrimVideoUtil {
 
     private static final String TAG = TrimVideoUtil.class.getSimpleName();
-    public static final int VIDEO_MAX_DURATION = 15;// 15秒
+    public static final int VIDEO_MAX_DURATION = 10;// 10秒
     public static final int MIN_TIME_FRAME = 5;
-    private static final int thumb_Width = (DeviceUtil.getDeviceWidth() - UnitConverter.dpToPx(20)) / VIDEO_MAX_DURATION;
-    private static final int thumb_Height = UnitConverter.dpToPx(60);
-    private static final long one_frame_time = 1000000;
+    private static final int THUMB_WIDTH = (DeviceUtil.getDeviceWidth() - UnitConverter.dpToPx(70)) / VIDEO_MAX_DURATION;
+    private static final int THUMB_HEIGHT = UnitConverter.dpToPx(60);
 
     public static void trim(Context context, String inputFile, String outputFile, long startMs, long endMs, final TrimVideoListener callback) {
         final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
@@ -76,7 +75,7 @@ public class TrimVideoUtil {
         }
     }
 
-    public static void backgroundShootVideoThumb(final Context context, final Uri videoUri, final SingleCallback<ArrayList<Bitmap>, Integer> callback) {
+    public static void backgroundShootVideoThumb(final Context context, final Uri videoUri, final int totalThumbsCount, final long startPosition, final long endPosition, final SingleCallback<ArrayList<Bitmap>, Integer> callback) {
         final ArrayList<Bitmap> thumbnailList = new ArrayList<>();
         BackgroundExecutor.execute(new BackgroundExecutor.Task("", 0L, "") {
                @Override
@@ -85,15 +84,13 @@ public class TrimVideoUtil {
                        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
                        mediaMetadataRetriever.setDataSource(context, videoUri);
                        // Retrieve media data use microsecond
-                       long videoLengthInMs = Long.parseLong(mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)) * 1000;
-                       long numThumbs = videoLengthInMs < one_frame_time ? 1 : (videoLengthInMs / one_frame_time);
-                       final long interval = videoLengthInMs / numThumbs;
-
+                       long interval = (endPosition - startPosition) / (totalThumbsCount - 1);
                        //每次截取到3帧之后上报
-                       for (long i = 0; i < numThumbs; ++i) {
-                           Bitmap bitmap = mediaMetadataRetriever.getFrameAtTime(i * interval, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+                       for (long i = 0; i < totalThumbsCount; ++i) {
+                           long frameTime = startPosition + interval * i;
+                           Bitmap bitmap = mediaMetadataRetriever.getFrameAtTime(frameTime, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
                            try {
-                               bitmap = Bitmap.createScaledBitmap(bitmap, thumb_Width, thumb_Height, false);
+                               bitmap = Bitmap.createScaledBitmap(bitmap, THUMB_WIDTH, THUMB_HEIGHT, false);
                            } catch (Exception e) {
                                e.printStackTrace();
                            }
