@@ -28,11 +28,9 @@ import com.iknow.android.utils.TrimVideoUtil;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 
 import iknow.android.utils.DeviceUtil;
 import iknow.android.utils.UnitConverter;
-import iknow.android.utils.callback.SingleCallback;
 import iknow.android.utils.thread.BackgroundExecutor;
 import iknow.android.utils.thread.UiThreadExecutor;
 
@@ -564,7 +562,7 @@ public class VideoTrimmerView extends FrameLayout {
             VideoThumbHolder videoThumbHolder;
             if (convertView == null) {
                 videoThumbHolder = new VideoThumbHolder();
-                convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.video_thumb_itme_layout, null);
+                convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.video_thumb_item_layout, null);
                 videoThumbHolder.thumb = (ImageView) convertView.findViewById(R.id.thumb);
                 convertView.setTag(videoThumbHolder);
             } else {

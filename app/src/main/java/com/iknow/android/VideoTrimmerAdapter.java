@@ -30,7 +30,7 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
   }
 
   @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-    return new TrimmerViewHolder(inflater.inflate(R.layout.video_thumb_itme_layout, parent, false));
+    return new TrimmerViewHolder(inflater.inflate(R.layout.video_thumb_item_layout, parent, false));
   }
 
   @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {

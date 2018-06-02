@@ -88,9 +88,9 @@ public class TrimVideoUtil {
                        //每次截取到3帧之后上报
                        for (long i = 0; i < totalThumbsCount; ++i) {
                            long frameTime = startPosition + interval * i;
-                           Bitmap bitmap = mediaMetadataRetriever.getFrameAtTime(frameTime, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+                           Bitmap bitmap = mediaMetadataRetriever.getFrameAtTime(frameTime * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
                            try {
-                               bitmap = Bitmap.createScaledBitmap(bitmap, THUMB_WIDTH, THUMB_HEIGHT, false);
+                               bitmap = Bitmap.createScaledBitmap(bitmap, (int)(THUMB_WIDTH * 1.0f / bitmap.getWidth()), bitmap.getHeight(), false);
                            } catch (Exception e) {
                                e.printStackTrace();
                            }
