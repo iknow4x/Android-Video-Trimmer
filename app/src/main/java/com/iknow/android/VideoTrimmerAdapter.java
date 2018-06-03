@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import com.iknow.android.utils.TrimVideoUtil;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,13 +22,11 @@ import java.util.List;
 public class VideoTrimmerAdapter extends RecyclerView.Adapter {
   private List<Bitmap> bitmaps = new ArrayList<>();
   private LayoutInflater inflater;
-  private int itemW;
   private Context context;
 
   public VideoTrimmerAdapter(Context context) {
     this.context = context;
     this.inflater = LayoutInflater.from(context);
-    this.itemW = itemW;
   }
 
   @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -51,9 +51,9 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
     TrimmerViewHolder(View itemView) {
       super(itemView);
       thumbImageView = itemView.findViewById(R.id.thumb);
-      //LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) img.getLayoutParams();
-      //layoutParams.width = itemW;
-      //img.setLayoutParams(layoutParams);
+      LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) thumbImageView.getLayoutParams();
+      layoutParams.width = TrimVideoUtil.VIDEO_FRAMES_WIDTH / TrimVideoUtil.MAX_COUNT_RANGE;
+      thumbImageView.setLayoutParams(layoutParams);
     }
   }
 

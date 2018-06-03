@@ -12,7 +12,6 @@ import com.iknow.android.databinding.ActivityTrimmerLayoutBinding;
 import com.iknow.android.interfaces.CompressVideoListener;
 import com.iknow.android.interfaces.TrimVideoListener;
 import com.iknow.android.utils.CompressVideoUtil;
-import com.iknow.android.utils.TrimVideoUtil;
 
 /**
  * Author：J.Chou
@@ -45,7 +44,6 @@ public class VideoTrimmerActivity extends AppCompatActivity implements TrimVideo
     String path = "";
     if (bd != null) path = bd.getString(VIDEO_PATH_KEY);
     if (binding.trimmerView != null) {
-      binding.trimmerView.setMaxDuration(TrimVideoUtil.VIDEO_MAX_DURATION);
       binding.trimmerView.setOnTrimVideoListener(this);
       binding.trimmerView.initVideoByURI(Uri.parse(path));
     }

@@ -48,9 +48,9 @@ public class RangeSeekBarView2 extends View {
   private int thumbWidth;
   private float thumbHalfWidth;
   private final float padding = 0;
-
+  private long mStartPosition = 0;
+  private long mEndPosition = 0;
   private float thumbPaddingTop = 0;
-  private float thumbPressPaddingTop = 0;
   private boolean isTouchDown;
   private float mDownMotionX;
   private boolean mIsDragging;
@@ -191,8 +191,8 @@ public class RangeSeekBarView2 extends View {
   }
 
   private void drawVideoTrimTimeText(Canvas canvas) {
-    String leftThumbsTime = DateUtil.convertSecondsToTime((long) normalizedToScreen(normalizedMinValue));
-    String rightThumbsTime = DateUtil.convertSecondsToTime((long) normalizedToScreen(normalizedMaxValue));
+    String leftThumbsTime = DateUtil.convertSecondsToTime(mStartPosition);
+    String rightThumbsTime = DateUtil.convertSecondsToTime(mEndPosition);
     canvas.drawText(leftThumbsTime, normalizedToScreen(normalizedMinValue), TextPositionY, mVideoTrimTimePaintL);
     canvas.drawText(rightThumbsTime, normalizedToScreen(normalizedMaxValue), TextPositionY, mVideoTrimTimePaintR);
   }
@@ -471,6 +471,12 @@ public class RangeSeekBarView2 extends View {
     }
     return (value - absoluteMinValuePrim) / (absoluteMaxValuePrim - absoluteMinValuePrim);
   }
+
+  public void setStartEndTime(long start, long end) {
+    this.mStartPosition = start / 1000;
+    this.mEndPosition = end / 1000;
+  }
+
 
   public void setSelectedMinValue(long value) {
     if (0 == (absoluteMaxValuePrim - absoluteMinValuePrim)) {
