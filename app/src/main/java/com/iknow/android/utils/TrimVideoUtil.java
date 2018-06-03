@@ -88,7 +88,7 @@ public class TrimVideoUtil {
           mediaMetadataRetriever.setDataSource(context, videoUri);
           // Retrieve media data use microsecond
           long interval = (endPosition - startPosition) / (totalThumbsCount - 1);
-          //每次截取到3帧之后上报
+          //每次截取到2帧之后上报
           for (long i = 0; i < totalThumbsCount; ++i) {
             long frameTime = startPosition + interval * i;
             Bitmap bitmap = mediaMetadataRetriever.getFrameAtTime(frameTime * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
@@ -98,7 +98,7 @@ public class TrimVideoUtil {
               e.printStackTrace();
             }
             thumbnailList.add(bitmap);
-            if (thumbnailList.size() == 3) {
+            if (thumbnailList.size() == 2) {
               callback.onSingleCallback((ArrayList<Bitmap>) thumbnailList.clone(), (int) interval);
               thumbnailList.clear();
             }
