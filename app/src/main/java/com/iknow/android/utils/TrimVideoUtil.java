@@ -25,6 +25,11 @@ import java.util.Locale;
 public class TrimVideoUtil {
 
     private static final String TAG = TrimVideoUtil.class.getSimpleName();
+    public static boolean isDebugMode = false;
+    public static final long MIN_CUT_DURATION = 3 * 1000L;// 最小剪辑时间3s
+    public static final long MAX_CUT_DURATION = 10 * 1000L;//视频最多剪切多长时间10s
+    public static final int MAX_COUNT_RANGE = 10;  //seekBar的区域内一共有多少张图片
+
     public static final int VIDEO_MAX_DURATION = 10;// 10秒
     public static final int MIN_TIME_FRAME = 5;
     private static final int THUMB_WIDTH = (DeviceUtil.getDeviceWidth() - UnitConverter.dpToPx(70)) / VIDEO_MAX_DURATION;

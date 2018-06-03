@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <color name="white">#ffffffff</color>
     <color name="red">#aacc0000</color>
     <color name="background_video_color">#2f3031</color>
     <color name="background_progress_color">#6C6D6D</color>

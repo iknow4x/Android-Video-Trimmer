@@ -42,13 +42,8 @@ public class VideoTrimmerView2 extends FrameLayout {
    * PixRangeMax = (视频总长 * SCREEN_WIDTH) / 视频最长的裁剪时间(15s)
    * 视频总长/PixRangeMax = 当前视频的时间/游标当前所在位置
    */
-  private static boolean isDebugMode = false;
-
-  private static final long MIN_CUT_DURATION = 3 * 1000L;// 最小剪辑时间3s
-  private static final long MAX_CUT_DURATION = 10 * 1000L;//视频最多剪切多长时间10s
-  private static final int MAX_COUNT_RANGE = 10;//seekBar的区域内一共有多少张图片
-
   private static final String TAG = VideoTrimmerView2.class.getSimpleName();
+
   private static final int margin = UnitConverter.dpToPx(6);
   private static final int SCREEN_WIDTH = (DeviceUtil.getDeviceWidth() - margin * 2);
   private static final int SCREEN_WIDTH_FULL = DeviceUtil.getDeviceWidth();
@@ -63,10 +58,10 @@ public class VideoTrimmerView2 extends FrameLayout {
   private LinearLayout mSeekBarLayout;
   private ImageView mPositionIcon;
   private int mMaxWidth;
-  private float averageMsPx;//每毫秒所占的px
+  private float mAverageMsPx;//每毫秒所占的px
   private float averagePxMs;//每px所占用的ms毫秒
 
-  private Uri mSrc;
+  private Uri mSourceUri;
   private String mFinalPath;
 
   private long mMaxDuration;
@@ -90,7 +85,7 @@ public class VideoTrimmerView2 extends FrameLayout {
   private int lastScrollX;
   private boolean isSeeking;
   private boolean isOverScaledTouchSlop;
-  private int mTotalThumbsCount;
+  private int mThumbsTotalCount;
 
   private final MessageHandler mMessageHandler = new MessageHandler(this);
 
@@ -122,37 +117,37 @@ public class VideoTrimmerView2 extends FrameLayout {
     long endPosition = mDuration;
     int rangeWidth;
     boolean isOver_60_s;
-    if (endPosition <= MAX_CUT_DURATION) {
+    if (endPosition <= TrimVideoUtil.MAX_CUT_DURATION) {
       isOver_60_s = false;
-      mTotalThumbsCount = MAX_COUNT_RANGE;
+      mThumbsTotalCount = TrimVideoUtil.MAX_COUNT_RANGE;
       rangeWidth = mMaxWidth;
     } else {
       isOver_60_s = true;
-      mTotalThumbsCount = (int) (endPosition * 1.0f / (MAX_CUT_DURATION * 1.0f) * MAX_COUNT_RANGE);
-      rangeWidth = mMaxWidth / MAX_COUNT_RANGE * mTotalThumbsCount;
+      mThumbsTotalCount = (int) (endPosition * 1.0f / (TrimVideoUtil.MAX_CUT_DURATION * 1.0f) * TrimVideoUtil.MAX_COUNT_RANGE);
+      rangeWidth = mMaxWidth / TrimVideoUtil.MAX_COUNT_RANGE * mThumbsTotalCount;
     }
-    mVideoThumbRecyclerView.addItemDecoration(new SpacesItemDecoration2(UnitConverter.dpToPx(35), mTotalThumbsCount));
+    mVideoThumbRecyclerView.addItemDecoration(new SpacesItemDecoration2(UnitConverter.dpToPx(35), mThumbsTotalCount));
     mSeekBarLayout = findViewById(R.id.seekBarLayout);
     mPositionIcon = findViewById(R.id.positionIcon);
     if (isOver_60_s) {
-      mRangeSeekBarView = new RangeSeekBarView2(mContext, 0L, MAX_CUT_DURATION);
+      mRangeSeekBarView = new RangeSeekBarView2(mContext, 0L, TrimVideoUtil.MAX_CUT_DURATION);
       mRangeSeekBarView.setSelectedMinValue(0L);
-      mRangeSeekBarView.setSelectedMaxValue(MAX_CUT_DURATION);
+      mRangeSeekBarView.setSelectedMaxValue(TrimVideoUtil.MAX_CUT_DURATION);
     } else {
       mRangeSeekBarView = new RangeSeekBarView2(mContext, 0L, endPosition);
       mRangeSeekBarView.setSelectedMinValue(0L);
       mRangeSeekBarView.setSelectedMaxValue(endPosition);
     }
-    mRangeSeekBarView.setMin_cut_time(MIN_CUT_DURATION);
+    mRangeSeekBarView.setMin_cut_time(TrimVideoUtil.MIN_CUT_DURATION);
     mRangeSeekBarView.setNotifyWhileDragging(true);
     mRangeSeekBarView.setOnRangeSeekBarChangeListener(mOnRangeSeekBarChangeListener);
     mSeekBarLayout.addView(mRangeSeekBarView);
 
-    averageMsPx = mDuration * 1.0f / rangeWidth * 1.0f;
+    mAverageMsPx = mDuration * 1.0f / rangeWidth * 1.0f;
     //init pos icon start
     leftProgress = 0;
     if (isOver_60_s) {
-      rightProgress = MAX_CUT_DURATION;
+      rightProgress = TrimVideoUtil.MAX_CUT_DURATION;
     } else {
       rightProgress = endPosition;
     }
@@ -160,8 +155,8 @@ public class VideoTrimmerView2 extends FrameLayout {
   }
 
   public void initVideoByURI(final Uri videoURI) {
-    mSrc = videoURI;
-    mVideoView.setVideoURI(mSrc);
+    mSourceUri = videoURI;
+    mVideoView.setVideoURI(mSourceUri);
     mVideoView.requestFocus();
   }
 
@@ -217,8 +212,7 @@ public class VideoTrimmerView2 extends FrameLayout {
       //initSeekBarFromRestore();
     }
     initRangeSeekBarView();
-    startShootVideoThumbs(mContext, mSrc, mTotalThumbsCount, 0, mDuration);
-
+    startShootVideoThumbs(mContext, mSourceUri, mThumbsTotalCount, 0, mDuration);
   }
 
   private void onVideoCompleted() {
@@ -295,7 +289,7 @@ public class VideoTrimmerView2 extends FrameLayout {
       Toast.makeText(mContext, "视频长不足5秒,无法上传", Toast.LENGTH_SHORT).show();
     } else {
       mVideoView.pause();
-      TrimVideoUtil.trim(mContext, mSrc.getPath(), getTrimmedVideoPath(), mStartPosition, mEndPosition, mOnTrimVideoListener);
+      TrimVideoUtil.trim(mContext, mSourceUri.getPath(), getTrimmedVideoPath(), mStartPosition, mEndPosition, mOnTrimVideoListener);
     }
   }
 
@@ -350,7 +344,7 @@ public class VideoTrimmerView2 extends FrameLayout {
     if (mVideoView == null) {
       return;
     }
-    if (isDebugMode) Log.i("Jason", "updateVideoProgress time = " + time);
+    if (TrimVideoUtil.isDebugMode) Log.i("Jason", "updateVideoProgress time = " + time);
     if (time >= mEndPosition) {
       mMessageHandler.removeMessages(SHOW_PROGRESS);
       mVideoView.pause();
@@ -363,7 +357,7 @@ public class VideoTrimmerView2 extends FrameLayout {
   private void notifyProgressUpdate() {
     if (mDuration == 0) return;
     int position = mVideoView.getCurrentPosition();
-    if (isDebugMode) Log.i("Jason", "updateVideoProgress position = " + position);
+    if (TrimVideoUtil.isDebugMode) Log.i("Jason", "updateVideoProgress position = " + position);
     mListeners.updateProgress(position, 0, 0);
   }
 
@@ -438,7 +432,7 @@ public class VideoTrimmerView2 extends FrameLayout {
           //videoPause();
         }
         isSeeking = true;
-        scrollPos = (long) (averageMsPx * (UnitConverter.dpToPx(35) + scrollX));
+        scrollPos = (long) (mAverageMsPx * (UnitConverter.dpToPx(35) + scrollX));
         Log.d(TAG, "-------scrollPos:>>>>>" + scrollPos);
         leftProgress = mRangeSeekBarView.getSelectedMinValue() + scrollPos;
         rightProgress = mRangeSeekBarView.getSelectedMaxValue() + scrollPos;

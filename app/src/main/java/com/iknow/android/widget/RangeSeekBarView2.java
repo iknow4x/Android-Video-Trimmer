@@ -17,6 +17,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import com.iknow.android.R;
+import com.iknow.android.utils.TrimVideoUtil;
+import iknow.android.utils.DateUtil;
 import iknow.android.utils.UnitConverter;
 import java.text.DecimalFormat;
 
@@ -30,7 +32,7 @@ public class RangeSeekBarView2 extends View {
   private double absoluteMinValuePrim, absoluteMaxValuePrim;
   private double normalizedMinValue = 0d;//点坐标占总长度的比例值，范围从0-1
   private double normalizedMaxValue = 1d;//点坐标占总长度的比例值，范围从0-1
-  private long min_cut_time = 3000;
+  private long min_cut_time = TrimVideoUtil.MIN_CUT_DURATION;
   private double normalizedMinValueTime = 0d;
   private double normalizedMaxValueTime = 1d;// normalized：规格化的--点坐标占总长度的比例值，范围从0-1
   private int mScaledTouchSlop;
@@ -106,7 +108,7 @@ public class RangeSeekBarView2 extends View {
     paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     rectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     rectPaint.setStyle(Paint.Style.FILL);
-    rectPaint.setColor(Color.parseColor("#ffffff"));
+    rectPaint.setColor(getContext().getResources().getColor(R.color.white));
 
     mVideoTrimTimePaintL.setStrokeWidth(3);
     mVideoTrimTimePaintL.setARGB(255, 51, 51, 51);
@@ -188,10 +190,10 @@ public class RangeSeekBarView2 extends View {
   }
 
   private void drawVideoTrimTimeText(Canvas canvas) {
-    //String leftThumbsTime = DateUtil.convertSecondsToTime(mStartPosition);
-    //String rightThumbsTime = DateUtil.convertSecondsToTime(mEndPosition);
-    //canvas.drawText(leftThumbsTime, getThumbs().get(0).getPos() + textPosMargin, TextPostionY, mVideoTrimTimePaintL);
-    //canvas.drawText(rightThumbsTime, getThumbs().get(1).getPos() + textPosMargin, TextPostionY, mVideoTrimTimePaintR);
+  //  String leftThumbsTime = DateUtil.convertSecondsToTime(mStartPosition);
+  //  String rightThumbsTime = DateUtil.convertSecondsToTime(mEndPosition);
+  //  canvas.drawText(leftThumbsTime, getThumbs().get(0).getPos() + textPosMargin, TextPostionY, mVideoTrimTimePaintL);
+  //  canvas.drawText(rightThumbsTime, getThumbs().get(1).getPos() + textPosMargin, TextPostionY, mVideoTrimTimePaintR);
   }
 
   @Override public boolean onTouchEvent(MotionEvent event) {
