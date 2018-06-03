@@ -32,7 +32,6 @@ public class RangeSeekBarView extends View {
     private float mMaxWidth;
     private float mThumbWidth;
     private float mThumbHeight;
-    private int mViewWidth;
     private float mPixelRangeMin;
     private long mPixelRangeMax;
     private int mDuration;
@@ -116,12 +115,12 @@ public class RangeSeekBarView extends View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         int minW = getPaddingLeft() + getPaddingRight() + getSuggestedMinimumWidth() + (int) mThumbWidth;
-        mViewWidth = resolveSizeAndState(minW, widthMeasureSpec, 1);
+        int viewWidth = resolveSizeAndState(minW, widthMeasureSpec, 1);
 
         int minH = getPaddingBottom() + getPaddingTop() + mHeightTimeLine + UnitConverter.dpToPx(2) * 2 + paddingTop;
         int viewHeight = resolveSizeAndState(minH, heightMeasureSpec, 1);
 
-        setMeasuredDimension(mViewWidth, viewHeight);
+        setMeasuredDimension(viewWidth, viewHeight);
         mPixelRangeMin = 0;
     }
 

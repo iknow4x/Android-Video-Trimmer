@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -27,12 +26,13 @@ public class RangeSeekBarView2 extends View {
   public static final int INVALID_POINTER_ID = 255;
   public static final int ACTION_POINTER_INDEX_MASK = 0x0000ff00, ACTION_POINTER_INDEX_SHIFT = 8;
   private int mActivePointerId = INVALID_POINTER_ID;
-  private static final int TextPostionY = UnitConverter.dpToPx(10);
+  private static final int TextPositionY = UnitConverter.dpToPx(7);
+  private static final int paddingTop = UnitConverter.dpToPx(10);
 
+  private long mMinShootTime = TrimVideoUtil.MIN_SHOOT_DURATION;
   private double absoluteMinValuePrim, absoluteMaxValuePrim;
   private double normalizedMinValue = 0d;//点坐标占总长度的比例值，范围从0-1
   private double normalizedMaxValue = 1d;//点坐标占总长度的比例值，范围从0-1
-  private long min_cut_time = TrimVideoUtil.MIN_CUT_DURATION;
   private double normalizedMinValueTime = 0d;
   private double normalizedMaxValueTime = 1d;// normalized：规格化的--点坐标占总长度的比例值，范围从0-1
   private int mScaledTouchSlop;
@@ -59,6 +59,7 @@ public class RangeSeekBarView2 extends View {
   private double min_width = 1;//最小裁剪距离
   private boolean notifyWhileDragging = false;
   private OnRangeSeekBarChangeListener mRangeSeekBarChangeListener;
+  private int whiteColorRes = getContext().getResources().getColor(R.color.white);
 
   public enum Thumb {
     MIN, MAX
@@ -91,8 +92,8 @@ public class RangeSeekBarView2 extends View {
     thumbImageLeft = BitmapFactory.decodeResource(getResources(), R.drawable.handle_left);
     int width = thumbImageLeft.getWidth();
     int height = thumbImageLeft.getHeight();
-    int newWidth = dip2px(11);
-    int newHeight = dip2px(55);
+    int newWidth = UnitConverter.dpToPx(11);
+    int newHeight = UnitConverter.dpToPx(55);
     float scaleWidth = newWidth * 1.0f / width;
     float scaleHeight = newHeight * 1.0f / height;
     Matrix matrix = new Matrix();
@@ -108,20 +109,20 @@ public class RangeSeekBarView2 extends View {
     paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     rectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     rectPaint.setStyle(Paint.Style.FILL);
-    rectPaint.setColor(getContext().getResources().getColor(R.color.white));
+    rectPaint.setColor(whiteColorRes);
 
     mVideoTrimTimePaintL.setStrokeWidth(3);
     mVideoTrimTimePaintL.setARGB(255, 51, 51, 51);
     mVideoTrimTimePaintL.setTextSize(28);
     mVideoTrimTimePaintL.setAntiAlias(true);
-    mVideoTrimTimePaintL.setColor(Color.parseColor("#444444"));
+    mVideoTrimTimePaintL.setColor(whiteColorRes);
     mVideoTrimTimePaintL.setTextAlign(Paint.Align.LEFT);
 
     mVideoTrimTimePaintR.setStrokeWidth(3);
     mVideoTrimTimePaintR.setARGB(255, 51, 51, 51);
     mVideoTrimTimePaintR.setTextSize(28);
     mVideoTrimTimePaintR.setAntiAlias(true);
-    mVideoTrimTimePaintR.setColor(Color.parseColor("#444444"));
+    mVideoTrimTimePaintR.setColor(whiteColorRes);
     mVideoTrimTimePaintR.setTextAlign(Paint.Align.RIGHT);
   }
 
@@ -170,8 +171,8 @@ public class RangeSeekBarView2 extends View {
         canvas.drawBitmap(m_bg_new2, (int) (rangeR - thumbWidth / 2), thumbPaddingTop, paint);
 
         //画上下的矩形
-        canvas.drawRect(rangeL, thumbPaddingTop, rangeR, thumbPaddingTop + dip2px(2), rectPaint);
-        canvas.drawRect(rangeL, getHeight() - dip2px(2), rangeR, getHeight(), rectPaint);
+        canvas.drawRect(rangeL, thumbPaddingTop + paddingTop, rangeR, thumbPaddingTop + UnitConverter.dpToPx(2) + paddingTop, rectPaint);
+        canvas.drawRect(rangeL, getHeight() - UnitConverter.dpToPx(2), rangeR, getHeight(), rectPaint);
         //画左右thumb
         drawThumb(normalizedToScreen(normalizedMinValue), false, canvas, true);
         drawThumb(normalizedToScreen(normalizedMaxValue), false, canvas, false);
@@ -186,14 +187,14 @@ public class RangeSeekBarView2 extends View {
 
   private void drawThumb(float screenCoord, boolean pressed, Canvas canvas, boolean isLeft) {
     canvas.drawBitmap(pressed ? thumbPressedImage : (isLeft ? thumbImageLeft : thumbImageRight), screenCoord - (isLeft ? 0 : thumbWidth),
-        (pressed ? thumbPressPaddingTop : thumbPaddingTop), paint);
+        paddingTop, paint);
   }
 
   private void drawVideoTrimTimeText(Canvas canvas) {
-  //  String leftThumbsTime = DateUtil.convertSecondsToTime(mStartPosition);
-  //  String rightThumbsTime = DateUtil.convertSecondsToTime(mEndPosition);
-  //  canvas.drawText(leftThumbsTime, getThumbs().get(0).getPos() + textPosMargin, TextPostionY, mVideoTrimTimePaintL);
-  //  canvas.drawText(rightThumbsTime, getThumbs().get(1).getPos() + textPosMargin, TextPostionY, mVideoTrimTimePaintR);
+    String leftThumbsTime = DateUtil.convertSecondsToTime((long) normalizedToScreen(normalizedMinValue));
+    String rightThumbsTime = DateUtil.convertSecondsToTime((long) normalizedToScreen(normalizedMaxValue));
+    canvas.drawText(leftThumbsTime, normalizedToScreen(normalizedMinValue), TextPositionY, mVideoTrimTimePaintL);
+    canvas.drawText(rightThumbsTime, normalizedToScreen(normalizedMaxValue), TextPositionY, mVideoTrimTimePaintR);
   }
 
   @Override public boolean onTouchEvent(MotionEvent event) {
@@ -205,7 +206,7 @@ public class RangeSeekBarView2 extends View {
     }
 
     if (!isEnabled()) return false;
-    if (absoluteMaxValuePrim <= min_cut_time) {
+    if (absoluteMaxValuePrim <= mMinShootTime) {
       return super.onTouchEvent(event);
     }
     int pointerIndex;// 记录点击点的index
@@ -332,7 +333,7 @@ public class RangeSeekBarView2 extends View {
       double current_width = screenCoord;
       float rangeL = normalizedToScreen(normalizedMinValue);
       float rangeR = normalizedToScreen(normalizedMaxValue);
-      double min = min_cut_time / (absoluteMaxValuePrim - absoluteMinValuePrim) * (width - thumbWidth * 2);
+      double min = mMinShootTime / (absoluteMaxValuePrim - absoluteMinValuePrim) * (width - thumbWidth * 2);
 
       if (absoluteMaxValuePrim > 5 * 60 * 1000) {//大于5分钟的精确小数四位
         DecimalFormat df = new DecimalFormat("0.0000");
@@ -456,8 +457,8 @@ public class RangeSeekBarView2 extends View {
     mIsDragging = false;
   }
 
-  public void setMin_cut_time(long min_cut_time) {
-    this.min_cut_time = min_cut_time;
+  public void setMinShootTime(long min_cut_time) {
+    this.mMinShootTime = min_cut_time;
   }
 
   private float normalizedToScreen(double normalizedCoord) {
@@ -518,11 +519,6 @@ public class RangeSeekBarView2 extends View {
 
   public void setNotifyWhileDragging(boolean flag) {
     this.notifyWhileDragging = flag;
-  }
-
-  public int dip2px(int dip) {
-    float scale = getContext().getResources().getDisplayMetrics().density;
-    return (int) ((float) dip * scale + 0.5F);
   }
 
   public void setTouchDown(boolean touchDown) {

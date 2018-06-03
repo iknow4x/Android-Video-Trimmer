@@ -20,7 +20,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        tools:background="@color/red"
         />
 
   </RelativeLayout>
@@ -48,49 +47,56 @@
     <FrameLayout
         android:id="@+id/video_frames_layout"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="60dp"
         android:layout_below="@+id/video_shoot_tip"
         >
 
       <android.support.v7.widget.RecyclerView
           android:id="@+id/video_frames_recyclerView"
           android:layout_width="match_parent"
-          android:layout_height="match_parent"
+          android:layout_height="50dp"
+          android:layout_gravity="bottom"
+          tools:background="@android:color/holo_green_light"
           />
 
       <ImageView
           android:id="@+id/positionIcon"
           android:layout_width="wrap_content"
-          android:layout_height="match_parent"
+          android:layout_height="50dp"
           android:layout_marginLeft="35dp"
           android:contentDescription="@null"
+          android:layout_gravity="bottom"
           android:src="@drawable/icon_seek_bar"
           />
 
       <LinearLayout
           android:layout_width="match_parent"
-          android:layout_height="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="bottom"
           android:orientation="horizontal"
           >
 
         <View
             android:layout_width="35dp"
-            android:layout_height="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="bottom"
             android:background="#66000000"
             />
 
         <LinearLayout
             android:id="@+id/seekBarLayout"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="60dp"
             android:layout_weight="1"
+            android:layout_gravity="bottom"
+            android:gravity="bottom"
             android:orientation="vertical"
-            tools:background="@android:color/holo_green_light"
             />
 
         <View
             android:layout_width="35dp"
             android:layout_height="match_parent"
+            android:layout_gravity="bottom"
             android:background="#66000000"
             />
       </LinearLayout>

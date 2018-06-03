@@ -1,5 +1,6 @@
 package com.iknow.android.widget;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
@@ -14,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -44,11 +46,10 @@ public class VideoTrimmerView2 extends FrameLayout {
    */
   private static final String TAG = VideoTrimmerView2.class.getSimpleName();
 
-  private static final int margin = UnitConverter.dpToPx(6);
-  private static final int SCREEN_WIDTH = (DeviceUtil.getDeviceWidth() - margin * 2);
   private static final int SCREEN_WIDTH_FULL = DeviceUtil.getDeviceWidth();
   private static final int SHOW_PROGRESS = 2;
 
+  private int mMaxWidth = SCREEN_WIDTH_FULL - UnitConverter.dpToPx(70);
   private Context mContext;
   private RelativeLayout mLinearVideo;
   private VideoView mVideoView;
@@ -57,7 +58,6 @@ public class VideoTrimmerView2 extends FrameLayout {
   private RangeSeekBarView2 mRangeSeekBarView;
   private LinearLayout mSeekBarLayout;
   private ImageView mPositionIcon;
-  private int mMaxWidth;
   private float mAverageMsPx;//每毫秒所占的px
   private float averagePxMs;//每px所占用的ms毫秒
 
@@ -116,29 +116,29 @@ public class VideoTrimmerView2 extends FrameLayout {
   private void initRangeSeekBarView() {
     long endPosition = mDuration;
     int rangeWidth;
-    boolean isOver_60_s;
-    if (endPosition <= TrimVideoUtil.MAX_CUT_DURATION) {
-      isOver_60_s = false;
+    boolean isOver60s;
+    if (endPosition <= TrimVideoUtil.MAX_SHOOT_DURATION) {
+      isOver60s = false;
       mThumbsTotalCount = TrimVideoUtil.MAX_COUNT_RANGE;
       rangeWidth = mMaxWidth;
     } else {
-      isOver_60_s = true;
-      mThumbsTotalCount = (int) (endPosition * 1.0f / (TrimVideoUtil.MAX_CUT_DURATION * 1.0f) * TrimVideoUtil.MAX_COUNT_RANGE);
+      isOver60s = true;
+      mThumbsTotalCount = (int) (endPosition * 1.0f / (TrimVideoUtil.MAX_SHOOT_DURATION * 1.0f) * TrimVideoUtil.MAX_COUNT_RANGE);
       rangeWidth = mMaxWidth / TrimVideoUtil.MAX_COUNT_RANGE * mThumbsTotalCount;
     }
     mVideoThumbRecyclerView.addItemDecoration(new SpacesItemDecoration2(UnitConverter.dpToPx(35), mThumbsTotalCount));
     mSeekBarLayout = findViewById(R.id.seekBarLayout);
     mPositionIcon = findViewById(R.id.positionIcon);
-    if (isOver_60_s) {
-      mRangeSeekBarView = new RangeSeekBarView2(mContext, 0L, TrimVideoUtil.MAX_CUT_DURATION);
+    if (isOver60s) {
+      mRangeSeekBarView = new RangeSeekBarView2(mContext, 0L, TrimVideoUtil.MAX_SHOOT_DURATION);
       mRangeSeekBarView.setSelectedMinValue(0L);
-      mRangeSeekBarView.setSelectedMaxValue(TrimVideoUtil.MAX_CUT_DURATION);
+      mRangeSeekBarView.setSelectedMaxValue(TrimVideoUtil.MAX_SHOOT_DURATION);
     } else {
       mRangeSeekBarView = new RangeSeekBarView2(mContext, 0L, endPosition);
       mRangeSeekBarView.setSelectedMinValue(0L);
       mRangeSeekBarView.setSelectedMaxValue(endPosition);
     }
-    mRangeSeekBarView.setMin_cut_time(TrimVideoUtil.MIN_CUT_DURATION);
+    mRangeSeekBarView.setMinShootTime(TrimVideoUtil.MIN_SHOOT_DURATION);
     mRangeSeekBarView.setNotifyWhileDragging(true);
     mRangeSeekBarView.setOnRangeSeekBarChangeListener(mOnRangeSeekBarChangeListener);
     mSeekBarLayout.addView(mRangeSeekBarView);
@@ -146,8 +146,8 @@ public class VideoTrimmerView2 extends FrameLayout {
     mAverageMsPx = mDuration * 1.0f / rangeWidth * 1.0f;
     //init pos icon start
     leftProgress = 0;
-    if (isOver_60_s) {
-      rightProgress = TrimVideoUtil.MAX_CUT_DURATION;
+    if (isOver60s) {
+      rightProgress = TrimVideoUtil.MAX_SHOOT_DURATION;
     } else {
       rightProgress = endPosition;
     }
@@ -161,15 +161,16 @@ public class VideoTrimmerView2 extends FrameLayout {
   }
 
   private void startShootVideoThumbs(final Context context, final Uri videoUri, int totalThumbsCount, long startPosition, long endPosition) {
-    TrimVideoUtil.backgroundShootVideoThumb(context, videoUri, totalThumbsCount, startPosition, endPosition, new SingleCallback<ArrayList<Bitmap>, Integer>() {
-      @Override public void onSingleCallback(final ArrayList<Bitmap> bitmaps, final Integer interval) {
-        UiThreadExecutor.runTask("", new Runnable() {
-          @Override public void run() {
-            mVideoThumbAdapter.addBitmaps(bitmaps);
+    TrimVideoUtil.backgroundShootVideoThumb(context, videoUri, totalThumbsCount, startPosition, endPosition,
+        new SingleCallback<ArrayList<Bitmap>, Integer>() {
+          @Override public void onSingleCallback(final ArrayList<Bitmap> bitmaps, final Integer interval) {
+            UiThreadExecutor.runTask("", new Runnable() {
+              @Override public void run() {
+                mVideoThumbAdapter.addBitmaps(bitmaps);
+              }
+            }, 0L);
           }
-        }, 0L);
-      }
-    });
+        });
   }
 
   private void onCancelClicked() {
@@ -307,6 +308,7 @@ public class VideoTrimmerView2 extends FrameLayout {
       mMessageHandler.removeMessages(SHOW_PROGRESS);
     } else {
       mVideoView.start();
+      playingAnim();
       //mMessageHandler.sendEmptyMessage(SHOW_PROGRESS);
     }
 
@@ -454,6 +456,59 @@ public class VideoTrimmerView2 extends FrameLayout {
     return (position) * itemWidth - firstVisibleChildView.getLeft();
   }
 
+  private ValueAnimator animator;
+
+  private void playingAnim() {
+    mPositionIcon.clearAnimation();
+    if (animator != null && animator.isRunning()) {
+      animator.cancel();
+    }
+    anim();
+    handler.removeCallbacks(run);
+    handler.post(run);
+  }
+
+  private void anim() {
+    if (mPositionIcon.getVisibility() == View.GONE) {
+      mPositionIcon.setVisibility(View.VISIBLE);
+    }
+    final FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mPositionIcon.getLayoutParams();
+    int start = (int) (UnitConverter.dpToPx(35) + (leftProgress/*mVideoView.getCurrentPosition()*/ - scrollPos) * averagePxMs);
+    int end = (int) (UnitConverter.dpToPx(35) + (rightProgress - scrollPos) * averagePxMs);
+    animator = ValueAnimator.ofInt(start, end).setDuration((rightProgress - scrollPos) - (leftProgress/*mVideoView.getCurrentPosition()*/ - scrollPos));
+    animator.setInterpolator(new LinearInterpolator());
+    animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+      @Override public void onAnimationUpdate(ValueAnimator animation) {
+        params.leftMargin = (int) animation.getAnimatedValue();
+        mPositionIcon.setLayoutParams(params);
+        Log.d(TAG, "----onAnimationUpdate--->>>>>>>" + params.leftMargin);
+      }
+    });
+    animator.start();
+  }
+
+  private Handler handler = new Handler();
+  private Runnable run = new Runnable() {
+
+    @Override public void run() {
+      videoProgressUpdate();
+      handler.postDelayed(run, 1000);
+    }
+  };
+
+  private void videoProgressUpdate() {
+    long currentPosition = mVideoView.getCurrentPosition();
+    Log.d(TAG, "videoProgressUpdate currentPosition = " + currentPosition);
+    if (currentPosition >= (rightProgress)) {
+      mVideoView.seekTo((int) leftProgress);
+      mPositionIcon.clearAnimation();
+      if (animator != null && animator.isRunning()) {
+        animator.cancel();
+      }
+      anim();
+    }
+  }
+
   private static class MessageHandler extends Handler {
     private final WeakReference<VideoTrimmerView2> mView;
 
@@ -473,5 +528,4 @@ public class VideoTrimmerView2 extends FrameLayout {
       }
     }
   }
-
 }
