@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.iknow.android.widget.VideoTrimmerView2
+        <com.iknow.android.widget.VideoTrimmerView
             android:id="@+id/trimmer_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

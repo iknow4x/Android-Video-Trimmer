@@ -1,580 +1,442 @@
 package com.iknow.android.widget;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
-import android.os.Message;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.Toast;
 import android.widget.VideoView;
-
 import com.iknow.android.R;
+import com.iknow.android.VideoTrimmerAdapter;
 import com.iknow.android.interfaces.ProgressVideoListener;
-import com.iknow.android.interfaces.RangeSeekBarListener;
 import com.iknow.android.interfaces.TrimVideoListener;
 import com.iknow.android.utils.TrimVideoUtil;
-
-import java.io.File;
-import java.lang.ref.WeakReference;
-
-import iknow.android.utils.DeviceUtil;
-import iknow.android.utils.UnitConverter;
+import iknow.android.utils.callback.SingleCallback;
 import iknow.android.utils.thread.BackgroundExecutor;
 import iknow.android.utils.thread.UiThreadExecutor;
+import java.io.File;
+import java.util.ArrayList;
+
+import static com.iknow.android.utils.TrimVideoUtil.VIDEO_FRAMES_WIDTH;
 
 public class VideoTrimmerView extends FrameLayout {
+  private static final String TAG = VideoTrimmerView.class.getSimpleName();
 
-    /**
-     * 计算公式:
-     * PixRangeMax = (视频总长 * SCREEN_WIDTH) / 视频最长的裁剪时间(15s)
-     * 视频总长/PixRangeMax = 当前视频的时间/游标当前所在位置
-     */
-    private static boolean isDebugMode = false;
+  private int mMaxWidth = VIDEO_FRAMES_WIDTH;
+  private Context mContext;
+  private RelativeLayout mLinearVideo;
+  private VideoView mVideoView;
+  private ImageView mPlayView;
+  private RecyclerView mVideoThumbRecyclerView;
+  private RangeSeekBarView mRangeSeekBarView;
+  private LinearLayout mSeekBarLayout;
+  private ImageView mPositionIcon;
+  private float mAverageMsPx;//每毫秒所占的px
+  private float averagePxMs;//每px所占用的ms毫秒
 
-    private static final String TAG = VideoTrimmerView.class.getSimpleName();
-    private static final int margin = UnitConverter.dpToPx(6);
-    private static final int SCREEN_WIDTH = (DeviceUtil.getDeviceWidth() - margin * 2);
-    private static final int SCREEN_WIDTH_FULL = DeviceUtil.getDeviceWidth();
-    private static final int SHOW_PROGRESS = 2;
+  private Uri mSourceUri;
+  private String mFinalPath;
 
-    private Context mContext;
-    private SeekBar mSeekBarView;
-    private RangeSeekBarView mRangeSeekBarView;
-    private RelativeLayout mLinearVideo;
-    private VideoView mVideoView;
-    private ImageView mPlayView;
-    private VideoThumbHorizontalListView videoThumbListView;
+  private ProgressVideoListener mListeners;
 
-    private Uri mSrc;
-    private String mFinalPath;
+  private TrimVideoListener mOnTrimVideoListener;
+  private int mDuration = 0;
+  private int mStartPosition = 0, mEndPosition = 0;
 
-    private long mMaxDuration;
-    private ProgressVideoListener mListeners;
+  private VideoTrimmerAdapter mVideoThumbAdapter;
+  private boolean isFromRestore = false;
+  //new
+  private long mLeftProgressPos, mRightProgressPos;
+  private long mRedProgressBarPos = 0;
+  private long scrollPos = 0;
+  private int mScaledTouchSlop;
+  private int lastScrollX;
+  private boolean isSeeking;
+  private boolean isOverScaledTouchSlop;
+  private int mThumbsTotalCount;
 
-    private TrimVideoListener mOnTrimVideoListener;
-    private int mDuration = 0;
-    private long mTimeVideo = 0;
-    private long mStartPosition = 0,mEndPosition = 0;
+  public VideoTrimmerView(Context context, AttributeSet attrs) {
+    this(context, attrs, 0);
+  }
 
-    private VideoThumbAdapter videoThumbAdapter;
-    private long pixelRangeMax;
-    private int currentPixMax;  //用于处理红色进度条
-    private int mScrolledOffset;
-    private float leftThumbValue,rightThumbValue;
-    private boolean isFromRestore = false;
+  public VideoTrimmerView(Context context, AttributeSet attrs, int defStyleAttr) {
+    super(context, attrs, defStyleAttr);
+    init(context);
+  }
 
-    private final MessageHandler mMessageHandler = new MessageHandler(this);
+  private void init(Context context) {
+    this.mContext = context;
+    LayoutInflater.from(context).inflate(R.layout.video_trimmer_view2, this, true);
 
-    public VideoTrimmerView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+    mLinearVideo = findViewById(R.id.layout_surface_view);
+    mVideoView = findViewById(R.id.video_loader);
+    mPlayView = findViewById(R.id.icon_video_play);
+    mSeekBarLayout = findViewById(R.id.seekBarLayout);
+    mPositionIcon = findViewById(R.id.positionIcon);
+    mVideoThumbRecyclerView = findViewById(R.id.video_frames_recyclerView);
+    mVideoThumbRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
+    mVideoThumbAdapter = new VideoTrimmerAdapter(mContext);
+    mVideoThumbRecyclerView.setAdapter(mVideoThumbAdapter);
+    mVideoThumbRecyclerView.addOnScrollListener(mOnScrollListener);
+    setUpListeners();
+  }
+
+  private void initRangeSeekBarView() {
+    int rangeWidth;
+    mLeftProgressPos = 0;
+    if (mDuration <= TrimVideoUtil.MAX_SHOOT_DURATION) {
+      mThumbsTotalCount = TrimVideoUtil.MAX_COUNT_RANGE;
+      rangeWidth = mMaxWidth;
+      mRightProgressPos = mDuration;
+    } else {
+      mThumbsTotalCount = (int) (mDuration * 1.0f / (TrimVideoUtil.MAX_SHOOT_DURATION * 1.0f) * TrimVideoUtil.MAX_COUNT_RANGE);
+      rangeWidth = mMaxWidth / TrimVideoUtil.MAX_COUNT_RANGE * mThumbsTotalCount;
+      mRightProgressPos = TrimVideoUtil.MAX_SHOOT_DURATION;
     }
+    mVideoThumbRecyclerView.addItemDecoration(new SpacesItemDecoration2(TrimVideoUtil.RECYCLER_VIEW_PADDING, mThumbsTotalCount));
 
-    public VideoTrimmerView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context);
-    }
+    mRangeSeekBarView = new RangeSeekBarView(mContext, mLeftProgressPos, mRightProgressPos);
+    mRangeSeekBarView.setSelectedMinValue(mLeftProgressPos);
+    mRangeSeekBarView.setSelectedMaxValue(mRightProgressPos);
 
-    private void init(Context context) {
-        this.mContext = context;
-        LayoutInflater.from(context).inflate(R.layout.video_trimmer_view, this, true);
+    mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
+    mRangeSeekBarView.setMinShootTime(TrimVideoUtil.MIN_SHOOT_DURATION);
+    mRangeSeekBarView.setNotifyWhileDragging(true);
+    mRangeSeekBarView.setOnRangeSeekBarChangeListener(mOnRangeSeekBarChangeListener);
+    mSeekBarLayout.addView(mRangeSeekBarView);
 
-        mSeekBarView = ((SeekBar) findViewById(R.id.handlerTop));
-        mRangeSeekBarView = ((RangeSeekBarView) findViewById(R.id.timeLineBar));
-        mLinearVideo = ((RelativeLayout) findViewById(R.id.layout_surface_view));
-        mVideoView = ((VideoView) findViewById(R.id.video_loader));
-        mPlayView = ((ImageView) findViewById(R.id.icon_video_play));
-        videoThumbListView = (VideoThumbHorizontalListView) findViewById(R.id.video_thumb_listview);
-        videoThumbAdapter = new VideoThumbAdapter(mContext);
-        videoThumbListView.setAdapter(videoThumbAdapter);
+    mAverageMsPx = mDuration * 1.0f / rangeWidth * 1.0f;
+    averagePxMs = (mMaxWidth * 1.0f / (mRightProgressPos - mLeftProgressPos));
+  }
 
-        videoThumbListView.setOnScrollStateChangedListener(onScrollStateChangedListener);
-        setUpListeners();
+  public void initVideoByURI(final Uri videoURI) {
+    mSourceUri = videoURI;
+    mVideoView.setVideoURI(mSourceUri);
+    mVideoView.requestFocus();
+  }
 
-        setUpSeekBar();
-    }
-
-    private void setUpSeekBar() {
-        mSeekBarView.setEnabled(false);
-        mSeekBarView.setOnTouchListener(new OnTouchListener() {
-            private float startX;
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-
-                    case MotionEvent.ACTION_DOWN:
-                        startX = event.getX();
-                        return false;
-                }
-
-                return true;
-            }
+  private void startShootVideoThumbs(final Context context, final Uri videoUri, int totalThumbsCount, long startPosition, long endPosition) {
+    TrimVideoUtil.backgroundShootVideoThumb(context, videoUri, totalThumbsCount, startPosition, endPosition,
+        new SingleCallback<ArrayList<Bitmap>, Integer>() {
+          @Override public void onSingleCallback(final ArrayList<Bitmap> bitmaps, final Integer interval) {
+            UiThreadExecutor.runTask("", new Runnable() {
+              @Override public void run() {
+                mVideoThumbAdapter.addBitmaps(bitmaps);
+              }
+            }, 0L);
+          }
         });
+  }
 
+  private void onCancelClicked() {
+    mOnTrimVideoListener.onCancel();
+  }
+
+  private void videoPrepared(MediaPlayer mp) {
+    ViewGroup.LayoutParams lp = mVideoView.getLayoutParams();
+    int videoWidth = mp.getVideoWidth();
+    int videoHeight = mp.getVideoHeight();
+    float videoProportion = (float) videoWidth / (float) videoHeight;
+    int screenWidth = mLinearVideo.getWidth();
+    int screenHeight = mLinearVideo.getHeight();
+    float screenProportion = (float) screenWidth / (float) screenHeight;
+
+    if (videoProportion > screenProportion) {
+      lp.width = screenWidth;
+      lp.height = (int) ((float) screenWidth / videoProportion);
+    } else {
+      lp.width = (int) (videoProportion * (float) screenHeight);
+      lp.height = screenHeight;
     }
-
-    public void setVideoURI(final Uri videoURI) {
-        mSrc = videoURI;
-
-        mVideoView.setVideoURI(mSrc);
-        mVideoView.requestFocus();
-
-        //TrimVideoUtil.backgroundShootVideoThumb(mContext, mSrc, new SingleCallback<ArrayList<Bitmap>, Integer>() {
-        //    @Override
-        //    public void onSingleCallback(final ArrayList<Bitmap> bitmap, final Integer interval) {
-        //        UiThreadExecutor.runTask("", new Runnable() {
-        //            @Override
-        //            public void run() {
-        //                videoThumbAdapter.addAll(bitmap);
-        //                videoThumbAdapter.notifyDataSetChanged();
-        //            }
-        //        }, 0L);
-        //
-        //    }
-        //});
+    mVideoView.setLayoutParams(lp);
+    mDuration = mVideoView.getDuration();
+    if (!getRestoreState()) {
+      seekTo((int) mRedProgressBarPos);
+    } else {
+      setRestoreState(false);
+      seekTo((int) mRedProgressBarPos);
     }
+    initRangeSeekBarView();
+    startShootVideoThumbs(mContext, mSourceUri, mThumbsTotalCount, 0, mDuration);
+  }
 
-    private void initSeekBarPosition() {
-        seekTo(mStartPosition);
-        //时间与屏幕的刻度永远保持一致
-        pixelRangeMax = (mDuration * SCREEN_WIDTH) / mMaxDuration;
-        mRangeSeekBarView.initThumbForRangeSeekBar(mDuration, pixelRangeMax);
+  private void videoCompleted() {
+    seekTo(mLeftProgressPos);
+    setPlayPauseViewIcon(false);
+  }
 
-        //大于15秒的时候,游标处于0-15秒
-        if (mDuration >= mMaxDuration) {
-            mEndPosition = mMaxDuration;
-            mTimeVideo = mMaxDuration;
-        } else {//小于15秒,游标处于0-mDuration
-            mEndPosition = mDuration;
-            mTimeVideo = mDuration;
-        }
+  private void onVideoReset() {
+    mVideoView.pause();
+    setPlayPauseViewIcon(false);
+  }
 
-        setUpProgressBarMarginsAndWidth(margin, SCREEN_WIDTH_FULL - (int)TimeToPix(mEndPosition) - margin);//Fucking seekBar,Waste a lot of my time
-
-        mRangeSeekBarView.setThumbValue(0, 0);
-        mRangeSeekBarView.setThumbValue(1, TimeToPix(mEndPosition));
-        mVideoView.pause();
-        setProgressBarMax();
-        setProgressBarPosition(mStartPosition);
-        mRangeSeekBarView.initMaxWidth();
-        mRangeSeekBarView.setStartEndTime(mStartPosition, mEndPosition);
-
-        /**记录两个游标对应屏幕的初始位置,这个两个值只会在视频长度可以滚动的时候有效*/
-        leftThumbValue = 0;
-        rightThumbValue = mDuration <= mMaxDuration ? TimeToPix(mDuration) : TimeToPix(mMaxDuration);
+  private void playVideoOrPause() {
+    mRedProgressBarPos = mVideoView.getCurrentPosition();
+    if (mVideoView.isPlaying()) {
+      mVideoView.pause();
+      pauseAnim();
+    } else {
+      mVideoView.start();
+      playingAnim();
     }
+    setPlayPauseViewIcon(mVideoView.isPlaying());
+  }
 
-    private void initSeekBarFromRestore() {
-
-        seekTo(mStartPosition);
-        setUpProgressBarMarginsAndWidth((int)leftThumbValue, (int)(SCREEN_WIDTH_FULL - rightThumbValue - margin));//设置seekar的左偏移量
-
-        setProgressBarMax();
-        setProgressBarPosition(mStartPosition);
-        mRangeSeekBarView.setStartEndTime(mStartPosition, mEndPosition);
-
-        leftThumbValue = 0;
-        rightThumbValue = mDuration <= mMaxDuration ? TimeToPix(mDuration) : TimeToPix(mMaxDuration);
+  public void onPause() {
+    if (mVideoView.isPlaying()) {
+      seekTo(mLeftProgressPos);//复位
+      mVideoView.pause();
+      setPlayPauseViewIcon(false);
+      mPositionIcon.setVisibility(GONE);
     }
+  }
 
-    private void onCancelClicked() {
-        mOnTrimVideoListener.onCancel();
-    }
+  public void setOnTrimVideoListener(TrimVideoListener onTrimVideoListener) {
+    mOnTrimVideoListener = onTrimVideoListener;
+  }
 
-    private void onPlayerIndicatorSeekStart() {
-        mMessageHandler.removeMessages(SHOW_PROGRESS);
-        mVideoView.pause();
-        notifyProgressUpdate();
-    }
+  /**
+   * Cancel trim thread execut action when finish
+   */
+  public void destroy() {
+    BackgroundExecutor.cancelAll("", true);
+    UiThreadExecutor.cancelAll("");
+  }
 
-    private void onPlayerIndicatorSeekStop(SeekBar seekBar) {
-        mVideoView.pause();
-    }
-
-
-    private void onVideoPrepared(MediaPlayer mp) {
-
-        ViewGroup.LayoutParams lp = mVideoView.getLayoutParams();
-        int videoWidth = mp.getVideoWidth();
-        int videoHeight = mp.getVideoHeight();
-        float videoProportion = (float) videoWidth / (float) videoHeight;
-        int screenWidth = mLinearVideo.getWidth();
-        int screenHeight = mLinearVideo.getHeight();
-        float screenProportion = (float) screenWidth / (float) screenHeight;
-
-        if (videoProportion > screenProportion) {
-            lp.width = screenWidth;
-            lp.height = (int) ((float) screenWidth / videoProportion);
-        } else {
-            lp.width = (int) (videoProportion * (float) screenHeight);
-            lp.height = screenHeight;
-        }
-        mVideoView.setLayoutParams(lp);
-
-        mDuration = (mVideoView.getDuration() / 1000) * 1000;
-        if(!getRestoreState())
-            initSeekBarPosition();
-        else {
-            setRestoreState(false);
-            initSeekBarFromRestore();
-        }
-    }
-
-
-    private void onSeekThumbs(int index, float value) {
-        switch (index) {
-            case Thumb.LEFT: {
-                mStartPosition = PixToTime(value);
-                setProgressBarPosition(mStartPosition);
-                break;
-            }
-            case Thumb.RIGHT: {
-                mEndPosition = PixToTime(value);
-                if(mEndPosition > mDuration)//实现归位
-                    mEndPosition = mDuration;
-                break;
-            }
-        }
-        setProgressBarMax();
-
-        mRangeSeekBarView.setStartEndTime(mStartPosition, mEndPosition);
-        seekTo(mStartPosition);
-        mTimeVideo = mEndPosition - mStartPosition;
-
-        setUpProgressBarMarginsAndWidth((int)leftThumbValue, (int)(SCREEN_WIDTH_FULL - rightThumbValue - margin));//设置seekar的左偏移量
-    }
-
-    private void onStopSeekThumbs() {
-        mMessageHandler.removeMessages(SHOW_PROGRESS);
-        setProgressBarPosition(mStartPosition);
-        onVideoReset();
-    }
-
-    private void onVideoCompleted() {
-        seekTo(mStartPosition);
-        setPlayPauseViewIcon(false);
-    }
-
-    private void onVideoReset() {
-        mVideoView.pause();
-        setPlayPauseViewIcon(false);
-    }
-
-    public void onPause(){
-        if (mVideoView.isPlaying()){
-            mMessageHandler.removeMessages(SHOW_PROGRESS);
-            mVideoView.pause();
-            seekTo(mStartPosition);//复位
-            setPlayPauseViewIcon(false);
-        }
-    }
-
-    private void setProgressBarPosition(long time) {
-        mSeekBarView.setProgress((int)(time - mStartPosition));
-    }
-
-    private void setProgressBarMax() {
-        mSeekBarView.setMax((int)(mEndPosition - mStartPosition));
-    }
-
-    public void setOnTrimVideoListener(TrimVideoListener onTrimVideoListener) {
-        mOnTrimVideoListener = onTrimVideoListener;
-    }
-
-    /**
-     * Cancel trim thread execut action when finish
-     */
-    public void destroy() {
-        BackgroundExecutor.cancelAll("", true);
-        UiThreadExecutor.cancelAll("");
-    }
-
-    public void setMaxDuration(int maxDuration) {
-        mMaxDuration = maxDuration * 1000;
-    }
-
-    private void setUpListeners() {
-        mListeners = new ProgressVideoListener() {
-            @Override
-            public void updateProgress(int time, int max, float scale) {
-                updateVideoProgress(time);
-            }
-        };
-
-        findViewById(R.id.cancelBtn).setOnClickListener(
-                new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        onCancelClicked();
-                    }
-                }
-        );
-
-        findViewById(R.id.finishBtn).setOnClickListener(
-                new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        onSaveClicked();
-                    }
-                }
-        );
-
-        mRangeSeekBarView.addOnRangeSeekBarListener(new RangeSeekBarListener() {
-            @Override
-            public void onCreate(RangeSeekBarView rangeSeekBarView, int index, float value) {
-            }
-
-            @Override
-            public void onSeek(RangeSeekBarView rangeSeekBarView, int index, float value) {
-                if (index == 0) {
-                    leftThumbValue = value;
-                }else {
-                    rightThumbValue = value;
-                }
-
-                onSeekThumbs(index, value + Math.abs(mScrolledOffset));
-            }
-
-            @Override
-            public void onSeekStart(RangeSeekBarView rangeSeekBarView, int index, float value) {
-                if (mSeekBarView.getVisibility() == View.VISIBLE)
-                    mSeekBarView.setVisibility(GONE);
-            }
-
-            @Override
-            public void onSeekStop(RangeSeekBarView rangeSeekBarView, int index, float value) {
-                onStopSeekThumbs();
-            }
-        });
-
-        mSeekBarView.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                onPlayerIndicatorSeekStart();
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                onPlayerIndicatorSeekStop(seekBar);
-            }
-        });
-
-        mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                onVideoPrepared(mp);
-            }
-        });
-
-        mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                onVideoCompleted();
-            }
-        });
-
-        mPlayView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickVideoPlayPause();
-            }
-        });
-    }
-
-    private void setUpProgressBarMarginsAndWidth(int left, int right) {
-        if(left == 0)
-            left = margin;
-
-        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mSeekBarView.getLayoutParams();
-        lp.setMargins(left, 0, right, 0);
-        mSeekBarView.setLayoutParams(lp);
-        currentPixMax = SCREEN_WIDTH_FULL - left - right;
-        mSeekBarView.getLayoutParams().width = currentPixMax;
-    }
-
-    private void onSaveClicked() {
-        if (mEndPosition/1000 - mStartPosition/1000 < TrimVideoUtil.MIN_SHOOT_DURATION) {
-            Toast.makeText(mContext, "视频长不足3秒,无法上传", Toast.LENGTH_SHORT).show();
-        }else{
-            mVideoView.pause();
-            TrimVideoUtil.trim(mContext, mSrc.getPath(), getTrimmedVideoPath(), mStartPosition, mEndPosition, mOnTrimVideoListener);
-        }
-    }
-
-    private String getTrimmedVideoPath() {
-        if (mFinalPath == null) {
-            File file = mContext.getExternalCacheDir();
-            if(file != null)
-                mFinalPath = file.getAbsolutePath();
-        }
-        return mFinalPath;
-    }
-
-    private void onClickVideoPlayPause() {
-        if (mVideoView.isPlaying()) {
-            mVideoView.pause();
-            mMessageHandler.removeMessages(SHOW_PROGRESS);
-        } else {
-            mVideoView.start();
-            mSeekBarView.setVisibility(View.VISIBLE);
-            mMessageHandler.sendEmptyMessage(SHOW_PROGRESS);
-        }
-
-        setPlayPauseViewIcon(mVideoView.isPlaying());
-    }
-
-    /**
-     * 屏幕长度转化成视频的长度
-     */
-    private long PixToTime(float value) {
-        if(pixelRangeMax == 0)
-            return 0;
-        return (long)((mDuration * value) / pixelRangeMax);
-    }
-
-    /**
-     * 视频长度转化成屏幕的长度
-     */
-    private long TimeToPix(long value) {
-        return (pixelRangeMax * value) / mDuration;
-    }
-
-    private void seekTo(long msec){
-        mVideoView.seekTo((int)msec);
-    }
-
-
-    private boolean getRestoreState() {
-        return isFromRestore;
-    }
-
-    public void setRestoreState(boolean fromRestore) {
-        isFromRestore = fromRestore;
-    }
-
-    private static class MessageHandler extends Handler {
-
-
-        private final WeakReference<VideoTrimmerView> mView;
-
-        MessageHandler(VideoTrimmerView view) {
-            mView = new WeakReference<>(view);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            VideoTrimmerView view = mView.get();
-            if (view == null || view.mVideoView == null) {
-                return;
-            }
-
-            view.notifyProgressUpdate();
-            if (view.mVideoView.isPlaying()) {
-                sendEmptyMessageDelayed(0, 10);
-            }
-        }
-    }
-
-    private void updateVideoProgress(int time) {
-        if (mVideoView == null) {
-            return;
-        }
-        if (isDebugMode) Log.i("Jason", "updateVideoProgress time = " + time);
-        if (time >= mEndPosition) {
-            mMessageHandler.removeMessages(SHOW_PROGRESS);
-            mVideoView.pause();
-            seekTo(mStartPosition);
-            setPlayPauseViewIcon(false);
-            return;
-        }
-
-        if (mSeekBarView != null) {
-            setProgressBarPosition(time);
-        }
-    }
-
-    private void notifyProgressUpdate() {
-        if (mDuration == 0) return;
-
-        int position = mVideoView.getCurrentPosition();
-        if (isDebugMode) Log.i("Jason", "updateVideoProgress position = " + position);
-        mListeners.updateProgress(position, 0, 0);
-    }
-
-    private void setPlayPauseViewIcon(boolean isPlaying) {
-        mPlayView.setImageResource(isPlaying ? R.drawable.icon_video_pause_black : R.drawable.icon_video_play_black);
-    }
-
-    private VideoThumbHorizontalListView.OnScrollStateChangedListener onScrollStateChangedListener = new VideoThumbHorizontalListView.OnScrollStateChangedListener() {
-        @Override
-        public void onScrollStateChanged(ScrollState scrollState, int scrolledOffset) {
-            if (videoThumbListView.getCurrentX() == 0)
-                return;
-
-            switch (scrollState) {
-
-                case SCROLL_STATE_FLING:
-                case SCROLL_STATE_IDLE:
-                case SCROLL_STATE_TOUCH_SCROLL:
-
-                    if (scrolledOffset < 0) {
-                        mScrolledOffset = mScrolledOffset - Math.abs(scrolledOffset);
-                        if (mScrolledOffset <= 0)
-                            mScrolledOffset = 0;
-                    } else {
-                        if(PixToTime(mScrolledOffset + SCREEN_WIDTH) <= mDuration)//根据时间来判断还是否可以向左滚动
-                            mScrolledOffset = mScrolledOffset + scrolledOffset;
-                    }
-                    onVideoReset();
-                    onSeekThumbs(0, mScrolledOffset + leftThumbValue);
-                    onSeekThumbs(1, mScrolledOffset + rightThumbValue);
-                    mRangeSeekBarView.invalidate();
-                    break;
-
-            }
-        }
+  private void setUpListeners() {
+    mListeners = new ProgressVideoListener() {
+      @Override public void updateProgress(int time, int max, float scale) {
+        updateVideoProgress(time);
+      }
     };
+    findViewById(R.id.cancelBtn).setOnClickListener(new OnClickListener() {
+      @Override public void onClick(View view) {
+        onCancelClicked();
+      }
+    });
 
-    private class VideoThumbAdapter extends ArrayAdapter<Bitmap> {
+    findViewById(R.id.finishBtn).setOnClickListener(new OnClickListener() {
+      @Override public void onClick(View view) {
+        onSaveClicked();
+      }
+    });
+    mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+      @Override public void onPrepared(MediaPlayer mp) {
+        videoPrepared(mp);
+      }
+    });
+    mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+      @Override public void onCompletion(MediaPlayer mp) {
+        videoCompleted();
+      }
+    });
+    mPlayView.setOnClickListener(new OnClickListener() {
+      @Override public void onClick(View v) {
+        playVideoOrPause();
+      }
+    });
+  }
 
-        VideoThumbAdapter(Context context) {
-            super(context, 0);
-        }
+  private void onSaveClicked() {
+    if (mRightProgressPos - mLeftProgressPos < TrimVideoUtil.MIN_SHOOT_DURATION) {
+      Toast.makeText(mContext, "视频长不足3秒,无法上传", Toast.LENGTH_SHORT).show();
+    } else {
+      mVideoView.pause();
+      TrimVideoUtil.trim(mContext, mSourceUri.getPath(), getTrimmedVideoPath(), mLeftProgressPos, mRightProgressPos, mOnTrimVideoListener);
+    }
+  }
 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            VideoThumbHolder videoThumbHolder;
-            if (convertView == null) {
-                videoThumbHolder = new VideoThumbHolder();
-                convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.video_thumb_item_layout, null);
-                videoThumbHolder.thumb = (ImageView) convertView.findViewById(R.id.thumb);
-                convertView.setTag(videoThumbHolder);
-            } else {
-                videoThumbHolder = (VideoThumbHolder) convertView.getTag();
-            }
-            videoThumbHolder.thumb.setImageBitmap(getItem(position));
-            return convertView;
-        }
+  private String getTrimmedVideoPath() {
+    if (mFinalPath == null) {
+      File file = mContext.getExternalCacheDir();
+      if (file != null) mFinalPath = file.getAbsolutePath();
+    }
+    return mFinalPath;
+  }
+
+  private void seekTo(long msec) {
+    mVideoView.seekTo((int) msec);
+  }
+
+  private boolean getRestoreState() {
+    return isFromRestore;
+  }
+
+  public void setRestoreState(boolean fromRestore) {
+    isFromRestore = fromRestore;
+  }
+
+  private void updateVideoProgress(int time) {
+    if (mVideoView == null) {
+      return;
+    }
+    if (TrimVideoUtil.isDebugMode) Log.i("Jason", "updateVideoProgress time = " + time);
+    if (time >= mEndPosition) {
+      mVideoView.pause();
+      seekTo(mStartPosition);
+      setPlayPauseViewIcon(false);
+      return;
+    }
+  }
+
+  private void setPlayPauseViewIcon(boolean isPlaying) {
+    mPlayView.setImageResource(isPlaying ? R.drawable.icon_video_pause_black : R.drawable.icon_video_play_black);
+  }
+
+  private final RangeSeekBarView.OnRangeSeekBarChangeListener mOnRangeSeekBarChangeListener = new RangeSeekBarView.OnRangeSeekBarChangeListener() {
+    @Override public void onRangeSeekBarValuesChanged(RangeSeekBarView bar, long minValue, long maxValue, int action, boolean isMin,
+        RangeSeekBarView.Thumb pressedThumb) {
+      Log.d(TAG, "-----minValue----->>>>>>" + minValue);
+      Log.d(TAG, "-----maxValue----->>>>>>" + maxValue);
+      mLeftProgressPos = minValue + scrollPos;
+      mRedProgressBarPos = mLeftProgressPos;
+      mRightProgressPos = maxValue + scrollPos;
+      Log.d(TAG, "-----mLeftProgressPos----->>>>>>" + mLeftProgressPos);
+      Log.d(TAG, "-----mRightProgressPos----->>>>>>" + mRightProgressPos);
+      switch (action) {
+        case MotionEvent.ACTION_DOWN:
+          isSeeking = false;
+          break;
+        case MotionEvent.ACTION_MOVE:
+          isSeeking = true;
+          seekTo((int) (pressedThumb == RangeSeekBarView.Thumb.MIN ? mLeftProgressPos : mRightProgressPos));
+          break;
+        case MotionEvent.ACTION_UP:
+          isSeeking = false;
+          seekTo((int) mLeftProgressPos);
+          break;
+        default:
+          break;
+      }
+
+      mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
+    }
+  };
+
+  private final RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
+    @Override public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+      super.onScrollStateChanged(recyclerView, newState);
+      Log.d(TAG, "newState = " + newState);
     }
 
-    private static class VideoThumbHolder {
-        public ImageView thumb;
+    @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+      super.onScrolled(recyclerView, dx, dy);
+      isSeeking = false;
+      int scrollX = calcScrollXDistance();
+      //达不到滑动的距离
+      if (Math.abs(lastScrollX - scrollX) < mScaledTouchSlop) {
+        isOverScaledTouchSlop = false;
+        return;
+      }
+      isOverScaledTouchSlop = true;
+      //初始状态,why ? 因为默认的时候有35dp的空白！
+      if (scrollX == -TrimVideoUtil.RECYCLER_VIEW_PADDING) {
+        scrollPos = 0;
+      } else {
+        isSeeking = true;
+        scrollPos = (long) (mAverageMsPx * (TrimVideoUtil.RECYCLER_VIEW_PADDING + scrollX));
+        mLeftProgressPos = mRangeSeekBarView.getSelectedMinValue() + scrollPos;
+        mRightProgressPos = mRangeSeekBarView.getSelectedMaxValue() + scrollPos;
+        Log.d(TAG, "onScrolled >>>> mLeftProgressPos = " + mLeftProgressPos);
+        Log.d(TAG, "onScrolled >>>> mRightProgressPos = " + mRightProgressPos);
+        mRedProgressBarPos = mLeftProgressPos;
+        if (mVideoView.isPlaying()) {
+          mVideoView.pause();
+          setPlayPauseViewIcon(false);
+        }
+        mPositionIcon.setVisibility(GONE);
+        seekTo(mLeftProgressPos);
+        mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
+        mRangeSeekBarView.invalidate();
+      }
+      lastScrollX = scrollX;
     }
+  };
 
+  /**
+   * 水平滑动了多少px
+   */
+  private int calcScrollXDistance() {
+    LinearLayoutManager layoutManager = (LinearLayoutManager) mVideoThumbRecyclerView.getLayoutManager();
+    int position = layoutManager.findFirstVisibleItemPosition();
+    View firstVisibleChildView = layoutManager.findViewByPosition(position);
+    int itemWidth = firstVisibleChildView.getWidth();
+    return (position) * itemWidth - firstVisibleChildView.getLeft();
+  }
+
+  private ValueAnimator animator;
+
+  private void playingAnim() {
+    mPositionIcon.clearAnimation();
+    if (animator != null && animator.isRunning()) {
+      animator.cancel();
+    }
+    anim();
+    handler.removeCallbacks(run);
+    handler.post(run);
+  }
+
+  private void pauseAnim() {
+    mPositionIcon.clearAnimation();
+    if (animator != null && animator.isRunning()) {
+      animator.cancel();
+    }
+  }
+
+  private void anim() {
+    if (mPositionIcon.getVisibility() == View.GONE) {
+      mPositionIcon.setVisibility(View.VISIBLE);
+    }
+    final FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mPositionIcon.getLayoutParams();
+    int start = (int) (TrimVideoUtil.RECYCLER_VIEW_PADDING + (mRedProgressBarPos/*mVideoView.getCurrentPosition()*/ - scrollPos) * averagePxMs);
+    int end = (int) (TrimVideoUtil.RECYCLER_VIEW_PADDING + (mRightProgressPos - scrollPos) * averagePxMs);
+    animator = ValueAnimator.ofInt(start, end).setDuration((mRightProgressPos - scrollPos) - (mRedProgressBarPos/*mVideoView.getCurrentPosition()*/ - scrollPos));
+    animator.setInterpolator(new LinearInterpolator());
+    animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+      @Override public void onAnimationUpdate(ValueAnimator animation) {
+        mRedProgressBarPos = (int) animation.getAnimatedValue();
+        params.leftMargin = (int) animation.getAnimatedValue();
+        mPositionIcon.setLayoutParams(params);
+        Log.d(TAG, "----onAnimationUpdate--->>>>>>>" + mRedProgressBarPos);
+      }
+    });
+    animator.start();
+  }
+
+  private Handler handler = new Handler();
+  private Runnable run = new Runnable() {
+
+    @Override public void run() {
+      updateVideoProgress();
+      handler.post(run);
+    }
+  };
+
+  private void updateVideoProgress() {
+    long currentPosition = mVideoView.getCurrentPosition();
+    Log.d(TAG, "updateVideoProgress currentPosition = " + currentPosition);
+    if (currentPosition >= (mRightProgressPos)) {
+      mRedProgressBarPos = mLeftProgressPos;
+      mPositionIcon.clearAnimation();
+      if (animator != null && animator.isRunning()) {
+        animator.cancel();
+      }
+      onPause();
+    }
+  }
 }

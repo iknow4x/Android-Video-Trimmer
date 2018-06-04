@@ -4,12 +4,6 @@ import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-/**
- * Author: Jason.Chou
- * Email: who_know_me@163.com
- * Created: 2016年05月04日 11:27 AM
- * Description:
- */
 public class SpacesItemDecoration2 extends RecyclerView.ItemDecoration{
 
   private int space;
@@ -22,7 +16,6 @@ public class SpacesItemDecoration2 extends RecyclerView.ItemDecoration{
 
   @Override
   public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-    // 第一个的前面和最后一个的后面
     int position = parent.getChildAdapterPosition(view);
     if (position == 0) {
       outRect.left = space;
