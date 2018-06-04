@@ -28,7 +28,6 @@ import com.iknow.android.VideoTrimmerAdapter;
 import com.iknow.android.interfaces.ProgressVideoListener;
 import com.iknow.android.interfaces.TrimVideoListener;
 import com.iknow.android.utils.TrimVideoUtil;
-import iknow.android.utils.UnitConverter;
 import iknow.android.utils.callback.SingleCallback;
 import iknow.android.utils.thread.BackgroundExecutor;
 import iknow.android.utils.thread.UiThreadExecutor;
@@ -122,7 +121,7 @@ public class VideoTrimmerView2 extends FrameLayout {
       rangeWidth = mMaxWidth / TrimVideoUtil.MAX_COUNT_RANGE * mThumbsTotalCount;
       mRightProgressPos = TrimVideoUtil.MAX_SHOOT_DURATION;
     }
-    mVideoThumbRecyclerView.addItemDecoration(new SpacesItemDecoration2(UnitConverter.dpToPx(35), mThumbsTotalCount));
+    mVideoThumbRecyclerView.addItemDecoration(new SpacesItemDecoration2(TrimVideoUtil.RECYCLER_VIEW_PADDING, mThumbsTotalCount));
 
     mRangeSeekBarView = new RangeSeekBarView2(mContext, mLeftProgressPos, mRightProgressPos);
     mRangeSeekBarView.setSelectedMinValue(mLeftProgressPos);
@@ -277,11 +276,11 @@ public class VideoTrimmerView2 extends FrameLayout {
   }
 
   private void onSaveClicked() {
-    if (mEndPosition / 1000 - mStartPosition / 1000 < TrimVideoUtil.MIN_TIME_FRAME) {
-      Toast.makeText(mContext, "视频长不足5秒,无法上传", Toast.LENGTH_SHORT).show();
+    if (mRightProgressPos - mLeftProgressPos < TrimVideoUtil.MIN_SHOOT_DURATION) {
+      Toast.makeText(mContext, "视频长不足3秒,无法上传", Toast.LENGTH_SHORT).show();
     } else {
       mVideoView.pause();
-      TrimVideoUtil.trim(mContext, mSourceUri.getPath(), getTrimmedVideoPath(), mStartPosition, mEndPosition, mOnTrimVideoListener);
+      TrimVideoUtil.trim(mContext, mSourceUri.getPath(), getTrimmedVideoPath(), mLeftProgressPos, mRightProgressPos, mOnTrimVideoListener);
     }
   }
 
@@ -362,16 +361,7 @@ public class VideoTrimmerView2 extends FrameLayout {
   private final RecyclerView.OnScrollListener mOnScrollListener = new RecyclerView.OnScrollListener() {
     @Override public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
       super.onScrollStateChanged(recyclerView, newState);
-      Log.d(TAG, "-------newState:>>>>>" + newState);
-      if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-        isSeeking = false;
-        //videoStart();
-      } else {
-        isSeeking = true;
-        if (isOverScaledTouchSlop && mVideoView != null && mVideoView.isPlaying()) {
-          //videoPause();
-        }
-      }
+      Log.d(TAG, "newState = " + newState);
     }
 
     @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -388,10 +378,6 @@ public class VideoTrimmerView2 extends FrameLayout {
       if (scrollX == -TrimVideoUtil.RECYCLER_VIEW_PADDING) {
         scrollPos = 0;
       } else {
-        // why 在这里处理一下,因为onScrollStateChanged早于onScrolled回调
-        if (mVideoView != null && mVideoView.isPlaying()) {
-          //videoPause();
-        }
         isSeeking = true;
         scrollPos = (long) (mAverageMsPx * (TrimVideoUtil.RECYCLER_VIEW_PADDING + scrollX));
         mLeftProgressPos = mRangeSeekBarView.getSelectedMinValue() + scrollPos;

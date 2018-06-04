@@ -13,7 +13,6 @@ import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
 import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
 import com.iknow.android.interfaces.TrimVideoListener;
 import com.iknow.android.models.VideoInfo;
-import iknow.android.utils.DateUtil;
 import iknow.android.utils.DeviceUtil;
 import iknow.android.utils.UnitConverter;
 import iknow.android.utils.callback.SingleCallback;
@@ -26,7 +25,7 @@ import java.util.Locale;
 public class TrimVideoUtil {
 
   public static boolean isDebugMode = false;
-  public static final long MIN_SHOOT_DURATION = 1000L;// 最小剪辑时间3s
+  public static final long MIN_SHOOT_DURATION = 3000L;// 最小剪辑时间3s
   public static final long MAX_SHOOT_DURATION = 10 * 1000L;//视频最多剪切多长时间10s
   public static final int MAX_COUNT_RANGE = 10;  //seekBar的区域内一共有多少张图片
   private static final int SCREEN_WIDTH_FULL = DeviceUtil.getDeviceWidth();
@@ -34,7 +33,6 @@ public class TrimVideoUtil {
   public static final int VIDEO_FRAMES_WIDTH = SCREEN_WIDTH_FULL - RECYCLER_VIEW_PADDING * 2;
 
   public static final int VIDEO_MAX_DURATION = 10;// 10秒
-  public static final int MIN_TIME_FRAME = 5;
   private static final int THUMB_WIDTH = (DeviceUtil.getDeviceWidth() - RECYCLER_VIEW_PADDING * 2) / VIDEO_MAX_DURATION;
 
   public static void trim(Context context, String inputFile, String outputFile, long startMs, long endMs, final TrimVideoListener callback) {
@@ -42,8 +40,8 @@ public class TrimVideoUtil {
     final String outputName = "trimmedVideo_" + timeStamp + ".mp4";
     outputFile = outputFile + "/" + outputName;
 
-    String start = DateUtil.convertSecondsToTime(startMs / 1000);
-    String duration = DateUtil.convertSecondsToTime((endMs - startMs) / 1000);
+    String start = convertSecondsToTime(startMs / 1000);
+    String duration = convertSecondsToTime((endMs - startMs) / 1000);
 
     /** 裁剪视频ffmpeg指令说明：
      * ffmpeg -ss START -t DURATION -i INPUT -vcodec copy -acodec copy OUTPUT
@@ -153,5 +151,38 @@ public class TrimVideoUtil {
     }
 
     return url;
+  }
+
+  private static String convertSecondsToTime(long seconds) {
+    String timeStr = null;
+    int hour = 0;
+    int minute = 0;
+    int second = 0;
+    if (seconds <= 0)
+      return "00:00";
+    else {
+      minute = (int) seconds / 60;
+      if (minute < 60) {
+        second = (int) seconds % 60;
+        timeStr = "00:" + unitFormat(minute) + ":" + unitFormat(second);
+      } else {
+        hour = minute / 60;
+        if (hour > 99)
+          return "99:59:59";
+        minute = minute % 60;
+        second = (int) (seconds - hour * 3600 - minute * 60);
+        timeStr = unitFormat(hour) + ":" + unitFormat(minute) + ":" + unitFormat(second);
+      }
+    }
+    return timeStr;
+  }
+
+  private static String unitFormat(int i) {
+    String retStr = null;
+    if (i >= 0 && i < 10)
+      retStr = "0" + Integer.toString(i);
+    else
+      retStr = "" + i;
+    return retStr;
   }
 }

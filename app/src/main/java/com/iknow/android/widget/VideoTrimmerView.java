@@ -409,8 +409,8 @@ public class VideoTrimmerView extends FrameLayout {
     }
 
     private void onSaveClicked() {
-        if (mEndPosition/1000 - mStartPosition/1000 < TrimVideoUtil.MIN_TIME_FRAME) {
-            Toast.makeText(mContext, "视频长不足5秒,无法上传", Toast.LENGTH_SHORT).show();
+        if (mEndPosition/1000 - mStartPosition/1000 < TrimVideoUtil.MIN_SHOOT_DURATION) {
+            Toast.makeText(mContext, "视频长不足3秒,无法上传", Toast.LENGTH_SHORT).show();
         }else{
             mVideoView.pause();
             TrimVideoUtil.trim(mContext, mSrc.getPath(), getTrimmedVideoPath(), mStartPosition, mEndPosition, mOnTrimVideoListener);
