@@ -23,7 +23,6 @@ import android.widget.Toast;
 import android.widget.VideoView;
 import com.iknow.android.R;
 import com.iknow.android.VideoTrimmerAdapter;
-import com.iknow.android.interfaces.ProgressVideoListener;
 import com.iknow.android.interfaces.TrimVideoListener;
 import com.iknow.android.utils.TrimVideoUtil;
 import iknow.android.utils.callback.SingleCallback;
@@ -48,16 +47,10 @@ public class VideoTrimmerView extends FrameLayout {
   private ImageView mPositionIcon;
   private float mAverageMsPx;//每毫秒所占的px
   private float averagePxMs;//每px所占用的ms毫秒
-
   private Uri mSourceUri;
   private String mFinalPath;
-
-  private ProgressVideoListener mListeners;
-
   private TrimVideoListener mOnTrimVideoListener;
   private int mDuration = 0;
-  private int mStartPosition = 0, mEndPosition = 0;
-
   private VideoTrimmerAdapter mVideoThumbAdapter;
   private boolean isFromRestore = false;
   //new
@@ -69,6 +62,8 @@ public class VideoTrimmerView extends FrameLayout {
   private boolean isSeeking;
   private boolean isOverScaledTouchSlop;
   private int mThumbsTotalCount;
+  private ValueAnimator mRedProgressAnimator;
+  private Handler mAnimationHandler = new Handler();
 
   public VideoTrimmerView(Context context, AttributeSet attrs) {
     this(context, attrs, 0);
@@ -189,10 +184,10 @@ public class VideoTrimmerView extends FrameLayout {
     mRedProgressBarPos = mVideoView.getCurrentPosition();
     if (mVideoView.isPlaying()) {
       mVideoView.pause();
-      pauseAnim();
+      pauseRedProgressAnimation();
     } else {
       mVideoView.start();
-      playingAnim();
+      playingRedProgressAnimation();
     }
     setPlayPauseViewIcon(mVideoView.isPlaying());
   }
@@ -219,11 +214,6 @@ public class VideoTrimmerView extends FrameLayout {
   }
 
   private void setUpListeners() {
-    mListeners = new ProgressVideoListener() {
-      @Override public void updateProgress(int time, int max, float scale) {
-        updateVideoProgress(time);
-      }
-    };
     findViewById(R.id.cancelBtn).setOnClickListener(new OnClickListener() {
       @Override public void onClick(View view) {
         onCancelClicked();
@@ -279,19 +269,6 @@ public class VideoTrimmerView extends FrameLayout {
 
   public void setRestoreState(boolean fromRestore) {
     isFromRestore = fromRestore;
-  }
-
-  private void updateVideoProgress(int time) {
-    if (mVideoView == null) {
-      return;
-    }
-    if (TrimVideoUtil.isDebugMode) Log.i("Jason", "updateVideoProgress time = " + time);
-    if (time >= mEndPosition) {
-      mVideoView.pause();
-      seekTo(mStartPosition);
-      setPlayPauseViewIcon(false);
-      return;
-    }
   }
 
   private void setPlayPauseViewIcon(boolean isPlaying) {
@@ -379,35 +356,26 @@ public class VideoTrimmerView extends FrameLayout {
     return (position) * itemWidth - firstVisibleChildView.getLeft();
   }
 
-  private ValueAnimator animator;
-
-  private void playingAnim() {
+  private void playingRedProgressAnimation() {
     mPositionIcon.clearAnimation();
-    if (animator != null && animator.isRunning()) {
-      animator.cancel();
+    if (mRedProgressAnimator != null && mRedProgressAnimator.isRunning()) {
+      mRedProgressAnimator.cancel();
     }
-    anim();
-    handler.removeCallbacks(run);
-    handler.post(run);
+    playing();
+    mAnimationHandler.removeCallbacks(mAnimationRunnable);
+    mAnimationHandler.post(mAnimationRunnable);
   }
 
-  private void pauseAnim() {
-    mPositionIcon.clearAnimation();
-    if (animator != null && animator.isRunning()) {
-      animator.cancel();
-    }
-  }
-
-  private void anim() {
+  private void playing() {
     if (mPositionIcon.getVisibility() == View.GONE) {
       mPositionIcon.setVisibility(View.VISIBLE);
     }
     final FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mPositionIcon.getLayoutParams();
     int start = (int) (TrimVideoUtil.RECYCLER_VIEW_PADDING + (mRedProgressBarPos/*mVideoView.getCurrentPosition()*/ - scrollPos) * averagePxMs);
     int end = (int) (TrimVideoUtil.RECYCLER_VIEW_PADDING + (mRightProgressPos - scrollPos) * averagePxMs);
-    animator = ValueAnimator.ofInt(start, end).setDuration((mRightProgressPos - scrollPos) - (mRedProgressBarPos/*mVideoView.getCurrentPosition()*/ - scrollPos));
-    animator.setInterpolator(new LinearInterpolator());
-    animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+    mRedProgressAnimator = ValueAnimator.ofInt(start, end).setDuration((mRightProgressPos - scrollPos) - (mRedProgressBarPos/*mVideoView.getCurrentPosition()*/ - scrollPos));
+    mRedProgressAnimator.setInterpolator(new LinearInterpolator());
+    mRedProgressAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override public void onAnimationUpdate(ValueAnimator animation) {
         mRedProgressBarPos = (int) animation.getAnimatedValue();
         params.leftMargin = (int) animation.getAnimatedValue();
@@ -415,15 +383,21 @@ public class VideoTrimmerView extends FrameLayout {
         Log.d(TAG, "----onAnimationUpdate--->>>>>>>" + mRedProgressBarPos);
       }
     });
-    animator.start();
+    mRedProgressAnimator.start();
   }
 
-  private Handler handler = new Handler();
-  private Runnable run = new Runnable() {
+  private void pauseRedProgressAnimation() {
+    mPositionIcon.clearAnimation();
+    if (mRedProgressAnimator != null && mRedProgressAnimator.isRunning()) {
+      mRedProgressAnimator.cancel();
+    }
+  }
+
+  private Runnable mAnimationRunnable = new Runnable() {
 
     @Override public void run() {
       updateVideoProgress();
-      handler.post(run);
+      mAnimationHandler.post(mAnimationRunnable);
     }
   };
 
@@ -433,8 +407,8 @@ public class VideoTrimmerView extends FrameLayout {
     if (currentPosition >= (mRightProgressPos)) {
       mRedProgressBarPos = mLeftProgressPos;
       mPositionIcon.clearAnimation();
-      if (animator != null && animator.isRunning()) {
-        animator.cancel();
+      if (mRedProgressAnimator != null && mRedProgressAnimator.isRunning()) {
+        mRedProgressAnimator.cancel();
       }
       onPause();
     }
