@@ -32,9 +32,7 @@ public class TrimVideoUtil {
   private static final int SCREEN_WIDTH_FULL = DeviceUtil.getDeviceWidth();
   public static final int RECYCLER_VIEW_PADDING = UnitConverter.dpToPx(35);
   public static final int VIDEO_FRAMES_WIDTH = SCREEN_WIDTH_FULL - RECYCLER_VIEW_PADDING * 2;
-
-
-  private static final int THUMB_WIDTH = (DeviceUtil.getDeviceWidth() - RECYCLER_VIEW_PADDING * 2) / VIDEO_MAX_TIME;
+  private static final int THUMB_WIDTH = (SCREEN_WIDTH_FULL- RECYCLER_VIEW_PADDING * 2) / VIDEO_MAX_TIME;
 
   public static void trim(Context context, String inputFile, String outputFile, long startMs, long endMs, final TrimVideoListener callback) {
     final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
