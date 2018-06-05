@@ -30,13 +30,12 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
     this.inflater = LayoutInflater.from(context);
   }
 
-  @NonNull
-  @Override public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+  @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
     return new TrimmerViewHolder(inflater.inflate(R.layout.video_thumb_item_layout, parent, false));
   }
 
   @Override public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-    ((TrimmerViewHolder)holder).thumbImageView.setImageBitmap(bitmaps.get(position));
+    ((TrimmerViewHolder) holder).thumbImageView.setImageBitmap(bitmaps.get(position));
   }
 
   @Override public int getItemCount() {
@@ -50,6 +49,7 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
 
   private final class TrimmerViewHolder extends RecyclerView.ViewHolder {
     ImageView thumbImageView;
+
     TrimmerViewHolder(View itemView) {
       super(itemView);
       thumbImageView = itemView.findViewById(R.id.thumb);
@@ -58,5 +58,4 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
       thumbImageView.setLayoutParams(layoutParams);
     }
   }
-
 }

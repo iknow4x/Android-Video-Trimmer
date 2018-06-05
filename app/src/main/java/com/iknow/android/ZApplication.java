@@ -21,36 +21,32 @@ import iknow.android.utils.BaseUtils;
  * Describe:
  */
 public class ZApplication extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        BaseUtils.init(this);
-        initImageLoader(this);
-        initFFmpegBinary(this);
-    }
+  @Override public void onCreate() {
+    super.onCreate();
+    BaseUtils.init(this);
+    initImageLoader(this);
+    initFFmpegBinary(this);
+  }
 
-    public static void initImageLoader(Context context) {
-        int memoryCacheSize = (int) (Runtime.getRuntime().maxMemory() / 10);
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context)
-                .memoryCache(new LRULimitedMemoryCache(memoryCacheSize))
-                .diskCacheFileNameGenerator(new Md5FileNameGenerator())
-                .tasksProcessingOrder(QueueProcessingType.LIFO)
-                .build();
-        // Initialize ImageLoader with configuration.
-        ImageLoader.getInstance().init(config);
-    }
+  public static void initImageLoader(Context context) {
+    int memoryCacheSize = (int) (Runtime.getRuntime().maxMemory() / 10);
+    ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(context).memoryCache(new LRULimitedMemoryCache(memoryCacheSize))
+        .diskCacheFileNameGenerator(new Md5FileNameGenerator())
+        .tasksProcessingOrder(QueueProcessingType.LIFO)
+        .build();
+    // Initialize ImageLoader with configuration.
+    ImageLoader.getInstance().init(config);
+  }
 
-    private void initFFmpegBinary(Context context) {
+  private void initFFmpegBinary(Context context) {
 
-        try {
-            FFmpeg.getInstance(context).loadBinary(new LoadBinaryResponseHandler() {
-                @Override
-                public void onFailure() {
-                }
-            });
-
-        } catch (FFmpegNotSupportedException e) {
-            e.printStackTrace();
+    try {
+      FFmpeg.getInstance(context).loadBinary(new LoadBinaryResponseHandler() {
+        @Override public void onFailure() {
         }
+      });
+    } catch (FFmpegNotSupportedException e) {
+      e.printStackTrace();
     }
+  }
 }

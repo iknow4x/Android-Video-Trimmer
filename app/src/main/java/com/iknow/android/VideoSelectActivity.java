@@ -34,8 +34,8 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
     GridLayoutManager manager = new GridLayoutManager(this, 4);
     binding.videoSelectRecyclerview.addItemDecoration(new SpacesItemDecoration(5));
     binding.videoSelectRecyclerview.setHasFixedSize(true);
-    VideoGridViewAdapter videoGridViewAdapter;
-    binding.videoSelectRecyclerview.setAdapter(videoGridViewAdapter = new VideoGridViewAdapter(this, allVideos));
+    VideoSelectAdapter videoGridViewAdapter;
+    binding.videoSelectRecyclerview.setAdapter(videoGridViewAdapter = new VideoSelectAdapter(this, allVideos));
     binding.videoSelectRecyclerview.setLayoutManager(manager);
 
     binding.videoShoot.setOnClickListener(this);
