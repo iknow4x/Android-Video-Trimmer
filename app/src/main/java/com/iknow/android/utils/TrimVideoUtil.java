@@ -24,7 +24,7 @@ import java.util.Locale;
 
 public class TrimVideoUtil {
 
-  public static boolean isDebugMode = false;
+  private static final String TAG = TrimVideoUtil.class.getSimpleName();
   public static final long MIN_SHOOT_DURATION = 3000L;// 最小剪辑时间3s
   public static final int VIDEO_MAX_TIME = 10;// 10秒
   public static final long MAX_SHOOT_DURATION = VIDEO_MAX_TIME * 1000L;//视频最多剪切多长时间10s
@@ -32,7 +32,8 @@ public class TrimVideoUtil {
   private static final int SCREEN_WIDTH_FULL = DeviceUtil.getDeviceWidth();
   public static final int RECYCLER_VIEW_PADDING = UnitConverter.dpToPx(35);
   public static final int VIDEO_FRAMES_WIDTH = SCREEN_WIDTH_FULL - RECYCLER_VIEW_PADDING * 2;
-  private static final int THUMB_WIDTH = (SCREEN_WIDTH_FULL- RECYCLER_VIEW_PADDING * 2) / VIDEO_MAX_TIME;
+  private static final int THUMB_WIDTH = (SCREEN_WIDTH_FULL - RECYCLER_VIEW_PADDING * 2) / VIDEO_MAX_TIME;
+  private static final int THUMB_HEIGHT = UnitConverter.dpToPx(50);
 
   public static void trim(Context context, String inputFile, String outputFile, long startMs, long endMs, final TrimVideoListener callback) {
     final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
@@ -90,8 +91,8 @@ public class TrimVideoUtil {
             long frameTime = startPosition + interval * i;
             Bitmap bitmap = mediaMetadataRetriever.getFrameAtTime(frameTime * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
             try {
-              bitmap = Bitmap.createScaledBitmap(bitmap, (int) (THUMB_WIDTH * 1.0f / bitmap.getWidth()), bitmap.getHeight(), false);
-            } catch (Exception e) {
+              bitmap = Bitmap.createScaledBitmap(bitmap, THUMB_WIDTH, THUMB_HEIGHT, false);
+            } catch (IllegalArgumentException e) {
               e.printStackTrace();
             }
             thumbnailList.add(bitmap);
@@ -157,17 +158,16 @@ public class TrimVideoUtil {
     int hour = 0;
     int minute = 0;
     int second = 0;
-    if (seconds <= 0)
+    if (seconds <= 0) {
       return "00:00";
-    else {
+    } else {
       minute = (int) seconds / 60;
       if (minute < 60) {
         second = (int) seconds % 60;
         timeStr = "00:" + unitFormat(minute) + ":" + unitFormat(second);
       } else {
         hour = minute / 60;
-        if (hour > 99)
-          return "99:59:59";
+        if (hour > 99) return "99:59:59";
         minute = minute % 60;
         second = (int) (seconds - hour * 3600 - minute * 60);
         timeStr = unitFormat(hour) + ":" + unitFormat(minute) + ":" + unitFormat(second);
@@ -178,10 +178,11 @@ public class TrimVideoUtil {
 
   private static String unitFormat(int i) {
     String retStr = null;
-    if (i >= 0 && i < 10)
+    if (i >= 0 && i < 10) {
       retStr = "0" + Integer.toString(i);
-    else
+    } else {
       retStr = "" + i;
+    }
     return retStr;
   }
 }

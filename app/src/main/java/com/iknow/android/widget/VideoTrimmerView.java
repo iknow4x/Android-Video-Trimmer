@@ -371,13 +371,12 @@ public class VideoTrimmerView extends FrameLayout {
       mRedProgressIcon.setVisibility(View.VISIBLE);
     }
     final FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mRedProgressIcon.getLayoutParams();
-    int start = (int) (TrimVideoUtil.RECYCLER_VIEW_PADDING + (mRedProgressBarPos/*mVideoView.getCurrentPosition()*/ - scrollPos) * averagePxMs);
+    int start = (int) (TrimVideoUtil.RECYCLER_VIEW_PADDING + (mRedProgressBarPos - scrollPos) * averagePxMs);
     int end = (int) (TrimVideoUtil.RECYCLER_VIEW_PADDING + (mRightProgressPos - scrollPos) * averagePxMs);
-    mRedProgressAnimator = ValueAnimator.ofInt(start, end).setDuration((mRightProgressPos - scrollPos) - (mRedProgressBarPos/*mVideoView.getCurrentPosition()*/ - scrollPos));
+    mRedProgressAnimator = ValueAnimator.ofInt(start, end).setDuration((mRightProgressPos - scrollPos) - (mRedProgressBarPos - scrollPos));
     mRedProgressAnimator.setInterpolator(new LinearInterpolator());
     mRedProgressAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override public void onAnimationUpdate(ValueAnimator animation) {
-        mRedProgressBarPos = (int) animation.getAnimatedValue();
         params.leftMargin = (int) animation.getAnimatedValue();
         mRedProgressIcon.setLayoutParams(params);
         Log.d(TAG, "----onAnimationUpdate--->>>>>>>" + mRedProgressBarPos);

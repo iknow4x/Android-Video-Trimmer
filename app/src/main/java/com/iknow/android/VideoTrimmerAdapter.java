@@ -2,6 +2,7 @@ package com.iknow.android;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,11 +30,12 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
     this.inflater = LayoutInflater.from(context);
   }
 
-  @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+  @NonNull
+  @Override public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
     return new TrimmerViewHolder(inflater.inflate(R.layout.video_thumb_item_layout, parent, false));
   }
 
-  @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+  @Override public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
     ((TrimmerViewHolder)holder).thumbImageView.setImageBitmap(bitmaps.get(position));
   }
 
@@ -47,7 +49,7 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
   }
 
   private final class TrimmerViewHolder extends RecyclerView.ViewHolder {
-    public ImageView thumbImageView;
+    ImageView thumbImageView;
     TrimmerViewHolder(View itemView) {
       super(itemView);
       thumbImageView = itemView.findViewById(R.id.thumb);
