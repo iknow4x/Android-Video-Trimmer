@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
@@ -25,9 +26,9 @@ public class RangeSeekBarView extends View {
   private static final String TAG = RangeSeekBarView.class.getSimpleName();
   public static final int INVALID_POINTER_ID = 255;
   public static final int ACTION_POINTER_INDEX_MASK = 0x0000ff00, ACTION_POINTER_INDEX_SHIFT = 8;
-  private int mActivePointerId = INVALID_POINTER_ID;
   private static final int TextPositionY = UnitConverter.dpToPx(7);
   private static final int paddingTop = UnitConverter.dpToPx(10);
+  private int mActivePointerId = INVALID_POINTER_ID;
 
   private long mMinShootTime = TrimVideoUtil.MIN_SHOOT_DURATION;
   private double absoluteMinValuePrim, absoluteMaxValuePrim;
@@ -39,12 +40,11 @@ public class RangeSeekBarView extends View {
   private Bitmap thumbImageLeft;
   private Bitmap thumbImageRight;
   private Bitmap thumbPressedImage;
-  private Bitmap mBitmapBlack;
-  private Bitmap mBitmapPro;
   private Paint paint;
   private Paint rectPaint;
   private final Paint mVideoTrimTimePaintL = new Paint();
   private final Paint mVideoTrimTimePaintR = new Paint();
+  private final Paint mShadow = new Paint();
   private int thumbWidth;
   private float thumbHalfWidth;
   private final float padding = 0;
@@ -89,6 +89,7 @@ public class RangeSeekBarView extends View {
   private void init() {
     mScaledTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
     thumbImageLeft = BitmapFactory.decodeResource(getResources(), R.drawable.icon_video_thumb_handle);
+
     int width = thumbImageLeft.getWidth();
     int height = thumbImageLeft.getHeight();
     int newWidth = UnitConverter.dpToPx(11);
@@ -102,9 +103,10 @@ public class RangeSeekBarView extends View {
     thumbPressedImage = thumbImageLeft;
     thumbWidth = newWidth;
     thumbHalfWidth = thumbWidth / 2;
+    int shadowColor = getContext().getResources().getColor(R.color.shadow_color);
+    mShadow.setAntiAlias(true);
+    mShadow.setColor(shadowColor);
 
-    mBitmapBlack = BitmapFactory.decodeResource(getResources(), R.drawable.upload_overlay_black);
-    mBitmapPro = BitmapFactory.decodeResource(getResources(), R.drawable.upload_overlay_trans);
     paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     rectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     rectPaint.setStyle(Paint.Style.FILL);
@@ -141,37 +143,24 @@ public class RangeSeekBarView extends View {
     super.onDraw(canvas);
     float bg_middle_left = 0;
     float bg_middle_right = getWidth() - getPaddingRight();
-    float scale = (bg_middle_right - bg_middle_left) / mBitmapPro.getWidth();
     float rangeL = normalizedToScreen(normalizedMinValue);
     float rangeR = normalizedToScreen(normalizedMaxValue);
-    float scale_pro = (rangeR - rangeL) / mBitmapPro.getWidth();
-    if (scale_pro > 0) {
-      try {
-        Matrix pro_mx = new Matrix();
-        Matrix mx = new Matrix();
-        pro_mx.postScale(scale_pro, 1f);
-        Bitmap m_bitmap_pro_new = Bitmap.createBitmap(mBitmapPro, 0, 0, mBitmapPro.getWidth(), mBitmapPro.getHeight(), pro_mx, true);
-        canvas.drawBitmap(m_bitmap_pro_new, rangeL, thumbPaddingTop, paint);
-        mx.postScale(scale, 1f);
-        Bitmap m_bitmap_black_new = Bitmap.createBitmap(mBitmapBlack, 0, 0, mBitmapBlack.getWidth(), mBitmapBlack.getHeight(), mx, true);
-        Bitmap m_bg_new1 = Bitmap.createBitmap(m_bitmap_black_new, 0, 0, (int) (rangeL - bg_middle_left) + (int) thumbWidth / 2, mBitmapBlack.getHeight());
-        canvas.drawBitmap(m_bg_new1, bg_middle_left, thumbPaddingTop, paint);
-        Bitmap m_bg_new2 = Bitmap.createBitmap(m_bitmap_black_new, (int) (rangeR - thumbWidth / 2), 0, (int) (getWidth() - rangeR) + (int) thumbWidth / 2,
-                mBitmapBlack.getHeight());
-        canvas.drawBitmap(m_bg_new2, (int) (rangeR - thumbWidth / 2), thumbPaddingTop, paint);
-        canvas.drawRect(rangeL, thumbPaddingTop + paddingTop, rangeR, thumbPaddingTop + UnitConverter.dpToPx(2) + paddingTop, rectPaint);
-        canvas.drawRect(rangeL, getHeight() - UnitConverter.dpToPx(2), rangeR, getHeight(), rectPaint);
-        drawThumb(normalizedToScreen(normalizedMinValue), false, canvas, true);
-        drawThumb(normalizedToScreen(normalizedMaxValue), false, canvas, false);
-      } catch (Exception ignored) {
-      }
-    }
+    Rect leftRect = new Rect((int) bg_middle_left, getHeight(), (int) rangeL, 0);
+    Rect rightRect = new Rect((int) rangeR, getHeight(), (int) bg_middle_right, 0);
+    canvas.drawRect(leftRect, mShadow);
+    canvas.drawRect(rightRect, mShadow);
+
+    canvas.drawRect(rangeL, thumbPaddingTop + paddingTop, rangeR, thumbPaddingTop + UnitConverter.dpToPx(2) + paddingTop, rectPaint);
+    canvas.drawRect(rangeL, getHeight() - UnitConverter.dpToPx(2), rangeR, getHeight(), rectPaint);
+
+    drawThumb(normalizedToScreen(normalizedMinValue), false, canvas, true);
+    drawThumb(normalizedToScreen(normalizedMaxValue), false, canvas, false);
     drawVideoTrimTimeText(canvas);
   }
 
   private void drawThumb(float screenCoord, boolean pressed, Canvas canvas, boolean isLeft) {
-    canvas.drawBitmap(pressed ? thumbPressedImage : (isLeft ? thumbImageLeft : thumbImageRight), screenCoord - (isLeft ? 0 : thumbWidth),
-        paddingTop, paint);
+    canvas.drawBitmap(pressed ? thumbPressedImage : (isLeft ? thumbImageLeft : thumbImageRight), screenCoord - (isLeft ? 0 : thumbWidth), paddingTop,
+        paint);
   }
 
   private void drawVideoTrimTimeText(Canvas canvas) {
@@ -460,7 +449,6 @@ public class RangeSeekBarView extends View {
     this.mStartPosition = start / 1000;
     this.mEndPosition = end / 1000;
   }
-
 
   public void setSelectedMinValue(long value) {
     if (0 == (absoluteMaxValuePrim - absoluteMinValuePrim)) {

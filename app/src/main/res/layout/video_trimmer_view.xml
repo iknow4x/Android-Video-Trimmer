@@ -40,9 +40,9 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:gravity="center"
-        android:text="拖动选择你要发表的10秒以内片段"
         android:textColor="@android:color/white"
         android:textSize="12dp"
+        tools:text="拖动选择你要发表的10秒以内片段"
         />
     <FrameLayout
         android:id="@+id/video_frames_layout"
@@ -63,9 +63,9 @@
           android:id="@+id/positionIcon"
           android:layout_width="wrap_content"
           android:layout_height="50dp"
+          android:layout_gravity="bottom"
           android:layout_marginLeft="35dp"
           android:contentDescription="@null"
-          android:layout_gravity="bottom"
           android:src="@drawable/icon_seek_bar"
           />
 
@@ -80,15 +80,15 @@
             android:layout_width="35dp"
             android:layout_height="50dp"
             android:layout_gravity="bottom"
-            android:background="#66000000"
+            android:background="@color/shadow_color"
             />
 
         <LinearLayout
             android:id="@+id/seekBarLayout"
             android:layout_width="0dp"
             android:layout_height="60dp"
-            android:layout_weight="1"
             android:layout_gravity="bottom"
+            android:layout_weight="1"
             android:gravity="bottom"
             android:orientation="vertical"
             />
@@ -97,7 +97,7 @@
             android:layout_width="35dp"
             android:layout_height="match_parent"
             android:layout_gravity="bottom"
-            android:background="#66000000"
+            android:background="@color/shadow_color"
             />
       </LinearLayout>
     </FrameLayout>

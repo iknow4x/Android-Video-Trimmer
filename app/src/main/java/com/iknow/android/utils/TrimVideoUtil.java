@@ -26,14 +26,15 @@ public class TrimVideoUtil {
 
   public static boolean isDebugMode = false;
   public static final long MIN_SHOOT_DURATION = 3000L;// 最小剪辑时间3s
-  public static final long MAX_SHOOT_DURATION = 10 * 1000L;//视频最多剪切多长时间10s
+  public static final int VIDEO_MAX_TIME = 10;// 10秒
+  public static final long MAX_SHOOT_DURATION = VIDEO_MAX_TIME * 1000L;//视频最多剪切多长时间10s
   public static final int MAX_COUNT_RANGE = 10;  //seekBar的区域内一共有多少张图片
   private static final int SCREEN_WIDTH_FULL = DeviceUtil.getDeviceWidth();
   public static final int RECYCLER_VIEW_PADDING = UnitConverter.dpToPx(35);
   public static final int VIDEO_FRAMES_WIDTH = SCREEN_WIDTH_FULL - RECYCLER_VIEW_PADDING * 2;
 
-  public static final int VIDEO_MAX_DURATION = 10;// 10秒
-  private static final int THUMB_WIDTH = (DeviceUtil.getDeviceWidth() - RECYCLER_VIEW_PADDING * 2) / VIDEO_MAX_DURATION;
+
+  private static final int THUMB_WIDTH = (DeviceUtil.getDeviceWidth() - RECYCLER_VIEW_PADDING * 2) / VIDEO_MAX_TIME;
 
   public static void trim(Context context, String inputFile, String outputFile, long startMs, long endMs, final TrimVideoListener callback) {
     final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());

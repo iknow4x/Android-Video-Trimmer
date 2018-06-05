@@ -19,6 +19,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 import com.iknow.android.R;
@@ -44,7 +45,8 @@ public class VideoTrimmerView extends FrameLayout {
   private RecyclerView mVideoThumbRecyclerView;
   private RangeSeekBarView mRangeSeekBarView;
   private LinearLayout mSeekBarLayout;
-  private ImageView mPositionIcon;
+  private ImageView mRedProgressIcon;
+  private TextView mVideoShootTipTv;
   private float mAverageMsPx;//每毫秒所占的px
   private float averagePxMs;//每px所占用的ms毫秒
   private Uri mSourceUri;
@@ -82,7 +84,8 @@ public class VideoTrimmerView extends FrameLayout {
     mVideoView = findViewById(R.id.video_loader);
     mPlayView = findViewById(R.id.icon_video_play);
     mSeekBarLayout = findViewById(R.id.seekBarLayout);
-    mPositionIcon = findViewById(R.id.positionIcon);
+    mRedProgressIcon = findViewById(R.id.positionIcon);
+    mVideoShootTipTv = findViewById(R.id.video_shoot_tip);
     mVideoThumbRecyclerView = findViewById(R.id.video_frames_recyclerView);
     mVideoThumbRecyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false));
     mVideoThumbAdapter = new VideoTrimmerAdapter(mContext);
@@ -123,6 +126,7 @@ public class VideoTrimmerView extends FrameLayout {
     mSourceUri = videoURI;
     mVideoView.setVideoURI(mSourceUri);
     mVideoView.requestFocus();
+    mVideoShootTipTv.setText(String.format(mContext.getResources().getString(R.string.video_shoot_tip), TrimVideoUtil.VIDEO_MAX_TIME));
   }
 
   private void startShootVideoThumbs(final Context context, final Uri videoUri, int totalThumbsCount, long startPosition, long endPosition) {
@@ -197,7 +201,7 @@ public class VideoTrimmerView extends FrameLayout {
       seekTo(mLeftProgressPos);//复位
       mVideoView.pause();
       setPlayPauseViewIcon(false);
-      mPositionIcon.setVisibility(GONE);
+      mRedProgressIcon.setVisibility(GONE);
     }
   }
 
@@ -336,7 +340,7 @@ public class VideoTrimmerView extends FrameLayout {
           mVideoView.pause();
           setPlayPauseViewIcon(false);
         }
-        mPositionIcon.setVisibility(GONE);
+        mRedProgressIcon.setVisibility(GONE);
         seekTo(mLeftProgressPos);
         mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
         mRangeSeekBarView.invalidate();
@@ -357,7 +361,7 @@ public class VideoTrimmerView extends FrameLayout {
   }
 
   private void playingRedProgressAnimation() {
-    mPositionIcon.clearAnimation();
+    mRedProgressIcon.clearAnimation();
     if (mRedProgressAnimator != null && mRedProgressAnimator.isRunning()) {
       mRedProgressAnimator.cancel();
     }
@@ -367,10 +371,10 @@ public class VideoTrimmerView extends FrameLayout {
   }
 
   private void playing() {
-    if (mPositionIcon.getVisibility() == View.GONE) {
-      mPositionIcon.setVisibility(View.VISIBLE);
+    if (mRedProgressIcon.getVisibility() == View.GONE) {
+      mRedProgressIcon.setVisibility(View.VISIBLE);
     }
-    final FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mPositionIcon.getLayoutParams();
+    final FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mRedProgressIcon.getLayoutParams();
     int start = (int) (TrimVideoUtil.RECYCLER_VIEW_PADDING + (mRedProgressBarPos/*mVideoView.getCurrentPosition()*/ - scrollPos) * averagePxMs);
     int end = (int) (TrimVideoUtil.RECYCLER_VIEW_PADDING + (mRightProgressPos - scrollPos) * averagePxMs);
     mRedProgressAnimator = ValueAnimator.ofInt(start, end).setDuration((mRightProgressPos - scrollPos) - (mRedProgressBarPos/*mVideoView.getCurrentPosition()*/ - scrollPos));
@@ -379,7 +383,7 @@ public class VideoTrimmerView extends FrameLayout {
       @Override public void onAnimationUpdate(ValueAnimator animation) {
         mRedProgressBarPos = (int) animation.getAnimatedValue();
         params.leftMargin = (int) animation.getAnimatedValue();
-        mPositionIcon.setLayoutParams(params);
+        mRedProgressIcon.setLayoutParams(params);
         Log.d(TAG, "----onAnimationUpdate--->>>>>>>" + mRedProgressBarPos);
       }
     });
@@ -387,7 +391,7 @@ public class VideoTrimmerView extends FrameLayout {
   }
 
   private void pauseRedProgressAnimation() {
-    mPositionIcon.clearAnimation();
+    mRedProgressIcon.clearAnimation();
     if (mRedProgressAnimator != null && mRedProgressAnimator.isRunning()) {
       mRedProgressAnimator.cancel();
     }
@@ -406,7 +410,7 @@ public class VideoTrimmerView extends FrameLayout {
     Log.d(TAG, "updateVideoProgress currentPosition = " + currentPosition);
     if (currentPosition >= (mRightProgressPos)) {
       mRedProgressBarPos = mLeftProgressPos;
-      mPositionIcon.clearAnimation();
+      mRedProgressIcon.clearAnimation();
       if (mRedProgressAnimator != null && mRedProgressAnimator.isRunning()) {
         mRedProgressAnimator.cancel();
       }
