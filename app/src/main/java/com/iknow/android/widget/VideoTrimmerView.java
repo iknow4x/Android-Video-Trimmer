@@ -196,7 +196,7 @@ public class VideoTrimmerView extends FrameLayout {
     setPlayPauseViewIcon(mVideoView.isPlaying());
   }
 
-  public void onPause() {
+  public void onVideoPause() {
     if (mVideoView.isPlaying()) {
       seekTo(mLeftProgressPos);//复位
       mVideoView.pause();
@@ -361,16 +361,12 @@ public class VideoTrimmerView extends FrameLayout {
   }
 
   private void playingRedProgressAnimation() {
-    mRedProgressIcon.clearAnimation();
-    if (mRedProgressAnimator != null && mRedProgressAnimator.isRunning()) {
-      mRedProgressAnimator.cancel();
-    }
-    playing();
-    mAnimationHandler.removeCallbacks(mAnimationRunnable);
+    pauseRedProgressAnimation();
+    playingAnimation();
     mAnimationHandler.post(mAnimationRunnable);
   }
 
-  private void playing() {
+  private void playingAnimation() {
     if (mRedProgressIcon.getVisibility() == View.GONE) {
       mRedProgressIcon.setVisibility(View.VISIBLE);
     }
@@ -393,6 +389,7 @@ public class VideoTrimmerView extends FrameLayout {
   private void pauseRedProgressAnimation() {
     mRedProgressIcon.clearAnimation();
     if (mRedProgressAnimator != null && mRedProgressAnimator.isRunning()) {
+      mAnimationHandler.removeCallbacks(mAnimationRunnable);
       mRedProgressAnimator.cancel();
     }
   }
@@ -401,7 +398,6 @@ public class VideoTrimmerView extends FrameLayout {
 
     @Override public void run() {
       updateVideoProgress();
-      mAnimationHandler.post(mAnimationRunnable);
     }
   };
 
@@ -410,11 +406,10 @@ public class VideoTrimmerView extends FrameLayout {
     Log.d(TAG, "updateVideoProgress currentPosition = " + currentPosition);
     if (currentPosition >= (mRightProgressPos)) {
       mRedProgressBarPos = mLeftProgressPos;
-      mRedProgressIcon.clearAnimation();
-      if (mRedProgressAnimator != null && mRedProgressAnimator.isRunning()) {
-        mRedProgressAnimator.cancel();
-      }
-      onPause();
+      pauseRedProgressAnimation();
+      onVideoPause();
+    } else {
+      mAnimationHandler.post(mAnimationRunnable);
     }
   }
 }

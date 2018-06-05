@@ -55,7 +55,7 @@ public class VideoTrimmerActivity extends AppCompatActivity implements TrimVideo
 
   @Override public void onPause() {
     super.onPause();
-    binding.trimmerView.onPause();
+    binding.trimmerView.onVideoPause();
     binding.trimmerView.setRestoreState(true);
   }
 
