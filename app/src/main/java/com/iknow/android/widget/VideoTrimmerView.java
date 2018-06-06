@@ -131,11 +131,11 @@ public class VideoTrimmerView extends FrameLayout {
 
   private void startShootVideoThumbs(final Context context, final Uri videoUri, int totalThumbsCount, long startPosition, long endPosition) {
     TrimVideoUtil.backgroundShootVideoThumb(context, videoUri, totalThumbsCount, startPosition, endPosition,
-        new SingleCallback<ArrayList<Bitmap>, Integer>() {
-          @Override public void onSingleCallback(final ArrayList<Bitmap> bitmaps, final Integer interval) {
+        new SingleCallback<Bitmap, Integer>() {
+          @Override public void onSingleCallback(final Bitmap bitmap, final Integer interval) {
             UiThreadExecutor.runTask("", new Runnable() {
               @Override public void run() {
-                mVideoThumbAdapter.addBitmaps(bitmaps);
+                mVideoThumbAdapter.addBitmaps(bitmap);
               }
             }, 0L);
           }

@@ -77,8 +77,7 @@ public class TrimVideoUtil {
   }
 
   public static void backgroundShootVideoThumb(final Context context, final Uri videoUri, final int totalThumbsCount, final long startPosition,
-      final long endPosition, final SingleCallback<ArrayList<Bitmap>, Integer> callback) {
-    final ArrayList<Bitmap> thumbnailList = new ArrayList<>();
+      final long endPosition, final SingleCallback<Bitmap, Integer> callback) {
     BackgroundExecutor.execute(new BackgroundExecutor.Task("", 0L, "") {
       @Override public void execute() {
         try {
@@ -86,7 +85,6 @@ public class TrimVideoUtil {
           mediaMetadataRetriever.setDataSource(context, videoUri);
           // Retrieve media data use microsecond
           long interval = (endPosition - startPosition) / (totalThumbsCount - 1);
-          //每次截取到2帧之后上报
           for (long i = 0; i < totalThumbsCount; ++i) {
             long frameTime = startPosition + interval * i;
             Bitmap bitmap = mediaMetadataRetriever.getFrameAtTime(frameTime * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
@@ -95,15 +93,7 @@ public class TrimVideoUtil {
             } catch (IllegalArgumentException e) {
               e.printStackTrace();
             }
-            thumbnailList.add(bitmap);
-            if (thumbnailList.size() == 2) {
-              callback.onSingleCallback((ArrayList<Bitmap>) thumbnailList.clone(), (int) interval);
-              thumbnailList.clear();
-            }
-          }
-          if (thumbnailList.size() > 0) {
-            callback.onSingleCallback((ArrayList<Bitmap>) thumbnailList.clone(), (int) interval);
-            thumbnailList.clear();
+            callback.onSingleCallback(bitmap, (int) interval);
           }
           mediaMetadataRetriever.release();
         } catch (final Throwable e) {

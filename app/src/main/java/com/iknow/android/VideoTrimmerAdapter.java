@@ -42,8 +42,8 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
     return bitmaps.size();
   }
 
-  public void addBitmaps(ArrayList<Bitmap> maps) {
-    bitmaps.addAll(maps);
+  public void addBitmaps(Bitmap bitmap) {
+    bitmaps.add(bitmap);
     notifyDataSetChanged();
   }
 
