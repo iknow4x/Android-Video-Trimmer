@@ -1,6 +1,7 @@
 package com.iknow.android;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import iknow.android.utils.DateUtil;
 import iknow.android.utils.DeviceUtil;
 import iknow.android.utils.callback.SingleCallback;
+import java.util.List;
 
 /**
  * Author：J.Chou
@@ -27,42 +29,41 @@ import iknow.android.utils.callback.SingleCallback;
  */
 public class VideoSelectAdapter extends RecyclerView.Adapter<VideoSelectAdapter.VideoViewHolder> {
 
-  private ArrayList<VideoInfo> videoListData;
+  private List<VideoInfo> mVideoListData = new ArrayList<>();
   private Context context;
   private SingleCallback<Boolean, VideoInfo> mSingleCallback;
   private ArrayList<VideoInfo> videoSelect = new ArrayList<>();
   private ArrayList<ImageView> selectIconList = new ArrayList<>();
+  private boolean isSelected = false;
 
-  VideoSelectAdapter(Context context, ArrayList<VideoInfo> dataList) {
+  VideoSelectAdapter(Context context) {
     this.context = context;
-    this.videoListData = dataList;
   }
 
-  @Override public VideoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+  @NonNull @Override public VideoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
     final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-
-    View view = null;
-    view = inflater.inflate(R.layout.video_select_gridview_item, null);
-
-    return new VideoViewHolder(view);
+    return new VideoViewHolder(inflater.inflate(R.layout.video_select_gridview_item, null));
   }
 
-  @Override public void onBindViewHolder(VideoViewHolder holder, int position) {
+  @Override public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
 
-    VideoInfo video = videoListData.get(position);
+    VideoInfo video = mVideoListData.get(position);
     holder.durationTv.setText(DateUtil.convertSecondsToTime(video.getDuration() / 1000));
     ImageLoader.getInstance().displayImage(TrimVideoUtil.getVideoFilePath(video.getVideoPath()), holder.videoCover);
   }
 
   @Override public int getItemCount() {
-    return videoListData.size();
+    return mVideoListData.size();
   }
 
-  void setItemClickCallback(final SingleCallback singleCallback) {
+  void setVideoData(List<VideoInfo> videos) {
+    mVideoListData = videos;
+    notifyDataSetChanged();
+  }
+
+  void setItemClickCallback(final SingleCallback<Boolean, VideoInfo> singleCallback) {
     this.mSingleCallback = singleCallback;
   }
-
-  private boolean isSelected = false;
 
   class VideoViewHolder extends RecyclerView.ViewHolder {
 
@@ -85,7 +86,7 @@ public class VideoSelectAdapter extends RecyclerView.Adapter<VideoSelectAdapter.
       videoCover.setLayoutParams(params);
       videoSelectPanel.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
-          VideoInfo videoInfo = videoListData.get(getAdapterPosition());
+          VideoInfo videoInfo = mVideoListData.get(getAdapterPosition());
           if (videoSelect.size() > 0) {
             if (videoInfo.equals(videoSelect.get(0))) {
               selectIcon.setImageResource(R.drawable.icon_video_unselected);
@@ -104,7 +105,7 @@ public class VideoSelectAdapter extends RecyclerView.Adapter<VideoSelectAdapter.
             selectIcon.setImageResource(R.drawable.icon_video_selected);
             isSelected = true;
           }
-          mSingleCallback.onSingleCallback(isSelected, videoListData.get(getAdapterPosition()));
+          mSingleCallback.onSingleCallback(isSelected, mVideoListData.get(getAdapterPosition()));
         }
       });
     }

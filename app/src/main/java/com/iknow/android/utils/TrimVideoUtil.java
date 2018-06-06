@@ -15,11 +15,19 @@ import com.iknow.android.interfaces.TrimVideoListener;
 import com.iknow.android.models.VideoInfo;
 import iknow.android.utils.DeviceUtil;
 import iknow.android.utils.UnitConverter;
+import iknow.android.utils.callback.SimpleCallback;
 import iknow.android.utils.callback.SingleCallback;
 import iknow.android.utils.thread.BackgroundExecutor;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class TrimVideoUtil {
@@ -103,33 +111,35 @@ public class TrimVideoUtil {
     });
   }
 
-  /**
-   * 需要设计成异步的
-   */
-  public static ArrayList<VideoInfo> getAllVideoFiles(Context mContext) {
-    VideoInfo video;
-    ArrayList<VideoInfo> videos = new ArrayList<>();
-    ContentResolver contentResolver = mContext.getContentResolver();
-    try {
-      Cursor cursor =
-          contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Video.Media.DATE_MODIFIED + " desc");
-      if (cursor != null) {
-        while (cursor.moveToNext()) {
-          video = new VideoInfo();
-          if (cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)) != 0) {
-            video.setDuration(cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)));
-            video.setVideoPath(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)));
-            video.setCreateTime(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED)));
-            video.setVideoName(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)));
-            videos.add(video);
+  public static void loadVideoFiles(final Context mContext, final SimpleCallback simpleCallback) {
+
+    Observable.create(new ObservableOnSubscribe<List<VideoInfo>>() {
+
+      @Override public void subscribe(ObservableEmitter<List<VideoInfo>> emitter) throws Exception {
+        List<VideoInfo> videos = new ArrayList<>();
+        ContentResolver contentResolver = mContext.getContentResolver();
+        Cursor cursor =
+            contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Video.Media.DATE_MODIFIED + " desc");
+        if (cursor != null) {
+          while (cursor.moveToNext()) {
+            VideoInfo videoInfo = new VideoInfo();
+            if (cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)) != 0) {
+              videoInfo.setDuration(cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)));
+              videoInfo.setVideoPath(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)));
+              videoInfo.setCreateTime(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED)));
+              videoInfo.setVideoName(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)));
+              videos.add(videoInfo);
+            }
           }
+          cursor.close();
         }
-        cursor.close();
+        emitter.onNext(videos);
       }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return videos;
+    }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<List<VideoInfo>>() {
+      @Override public void accept(List<VideoInfo> videoInfos) throws Exception {
+        simpleCallback.success(videoInfos);
+      }
+    });
   }
 
   public static String getVideoFilePath(String url) {

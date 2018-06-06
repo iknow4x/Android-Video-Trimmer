@@ -10,9 +10,10 @@ import com.iknow.android.models.VideoInfo;
 import com.iknow.android.utils.TrimVideoUtil;
 import com.iknow.android.widget.SpacesItemDecoration;
 
-import java.util.ArrayList;
+import iknow.android.utils.callback.SimpleCallback;
 
 import iknow.android.utils.callback.SingleCallback;
+import java.util.List;
 
 /**
  * Author：J.Chou
@@ -22,48 +23,52 @@ import iknow.android.utils.callback.SingleCallback;
  */
 public class VideoSelectActivity extends AppCompatActivity implements View.OnClickListener {
 
-  private VideoSelectLayoutBinding binding;
-  private ArrayList<VideoInfo> allVideos = new ArrayList<>();
+  private VideoSelectLayoutBinding mBinding;
+  private VideoSelectAdapter mVideoSelectAdapter;
   private String videoPath;
 
   @Override protected void onCreate(Bundle bundle) {
     super.onCreate(bundle);
-    binding = DataBindingUtil.setContentView(this, R.layout.video_select_layout);
+    mBinding = DataBindingUtil.setContentView(this, R.layout.video_select_layout);
 
-    allVideos = TrimVideoUtil.getAllVideoFiles(this);
+
     GridLayoutManager manager = new GridLayoutManager(this, 4);
-    binding.videoSelectRecyclerview.addItemDecoration(new SpacesItemDecoration(5));
-    binding.videoSelectRecyclerview.setHasFixedSize(true);
-    VideoSelectAdapter videoGridViewAdapter;
-    binding.videoSelectRecyclerview.setAdapter(videoGridViewAdapter = new VideoSelectAdapter(this, allVideos));
-    binding.videoSelectRecyclerview.setLayoutManager(manager);
+    mBinding.videoSelectRecyclerview.addItemDecoration(new SpacesItemDecoration(5));
+    mBinding.videoSelectRecyclerview.setHasFixedSize(true);
 
-    binding.videoShoot.setOnClickListener(this);
-    binding.mBtnBack.setOnClickListener(this);
-    binding.nextStep.setOnClickListener(this);
+    mBinding.videoSelectRecyclerview.setAdapter(mVideoSelectAdapter = new VideoSelectAdapter(this));
+    mBinding.videoSelectRecyclerview.setLayoutManager(manager);
 
-    binding.nextStep.setTextAppearance(this, R.style.gray_text_18_style);
-    binding.nextStep.setEnabled(false);
+    mBinding.videoShoot.setOnClickListener(this);
+    mBinding.mBtnBack.setOnClickListener(this);
+    mBinding.nextStep.setOnClickListener(this);
 
-    videoGridViewAdapter.setItemClickCallback(new SingleCallback<Boolean, VideoInfo>() {
+    mBinding.nextStep.setTextAppearance(this, R.style.gray_text_18_style);
+    mBinding.nextStep.setEnabled(false);
+
+    mVideoSelectAdapter.setItemClickCallback(new SingleCallback<Boolean, VideoInfo>() {
       @Override public void onSingleCallback(Boolean isSelected, VideoInfo video) {
         if (video != null) videoPath = video.getVideoPath();
-        binding.nextStep.setEnabled(isSelected);
-        binding.nextStep.setTextAppearance(VideoSelectActivity.this, isSelected ? R.style.blue_text_18_style : R.style.gray_text_18_style);
+        mBinding.nextStep.setEnabled(isSelected);
+        mBinding.nextStep.setTextAppearance(VideoSelectActivity.this, isSelected ? R.style.blue_text_18_style : R.style.gray_text_18_style);
       }
     });
-    //FileUtils.createVideoTempFolder();//Create temp file folder
+    TrimVideoUtil.loadVideoFiles(this, new SimpleCallback() {
+      @SuppressWarnings("unchecked")
+      @Override public void success(Object obj) {
+          mVideoSelectAdapter.setVideoData((List<VideoInfo>) obj);
+      }
+    });
   }
 
   @Override protected void onDestroy() {
     super.onDestroy();
-    allVideos = null;
   }
 
   @Override public void onClick(View v) {
-    if (v.getId() == binding.mBtnBack.getId()) {
+    if (v.getId() == mBinding.mBtnBack.getId()) {
       finish();
-    } else if (v.getId() == binding.nextStep.getId()) {
+    } else if (v.getId() == mBinding.nextStep.getId()) {
       VideoTrimmerActivity.call(VideoSelectActivity.this, videoPath);
     }
   }

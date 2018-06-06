@@ -21,29 +21,29 @@ import java.util.List;
  * description:
  */
 public class VideoTrimmerAdapter extends RecyclerView.Adapter {
-  private List<Bitmap> bitmaps = new ArrayList<>();
-  private LayoutInflater inflater;
+  private List<Bitmap> mBitmaps = new ArrayList<>();
+  private LayoutInflater mInflater;
   private Context context;
 
   public VideoTrimmerAdapter(Context context) {
     this.context = context;
-    this.inflater = LayoutInflater.from(context);
+    this.mInflater = LayoutInflater.from(context);
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-    return new TrimmerViewHolder(inflater.inflate(R.layout.video_thumb_item_layout, parent, false));
+    return new TrimmerViewHolder(mInflater.inflate(R.layout.video_thumb_item_layout, parent, false));
   }
 
   @Override public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-    ((TrimmerViewHolder) holder).thumbImageView.setImageBitmap(bitmaps.get(position));
+    ((TrimmerViewHolder) holder).thumbImageView.setImageBitmap(mBitmaps.get(position));
   }
 
   @Override public int getItemCount() {
-    return bitmaps.size();
+    return mBitmaps.size();
   }
 
   public void addBitmaps(Bitmap bitmap) {
-    bitmaps.add(bitmap);
+    mBitmaps.add(bitmap);
     notifyDataSetChanged();
   }
 

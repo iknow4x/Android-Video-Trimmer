@@ -22,9 +22,9 @@ import com.iknow.android.utils.CompressVideoUtil;
 public class VideoTrimmerActivity extends AppCompatActivity implements TrimVideoListener {
 
   private static final String TAG = "jason";
-  private static final String VIDEO_PATH_KEY = "path";
+  private static final String VIDEO_PATH_KEY = "video-file-path";
   public static final int VIDEO_TRIM_REQUEST_CODE = 0x001;
-  private ActivityTrimmerLayoutBinding binding;
+  private ActivityTrimmerLayoutBinding mBinding;
   private ProgressDialog mProgressDialog;
 
   public static void call(FragmentActivity from, String videoPath) {
@@ -39,13 +39,13 @@ public class VideoTrimmerActivity extends AppCompatActivity implements TrimVideo
 
   @Override protected void onCreate(Bundle bundle) {
     super.onCreate(bundle);
-    binding = DataBindingUtil.setContentView(this, R.layout.activity_trimmer_layout);
+    mBinding = DataBindingUtil.setContentView(this, R.layout.activity_trimmer_layout);
     Bundle bd = getIntent().getExtras();
     String path = "";
     if (bd != null) path = bd.getString(VIDEO_PATH_KEY);
-    if (binding.trimmerView != null) {
-      binding.trimmerView.setOnTrimVideoListener(this);
-      binding.trimmerView.initVideoByURI(Uri.parse(path));
+    if (mBinding.trimmerView != null) {
+      mBinding.trimmerView.setOnTrimVideoListener(this);
+      mBinding.trimmerView.initVideoByURI(Uri.parse(path));
     }
   }
 
@@ -55,13 +55,13 @@ public class VideoTrimmerActivity extends AppCompatActivity implements TrimVideo
 
   @Override public void onPause() {
     super.onPause();
-    binding.trimmerView.onVideoPause();
-    binding.trimmerView.setRestoreState(true);
+    mBinding.trimmerView.onVideoPause();
+    mBinding.trimmerView.setRestoreState(true);
   }
 
   @Override protected void onDestroy() {
     super.onDestroy();
-    binding.trimmerView.destroy();
+    mBinding.trimmerView.onDestroy();
   }
 
   @Override public void onStartTrim() {
@@ -87,7 +87,7 @@ public class VideoTrimmerActivity extends AppCompatActivity implements TrimVideo
   }
 
   @Override public void onCancel() {
-    binding.trimmerView.destroy();
+    mBinding.trimmerView.onDestroy();
     finish();
   }
 

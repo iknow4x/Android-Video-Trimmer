@@ -24,6 +24,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 import com.iknow.android.R;
 import com.iknow.android.VideoTrimmerAdapter;
+import com.iknow.android.interfaces.IVideoTrimmerView;
 import com.iknow.android.interfaces.TrimVideoListener;
 import com.iknow.android.utils.TrimVideoUtil;
 import iknow.android.utils.callback.SingleCallback;
@@ -34,7 +35,8 @@ import java.util.ArrayList;
 
 import static com.iknow.android.utils.TrimVideoUtil.VIDEO_FRAMES_WIDTH;
 
-public class VideoTrimmerView extends FrameLayout {
+public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView{
+
   private static final String TAG = VideoTrimmerView.class.getSimpleName();
 
   private int mMaxWidth = VIDEO_FRAMES_WIDTH;
@@ -207,14 +209,6 @@ public class VideoTrimmerView extends FrameLayout {
 
   public void setOnTrimVideoListener(TrimVideoListener onTrimVideoListener) {
     mOnTrimVideoListener = onTrimVideoListener;
-  }
-
-  /**
-   * Cancel trim thread execut action when finish
-   */
-  public void destroy() {
-    BackgroundExecutor.cancelAll("", true);
-    UiThreadExecutor.cancelAll("");
   }
 
   private void setUpListeners() {
@@ -410,5 +404,13 @@ public class VideoTrimmerView extends FrameLayout {
     } else {
       mAnimationHandler.post(mAnimationRunnable);
     }
+  }
+
+  /**
+   * Cancel trim thread execut action when finish
+   */
+  @Override public void onDestroy() {
+    BackgroundExecutor.cancelAll("", true);
+    UiThreadExecutor.cancelAll("");
   }
 }
