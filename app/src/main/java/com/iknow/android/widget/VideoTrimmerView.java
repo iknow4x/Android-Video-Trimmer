@@ -23,7 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 import com.iknow.android.R;
-import com.iknow.android.VideoTrimmerAdapter;
+import com.iknow.android.features.trim.VideoTrimmerAdapter;
 import com.iknow.android.interfaces.IVideoTrimmerView;
 import com.iknow.android.interfaces.TrimVideoListener;
 import com.iknow.android.utils.TrimVideoUtil;
@@ -31,7 +31,6 @@ import iknow.android.utils.callback.SingleCallback;
 import iknow.android.utils.thread.BackgroundExecutor;
 import iknow.android.utils.thread.UiThreadExecutor;
 import java.io.File;
-import java.util.ArrayList;
 
 import static com.iknow.android.utils.TrimVideoUtil.VIDEO_FRAMES_WIDTH;
 

@@ -1,10 +1,12 @@
-package com.iknow.android;
+package com.iknow.android.features.select;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.view.View;
+import com.iknow.android.R;
+import com.iknow.android.features.trim.VideoTrimmerActivity;
 import com.iknow.android.databinding.VideoSelectLayoutBinding;
 import com.iknow.android.models.VideoInfo;
 import com.iknow.android.utils.TrimVideoUtil;

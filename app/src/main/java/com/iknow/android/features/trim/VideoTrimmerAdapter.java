@@ -1,4 +1,4 @@
-package com.iknow.android;
+package com.iknow.android.features.trim;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import com.iknow.android.R;
 import com.iknow.android.utils.TrimVideoUtil;
 import java.util.ArrayList;
 import java.util.List;

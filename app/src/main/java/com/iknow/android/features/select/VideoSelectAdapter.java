@@ -1,4 +1,4 @@
-package com.iknow.android;
+package com.iknow.android.features.select;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.iknow.android.R;
 import com.iknow.android.models.VideoInfo;
 import com.iknow.android.utils.TrimVideoUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;

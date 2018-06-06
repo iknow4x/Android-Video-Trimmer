@@ -1,4 +1,4 @@
-package com.iknow.android;
+package com.iknow.android.features.trim;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import com.iknow.android.R;
 import com.iknow.android.databinding.ActivityTrimmerLayoutBinding;
 import com.iknow.android.interfaces.CompressVideoListener;
 import com.iknow.android.interfaces.TrimVideoListener;
