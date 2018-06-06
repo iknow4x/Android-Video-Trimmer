@@ -25,12 +25,11 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
 
   private VideoSelectLayoutBinding mBinding;
   private VideoSelectAdapter mVideoSelectAdapter;
-  private String videoPath;
+  private String mVideoPath;
 
   @Override protected void onCreate(Bundle bundle) {
     super.onCreate(bundle);
     mBinding = DataBindingUtil.setContentView(this, R.layout.video_select_layout);
-
 
     GridLayoutManager manager = new GridLayoutManager(this, 4);
     mBinding.videoSelectRecyclerview.addItemDecoration(new SpacesItemDecoration(5));
@@ -48,7 +47,7 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
 
     mVideoSelectAdapter.setItemClickCallback(new SingleCallback<Boolean, VideoInfo>() {
       @Override public void onSingleCallback(Boolean isSelected, VideoInfo video) {
-        if (video != null) videoPath = video.getVideoPath();
+        if (video != null) mVideoPath = video.getVideoPath();
         mBinding.nextStep.setEnabled(isSelected);
         mBinding.nextStep.setTextAppearance(VideoSelectActivity.this, isSelected ? R.style.blue_text_18_style : R.style.gray_text_18_style);
       }
@@ -69,7 +68,7 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
     if (v.getId() == mBinding.mBtnBack.getId()) {
       finish();
     } else if (v.getId() == mBinding.nextStep.getId()) {
-      VideoTrimmerActivity.call(VideoSelectActivity.this, videoPath);
+      VideoTrimmerActivity.call(VideoSelectActivity.this, mVideoPath);
     }
   }
 }

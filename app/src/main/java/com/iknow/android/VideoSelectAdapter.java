@@ -29,8 +29,8 @@ import java.util.List;
  */
 public class VideoSelectAdapter extends RecyclerView.Adapter<VideoSelectAdapter.VideoViewHolder> {
 
-  private List<VideoInfo> mVideoListData = new ArrayList<>();
   private Context context;
+  private List<VideoInfo> mVideoListData = new ArrayList<>();
   private SingleCallback<Boolean, VideoInfo> mSingleCallback;
   private ArrayList<VideoInfo> videoSelect = new ArrayList<>();
   private ArrayList<ImageView> selectIconList = new ArrayList<>();
@@ -57,7 +57,7 @@ public class VideoSelectAdapter extends RecyclerView.Adapter<VideoSelectAdapter.
   }
 
   void setVideoData(List<VideoInfo> videos) {
-    mVideoListData = videos;
+    mVideoListData.addAll(videos);
     notifyDataSetChanged();
   }
 

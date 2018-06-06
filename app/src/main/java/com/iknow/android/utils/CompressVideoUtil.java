@@ -32,14 +32,6 @@ public class CompressVideoUtil {
           callback.onSuccess("Compress video successed!");
           callback.onFinish();
         }
-
-        @Override
-        public void onStart() {
-        }
-
-        @Override
-        public void onFinish() {
-        }
       });
     } catch (FFmpegCommandAlreadyRunningException e) {
       e.printStackTrace();

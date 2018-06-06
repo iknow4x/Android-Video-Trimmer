@@ -65,8 +65,6 @@ public class TrimVideoUtil {
     try {
       final String tempOutFile = outputFile;
       FFmpeg.getInstance(context).execute(command, new ExecuteBinaryResponseHandler() {
-        @Override public void onFailure(String s) {
-        }
 
         @Override public void onSuccess(String s) {
           callback.onFinishTrim(tempOutFile);
@@ -74,9 +72,6 @@ public class TrimVideoUtil {
 
         @Override public void onStart() {
           callback.onStartTrim();
-        }
-
-        @Override public void onFinish() {
         }
       });
     } catch (FFmpegCommandAlreadyRunningException e) {
@@ -137,7 +132,7 @@ public class TrimVideoUtil {
       }
     }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<List<VideoInfo>>() {
       @Override public void accept(List<VideoInfo> videoInfos) throws Exception {
-        simpleCallback.success(videoInfos);
+        if(simpleCallback != null) simpleCallback.success(videoInfos);
       }
     });
   }
