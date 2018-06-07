@@ -1,5 +1,6 @@
 package com.iknow.android.features.select;
 
+import android.Manifest;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import com.iknow.android.models.VideoInfo;
 import com.iknow.android.utils.TrimVideoUtil;
 import com.iknow.android.widget.SpacesItemDecoration;
 
+import com.tbruyelle.rxpermissions2.RxPermissions;
 import iknow.android.utils.callback.SimpleCallback;
 
 import iknow.android.utils.callback.SingleCallback;
@@ -54,12 +56,20 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
         mBinding.nextStep.setTextAppearance(VideoSelectActivity.this, isSelected ? R.style.blue_text_18_style : R.style.gray_text_18_style);
       }
     });
-    TrimVideoUtil.loadVideoFiles(this, new SimpleCallback() {
-      @SuppressWarnings("unchecked")
-      @Override public void success(Object obj) {
-          mVideoSelectAdapter.setVideoData((List<VideoInfo>) obj);
-      }
-    });
+
+    RxPermissions rxPermissions = new RxPermissions(this);
+    rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(granted -> {
+          if (granted) { // Always true pre-M
+            TrimVideoUtil.loadVideoFiles(this, new SimpleCallback() {
+              @SuppressWarnings("unchecked")
+              @Override public void success(Object obj) {
+                mVideoSelectAdapter.setVideoData((List<VideoInfo>) obj);
+              }
+            });
+          } else {
+            finish();
+          }
+        });
   }
 
   @Override protected void onDestroy() {
