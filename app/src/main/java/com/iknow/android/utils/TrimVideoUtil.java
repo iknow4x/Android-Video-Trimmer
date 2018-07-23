@@ -1,5 +1,6 @@
 package com.iknow.android.utils;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -19,7 +20,6 @@ import iknow.android.utils.callback.SimpleCallback;
 import iknow.android.utils.callback.SingleCallback;
 import iknow.android.utils.thread.BackgroundExecutor;
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -30,6 +30,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Author：J.Chou
+ * Date：  2016.08.01 2:23 PM
+ * Email： who_know_me@163.com
+ * Describe:
+ */
 public class TrimVideoUtil {
 
   private static final String TAG = TrimVideoUtil.class.getSimpleName();
@@ -50,17 +56,19 @@ public class TrimVideoUtil {
 
     String start = convertSecondsToTime(startMs / 1000);
     String duration = convertSecondsToTime((endMs - startMs) / 1000);
+    //String start = String.valueOf(startMs);
+    //String duration = String.valueOf(endMs - startMs);
 
     /** 裁剪视频ffmpeg指令说明：
-     * ffmpeg -ss START -t DURATION -i INPUT -vcodec copy -acodec copy OUTPUT
+     * ffmpeg -ss START -t DURATION -i INPUT -codec copy -avoid_negative_ts 1 OUTPUT
      -ss 开始时间，如： 00:00:20，表示从20秒开始；
      -t 时长，如： 00:00:10，表示截取10秒长的视频；
      -i 输入，后面是空格，紧跟着就是输入视频文件；
-     -vcodec copy 和 -acodec copy 表示所要使用的视频和音频的编码格式，这里指定为copy表示原样拷贝；
+     -codec copy -avoid_negative_ts 1 表示所要使用的视频和音频的编码格式，这里指定为copy表示原样拷贝；
      INPUT，输入视频文件；
      OUTPUT，输出视频文件
      */
-    String cmd = "-ss " + start + " -t " + duration + " -i " + inputFile + " -vcodec copy -acodec copy " + outputFile;
+    String cmd = "-ss " + start + " -t " + duration + " -accurate_seek" + " -i " + inputFile + " -codec copy -avoid_negative_ts 1 " + outputFile;
     String[] command = cmd.split(" ");
     try {
       final String tempOutFile = outputFile;
@@ -106,30 +114,30 @@ public class TrimVideoUtil {
     });
   }
 
-  public static void loadVideoFiles(final Context mContext, final SimpleCallback simpleCallback) {
-
-    Observable.create(new ObservableOnSubscribe<List<VideoInfo>>() {
-
-      @Override public void subscribe(ObservableEmitter<List<VideoInfo>> emitter) throws Exception {
-        List<VideoInfo> videos = new ArrayList<>();
-        ContentResolver contentResolver = mContext.getContentResolver();
-        Cursor cursor =
-            contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null, null, MediaStore.Video.Media.DATE_MODIFIED + " desc");
-        if (cursor != null) {
-          while (cursor.moveToNext()) {
-            VideoInfo videoInfo = new VideoInfo();
-            if (cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)) != 0) {
-              videoInfo.setDuration(cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)));
-              videoInfo.setVideoPath(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)));
-              videoInfo.setCreateTime(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED)));
-              videoInfo.setVideoName(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)));
-              videos.add(videoInfo);
-            }
+  @SuppressLint("CheckResult")
+  public static void loadAllVideoFiles(final Context mContext, final SimpleCallback simpleCallback) {
+    Observable.create((ObservableOnSubscribe<List<VideoInfo>>) emitter -> {
+      List<VideoInfo> videos = new ArrayList<>();
+      ContentResolver contentResolver = mContext.getContentResolver();
+      Cursor cursor = contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+          null,
+          null,
+          null,
+          MediaStore.Video.Media.DATE_MODIFIED + " desc");
+      if (cursor != null) {
+        while (cursor.moveToNext()) {
+          VideoInfo videoInfo = new VideoInfo();
+          if (cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)) != 0) {
+            videoInfo.setDuration(cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)));
+            videoInfo.setVideoPath(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)));
+            videoInfo.setCreateTime(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED)));
+            videoInfo.setVideoName(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)));
+            videos.add(videoInfo);
           }
-          cursor.close();
         }
-        emitter.onNext(videos);
+        cursor.close();
       }
+      emitter.onNext(videos);
     }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<List<VideoInfo>>() {
       @Override public void accept(List<VideoInfo> videoInfos) throws Exception {
         if(simpleCallback != null) simpleCallback.success(videoInfos);

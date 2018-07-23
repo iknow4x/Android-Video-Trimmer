@@ -21,6 +21,7 @@
 
 ### 其他
 * 视频裁剪完成，会将裁剪好的视频输出保存至应用的Android->data->包名->cache文件夹中
+* 联系方式 Email: who_know_me@163.com WeChat: 516799851
 
 ### 欢迎star、fork和issues.
 

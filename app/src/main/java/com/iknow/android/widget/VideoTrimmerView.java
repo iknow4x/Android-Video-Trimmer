@@ -34,6 +34,12 @@ import java.io.File;
 
 import static com.iknow.android.utils.TrimVideoUtil.VIDEO_FRAMES_WIDTH;
 
+/**
+ * Author：J.Chou
+ * Date：  2016.08.01 2:23 PM
+ * Email： who_know_me@163.com
+ * Describe:
+ */
 public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView{
 
   private static final String TAG = VideoTrimmerView.class.getSimpleName();
