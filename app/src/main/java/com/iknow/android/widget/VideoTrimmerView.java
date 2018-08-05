@@ -40,7 +40,7 @@ import static com.iknow.android.utils.TrimVideoUtil.VIDEO_FRAMES_WIDTH;
  * Email： who_know_me@163.com
  * Describe:
  */
-public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView{
+public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 
   private static final String TAG = VideoTrimmerView.class.getSimpleName();
 
@@ -102,6 +102,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView{
   }
 
   private void initRangeSeekBarView() {
+    if(mRangeSeekBarView != null) return;
     int rangeWidth;
     mLeftProgressPos = 0;
     if (mDuration <= TrimVideoUtil.MAX_SHOOT_DURATION) {
@@ -114,11 +115,9 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView{
       mRightProgressPos = TrimVideoUtil.MAX_SHOOT_DURATION;
     }
     mVideoThumbRecyclerView.addItemDecoration(new SpacesItemDecoration2(TrimVideoUtil.RECYCLER_VIEW_PADDING, mThumbsTotalCount));
-
     mRangeSeekBarView = new RangeSeekBarView(mContext, mLeftProgressPos, mRightProgressPos);
     mRangeSeekBarView.setSelectedMinValue(mLeftProgressPos);
     mRangeSeekBarView.setSelectedMaxValue(mRightProgressPos);
-
     mRangeSeekBarView.setStartEndTime(mLeftProgressPos, mRightProgressPos);
     mRangeSeekBarView.setMinShootTime(TrimVideoUtil.MIN_SHOOT_DURATION);
     mRangeSeekBarView.setNotifyWhileDragging(true);
