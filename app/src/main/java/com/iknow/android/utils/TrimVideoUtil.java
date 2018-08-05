@@ -9,6 +9,7 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
 import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
 import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
@@ -22,7 +23,6 @@ import iknow.android.utils.thread.BackgroundExecutor;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -68,7 +68,10 @@ public class TrimVideoUtil {
      INPUT，输入视频文件；
      OUTPUT，输出视频文件
      */
-    String cmd = "-ss " + start + " -t " + duration + " -accurate_seek" + " -i " + inputFile + " -codec copy -avoid_negative_ts 1 " + outputFile;
+    //String cmd = "-ss " + start + " -t " + duration + " -accurate_seek" + " -i " + inputFile + " -codec copy -avoid_negative_ts 1 " + outputFile;
+
+    //https://superuser.com/questions/138331/using-ffmpeg-to-cut-up-video
+    String cmd = "-ss " + start + " -i " + inputFile + " -ss " + start + " -t " + duration + " -c copy " + outputFile;
     String[] command = cmd.split(" ");
     try {
       final String tempOutFile = outputFile;
@@ -118,31 +121,33 @@ public class TrimVideoUtil {
   public static void loadAllVideoFiles(final Context mContext, final SimpleCallback simpleCallback) {
     Observable.create((ObservableOnSubscribe<List<VideoInfo>>) emitter -> {
       List<VideoInfo> videos = new ArrayList<>();
-      ContentResolver contentResolver = mContext.getContentResolver();
-      Cursor cursor = contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-          null,
-          null,
-          null,
-          MediaStore.Video.Media.DATE_MODIFIED + " desc");
-      if (cursor != null) {
-        while (cursor.moveToNext()) {
-          VideoInfo videoInfo = new VideoInfo();
-          if (cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)) != 0) {
-            videoInfo.setDuration(cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)));
-            videoInfo.setVideoPath(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)));
-            videoInfo.setCreateTime(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED)));
-            videoInfo.setVideoName(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)));
-            videos.add(videoInfo);
+      try {
+        ContentResolver contentResolver = mContext.getContentResolver();
+        Cursor cursor = contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+            null,
+            null,
+            null,
+            MediaStore.Video.Media.DATE_MODIFIED + " desc");
+        if (cursor != null) {
+          while (cursor.moveToNext()) {
+            VideoInfo videoInfo = new VideoInfo();
+            if (cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)) != 0) {
+              videoInfo.setDuration(cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)));
+              videoInfo.setVideoPath(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)));
+              videoInfo.setCreateTime(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED)));
+              videoInfo.setVideoName(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)));
+              videos.add(videoInfo);
+            }
           }
+          cursor.close();
         }
-        cursor.close();
+        emitter.onNext(videos);
+      } catch (Throwable t) {
+        emitter.onError(t);
       }
-      emitter.onNext(videos);
-    }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<List<VideoInfo>>() {
-      @Override public void accept(List<VideoInfo> videoInfos) throws Exception {
-        if(simpleCallback != null) simpleCallback.success(videoInfos);
-      }
-    });
+    }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(videoInfos -> {
+      if (simpleCallback != null) simpleCallback.success(videoInfos);
+    }, throwable -> Log.e(TAG, throwable.getMessage()));
   }
 
   public static String getVideoFilePath(String url) {
