@@ -139,11 +139,13 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
     TrimVideoUtil.backgroundShootVideoThumb(context, videoUri, totalThumbsCount, startPosition, endPosition,
         new SingleCallback<Bitmap, Integer>() {
           @Override public void onSingleCallback(final Bitmap bitmap, final Integer interval) {
-            UiThreadExecutor.runTask("", new Runnable() {
-              @Override public void run() {
-                mVideoThumbAdapter.addBitmaps(bitmap);
-              }
-            }, 0L);
+            if (bitmap != null) {
+              UiThreadExecutor.runTask("", new Runnable() {
+                @Override public void run() {
+                  mVideoThumbAdapter.addBitmaps(bitmap);
+                }
+              }, 0L);
+            }
           }
         });
   }
