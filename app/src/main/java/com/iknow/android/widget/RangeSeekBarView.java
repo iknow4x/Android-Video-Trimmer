@@ -17,7 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import com.iknow.android.R;
-import com.iknow.android.utils.TrimVideoUtil;
+import com.iknow.android.features.trim.VideoTrimmerUtil;
 import iknow.android.utils.DateUtil;
 import iknow.android.utils.UnitConverter;
 import java.text.DecimalFormat;
@@ -30,7 +30,7 @@ public class RangeSeekBarView extends View {
   private static final int paddingTop = UnitConverter.dpToPx(10);
   private int mActivePointerId = INVALID_POINTER_ID;
 
-  private long mMinShootTime = TrimVideoUtil.MIN_SHOOT_DURATION;
+  private long mMinShootTime = VideoTrimmerUtil.MIN_SHOOT_DURATION;
   private double absoluteMinValuePrim, absoluteMaxValuePrim;
   private double normalizedMinValue = 0d;//点坐标占总长度的比例值，范围从0-1
   private double normalizedMaxValue = 1d;//点坐标占总长度的比例值，范围从0-1

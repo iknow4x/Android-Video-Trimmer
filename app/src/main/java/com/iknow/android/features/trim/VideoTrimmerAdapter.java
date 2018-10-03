@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import com.iknow.android.R;
-import com.iknow.android.utils.TrimVideoUtil;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +54,7 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
       super(itemView);
       thumbImageView = itemView.findViewById(R.id.thumb);
       LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) thumbImageView.getLayoutParams();
-      layoutParams.width = TrimVideoUtil.VIDEO_FRAMES_WIDTH / TrimVideoUtil.MAX_COUNT_RANGE;
+      layoutParams.width = VideoTrimmerUtil.VIDEO_FRAMES_WIDTH / VideoTrimmerUtil.MAX_COUNT_RANGE;
       thumbImageView.setLayoutParams(layoutParams);
     }
   }

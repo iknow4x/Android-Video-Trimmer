@@ -11,7 +11,7 @@ import com.iknow.android.R;
 import com.iknow.android.features.trim.VideoTrimmerActivity;
 import com.iknow.android.databinding.VideoSelectLayoutBinding;
 import com.iknow.android.models.VideoInfo;
-import com.iknow.android.utils.TrimVideoUtil;
+import com.iknow.android.features.trim.VideoTrimmerUtil;
 import com.iknow.android.widget.SpacesItemDecoration;
 
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -62,7 +62,7 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
     RxPermissions rxPermissions = new RxPermissions(this);
     rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(granted -> {
           if (granted) { // Always true pre-M
-            TrimVideoUtil.loadAllVideoFiles(this, new SimpleCallback() {
+            VideoTrimmerUtil.loadAllVideoFiles(this, new SimpleCallback() {
               @SuppressWarnings("unchecked")
               @Override public void success(Object obj) {
                 mVideoSelectAdapter.setVideoData((List<VideoInfo>) obj);

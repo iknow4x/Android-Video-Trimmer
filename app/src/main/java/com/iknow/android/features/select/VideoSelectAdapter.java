@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.iknow.android.R;
 import com.iknow.android.models.VideoInfo;
-import com.iknow.android.utils.TrimVideoUtil;
+import com.iknow.android.features.trim.VideoTrimmerUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ public class VideoSelectAdapter extends RecyclerView.Adapter<VideoSelectAdapter.
 
     VideoInfo video = mVideoListData.get(position);
     holder.durationTv.setText(DateUtil.convertSecondsToTime(video.getDuration() / 1000));
-    ImageLoader.getInstance().displayImage(TrimVideoUtil.getVideoFilePath(video.getVideoPath()), holder.videoCover);
+    ImageLoader.getInstance().displayImage(VideoTrimmerUtil.getVideoFilePath(video.getVideoPath()), holder.videoCover);
   }
 
   @Override public int getItemCount() {

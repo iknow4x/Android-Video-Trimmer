@@ -1,4 +1,4 @@
-package com.iknow.android.utils;
+package com.iknow.android.features.trim;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
@@ -36,9 +36,9 @@ import java.util.Locale;
  * Email： who_know_me@163.com
  * Describe:
  */
-public class TrimVideoUtil {
+public class VideoTrimmerUtil {
 
-  private static final String TAG = TrimVideoUtil.class.getSimpleName();
+  private static final String TAG = VideoTrimmerUtil.class.getSimpleName();
   public static final long MIN_SHOOT_DURATION = 3000L;// 最小剪辑时间3s
   public static final int VIDEO_MAX_TIME = 10;// 10秒
   public static final long MAX_SHOOT_DURATION = VIDEO_MAX_TIME * 1000L;//视频最多剪切多长时间10s
