@@ -2,7 +2,7 @@ package com.iknow.android.interfaces;
 
 import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
 
-public class CompressVideoListener extends ExecuteBinaryResponseHandler {
+public class VideoCompressListener extends ExecuteBinaryResponseHandler {
 
     @Override public void onSuccess(String message) {
     }

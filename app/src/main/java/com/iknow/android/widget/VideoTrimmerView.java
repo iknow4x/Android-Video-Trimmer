@@ -25,7 +25,7 @@ import android.widget.VideoView;
 import com.iknow.android.R;
 import com.iknow.android.features.trim.VideoTrimmerAdapter;
 import com.iknow.android.interfaces.IVideoTrimmerView;
-import com.iknow.android.interfaces.TrimVideoListener;
+import com.iknow.android.interfaces.VideoTrimListener;
 import com.iknow.android.features.trim.VideoTrimmerUtil;
 import iknow.android.utils.callback.SingleCallback;
 import iknow.android.utils.thread.BackgroundExecutor;
@@ -58,7 +58,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
   private float averagePxMs;//每px所占用的ms毫秒
   private Uri mSourceUri;
   private String mFinalPath;
-  private TrimVideoListener mOnTrimVideoListener;
+  private VideoTrimListener mOnTrimVideoListener;
   private int mDuration = 0;
   private VideoTrimmerAdapter mVideoThumbAdapter;
   private boolean isFromRestore = false;
@@ -213,7 +213,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
     }
   }
 
-  public void setOnTrimVideoListener(TrimVideoListener onTrimVideoListener) {
+  public void setOnTrimVideoListener(VideoTrimListener onTrimVideoListener) {
     mOnTrimVideoListener = onTrimVideoListener;
   }
 

@@ -10,8 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import com.iknow.android.R;
 import com.iknow.android.databinding.ActivityTrimmerLayoutBinding;
-import com.iknow.android.interfaces.CompressVideoListener;
-import com.iknow.android.interfaces.TrimVideoListener;
+import com.iknow.android.interfaces.VideoCompressListener;
+import com.iknow.android.interfaces.VideoTrimListener;
 import com.iknow.android.features.compress.VideoCompressor;
 
 /**
@@ -20,7 +20,7 @@ import com.iknow.android.features.compress.VideoCompressor;
  * Email： who_know_me@163.com
  * Describe:
  */
-public class VideoTrimmerActivity extends AppCompatActivity implements TrimVideoListener {
+public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrimListener {
 
   private static final String TAG = "jason";
   private static final String VIDEO_PATH_KEY = "video-file-path";
@@ -73,7 +73,7 @@ public class VideoTrimmerActivity extends AppCompatActivity implements TrimVideo
     //TODO: please handle your trimmed video url here!!!
     String out = "/storage/emulated/0/Android/data/com.iknow.android/cache/compress.mp4";
     buildDialog(getResources().getString(R.string.compressing)).show();
-    VideoCompressor.compress(this, in, out, new CompressVideoListener() {
+    VideoCompressor.compress(this, in, out, new VideoCompressListener() {
       @Override public void onSuccess(String message) {
       }
 

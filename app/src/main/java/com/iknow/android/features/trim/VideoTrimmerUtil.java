@@ -13,7 +13,7 @@ import android.util.Log;
 import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
 import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
 import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
-import com.iknow.android.interfaces.TrimVideoListener;
+import com.iknow.android.interfaces.VideoTrimListener;
 import com.iknow.android.models.VideoInfo;
 import iknow.android.utils.DeviceUtil;
 import iknow.android.utils.UnitConverter;
@@ -49,7 +49,7 @@ public class VideoTrimmerUtil {
   private static final int THUMB_WIDTH = (SCREEN_WIDTH_FULL - RECYCLER_VIEW_PADDING * 2) / VIDEO_MAX_TIME;
   private static final int THUMB_HEIGHT = UnitConverter.dpToPx(50);
 
-  public static void trim(Context context, String inputFile, String outputFile, long startMs, long endMs, final TrimVideoListener callback) {
+  public static void trim(Context context, String inputFile, String outputFile, long startMs, long endMs, final VideoTrimListener callback) {
     final String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
     final String outputName = "trimmedVideo_" + timeStamp + ".mp4";
     outputFile = outputFile + "/" + outputName;
