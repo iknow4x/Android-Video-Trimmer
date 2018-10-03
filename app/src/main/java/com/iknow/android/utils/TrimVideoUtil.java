@@ -68,10 +68,14 @@ public class TrimVideoUtil {
      INPUT，输入视频文件；
      OUTPUT，输出视频文件
      */
-    //String cmd = "-ss " + start + " -t " + duration + " -accurate_seek" + " -i " + inputFile + " -codec copy -avoid_negative_ts 1 " + outputFile;
-
+    //TODO: Here are some instructions
+    //https://trac.ffmpeg.org/wiki/Seeking
     //https://superuser.com/questions/138331/using-ffmpeg-to-cut-up-video
-    String cmd = "-ss " + start + " -i " + inputFile + " -ss " + start + " -t " + duration + " -c copy " + outputFile;
+
+    //1. String cmd = "-ss " + start + " -t " + duration + " -accurate_seek" + " -i " + inputFile + " -codec copy -avoid_negative_ts 1 " + outputFile;
+    //2. String cmd = "-ss " + start + " -i " + inputFile + " -ss " + start + " -t " + duration + " -vcodec copy " + outputFile;
+    //3. {"ffmpeg", "-ss", "" + startTime, "-y", "-i", inputFile, "-t", "" + induration, "-vcodec", "mpeg4", "-b:v", "2097152", "-b:a", "48000", "-ac", "2", "-ar", "22050", outputFile}
+    String cmd = "-ss " + start + " -y " + "-i " + inputFile + " -t " + duration + " -vcodec " + "mpeg4 " + "-b:v " + "2097152 " + "-b:a " + "48000 " + "-ac " + "2 " + "-ar " + "22050 "+ outputFile;
     String[] command = cmd.split(" ");
     try {
       final String tempOutFile = outputFile;
