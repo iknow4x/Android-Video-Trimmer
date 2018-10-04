@@ -31,10 +31,13 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
   private VideoSelectLayoutBinding mBinding;
   private VideoSelectAdapter mVideoSelectAdapter;
   private String mVideoPath;
+  private VideoLoadManager mVideoLoadManager;
 
   @SuppressLint("CheckResult")
   @Override protected void onCreate(Bundle bundle) {
     super.onCreate(bundle);
+    mVideoLoadManager = new VideoLoadManager();
+    mVideoLoadManager.setLoader(new VideoCursorLoader());
     mBinding = DataBindingUtil.setContentView(this, R.layout.video_select_layout);
 
     GridLayoutManager manager = new GridLayoutManager(this, 4);
@@ -62,7 +65,7 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
     RxPermissions rxPermissions = new RxPermissions(this);
     rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(granted -> {
           if (granted) { // Always true pre-M
-            VideoTrimmerUtil.loadAllVideoFiles(this, new SimpleCallback() {
+            mVideoLoadManager.load(this, new SimpleCallback() {
               @SuppressWarnings("unchecked")
               @Override public void success(Object obj) {
                 mVideoSelectAdapter.setVideoData((List<VideoInfo>) obj);

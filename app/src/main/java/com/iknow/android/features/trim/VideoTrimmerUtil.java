@@ -1,33 +1,20 @@
 package com.iknow.android.features.trim;
 
-import android.annotation.SuppressLint;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
 import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
 import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
 import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegCommandAlreadyRunningException;
 import com.iknow.android.interfaces.VideoTrimListener;
-import com.iknow.android.models.VideoInfo;
 import iknow.android.utils.DeviceUtil;
 import iknow.android.utils.UnitConverter;
-import iknow.android.utils.callback.SimpleCallback;
 import iknow.android.utils.callback.SingleCallback;
 import iknow.android.utils.thread.BackgroundExecutor;
-import io.reactivex.Observable;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -119,39 +106,6 @@ public class VideoTrimmerUtil {
         }
       }
     });
-  }
-
-  @SuppressLint("CheckResult")
-  public static void loadAllVideoFiles(final Context mContext, final SimpleCallback simpleCallback) {
-    Observable.create((ObservableOnSubscribe<List<VideoInfo>>) emitter -> {
-      List<VideoInfo> videos = new ArrayList<>();
-      try {
-        ContentResolver contentResolver = mContext.getContentResolver();
-        Cursor cursor = contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-            null,
-            null,
-            null,
-            MediaStore.Video.Media.DATE_MODIFIED + " desc");
-        if (cursor != null) {
-          while (cursor.moveToNext()) {
-            VideoInfo videoInfo = new VideoInfo();
-            if (cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)) != 0) {
-              videoInfo.setDuration(cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)));
-              videoInfo.setVideoPath(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)));
-              videoInfo.setCreateTime(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED)));
-              videoInfo.setVideoName(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)));
-              videos.add(videoInfo);
-            }
-          }
-          cursor.close();
-        }
-        emitter.onNext(videos);
-      } catch (Throwable t) {
-        emitter.onError(t);
-      }
-    }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(videoInfos -> {
-      if (simpleCallback != null) simpleCallback.success(videoInfos);
-    }, throwable -> Log.e(TAG, throwable.getMessage()));
   }
 
   public static String getVideoFilePath(String url) {
