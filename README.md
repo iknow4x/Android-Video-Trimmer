@@ -7,9 +7,9 @@
 ### 使用到相关技术
 * FFmpeg实现裁剪视频
 * FFmpeg实现裁剪之后的视频压缩
-* ContentResolver获取所有视频资源
+* 采用Loader或者ContentProvider获取所有视频资源
 * 采用VideoView播放视频
-* 使用水平滚动的ListView显示视频的帧图片
+* 采用RecycleView显示视频的帧图片
 * 通过MediaMetadataRetriever获取视频帧的Bitmap
 * View的自定义
 
