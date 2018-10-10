@@ -136,7 +136,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
   }
 
   private void startShootVideoThumbs(final Context context, final Uri videoUri, int totalThumbsCount, long startPosition, long endPosition) {
-    VideoTrimmerUtil.backgroundShootVideoThumb(context, videoUri, totalThumbsCount, startPosition, endPosition,
+    VideoTrimmerUtil.shootVideoThumbInBackground(context, videoUri, totalThumbsCount, startPosition, endPosition,
         new SingleCallback<Bitmap, Integer>() {
           @Override public void onSingleCallback(final Bitmap bitmap, final Integer interval) {
             if (bitmap != null) {
