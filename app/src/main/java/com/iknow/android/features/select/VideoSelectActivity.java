@@ -11,7 +11,6 @@ import com.iknow.android.R;
 import com.iknow.android.features.trim.VideoTrimmerActivity;
 import com.iknow.android.databinding.VideoSelectLayoutBinding;
 import com.iknow.android.models.VideoInfo;
-import com.iknow.android.features.trim.VideoTrimmerUtil;
 import com.iknow.android.widget.SpacesItemDecoration;
 
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -37,7 +36,7 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
   @Override protected void onCreate(Bundle bundle) {
     super.onCreate(bundle);
     mVideoLoadManager = new VideoLoadManager();
-    mVideoLoadManager.setLoader(new VideoCursorLoader());
+    mVideoLoadManager.setLoader(new VideoRxJavaLoader());
     mBinding = DataBindingUtil.setContentView(this, R.layout.video_select_layout);
 
     GridLayoutManager manager = new GridLayoutManager(this, 4);
