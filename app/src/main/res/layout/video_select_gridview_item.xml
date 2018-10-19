@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/video_view"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
 
     <ImageView
         android:id="@+id/cover_image"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@null"
         android:scaleType="fitXY" />
 
     <RelativeLayout
@@ -23,6 +26,7 @@
             android:layout_height="20dip"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
+            android:contentDescription="@null"
             android:src="@drawable/icon_video_unselected" />
     </RelativeLayout>
 
@@ -34,20 +38,14 @@
         android:paddingRight="5dp"
         android:layout_gravity="bottom">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:src="@drawable/icon_video"/>
-
         <TextView
             android:id="@+id/video_duration"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
             android:layout_alignParentRight="true"
-            android:textSize="9dp"
+            android:textSize="12sp"
             android:textColor="#ffffff"
-            android:text="12:10"/>
+            tools:text="12:10"/>
     </RelativeLayout>
 </FrameLayout>

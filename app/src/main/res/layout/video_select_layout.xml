@@ -55,19 +55,14 @@
                 android:visibility="visible"/>
         </RelativeLayout>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/video_select_recyclerview"
+        <GridView
+            android:id="@+id/video_gridview"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="@android:color/white"
-            android:gravity="center"
-            android:horizontalSpacing="2dip"
-            android:listSelector="@android:color/transparent"
             android:numColumns="3"
-            android:padding="2dip"
-            android:stretchMode="columnWidth"
-            android:verticalSpacing="2dip"/>
+            android:horizontalSpacing="2dp"
+            android:verticalSpacing="2dp" />
 
         <View
             android:layout_width="match_parent"

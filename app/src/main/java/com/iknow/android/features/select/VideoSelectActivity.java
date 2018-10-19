@@ -2,22 +2,18 @@ package com.iknow.android.features.select;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.view.View;
 import com.iknow.android.R;
-import com.iknow.android.features.trim.VideoTrimmerActivity;
 import com.iknow.android.databinding.VideoSelectLayoutBinding;
-import com.iknow.android.models.VideoInfo;
-import com.iknow.android.widget.SpacesItemDecoration;
-
+import com.iknow.android.features.trim.VideoTrimmerActivity;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import iknow.android.utils.callback.SimpleCallback;
-
 import iknow.android.utils.callback.SingleCallback;
-import java.util.List;
 
 /**
  * Author：J.Chou
@@ -36,16 +32,8 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
   @Override protected void onCreate(Bundle bundle) {
     super.onCreate(bundle);
     mVideoLoadManager = new VideoLoadManager();
-    mVideoLoadManager.setLoader(new VideoRxJavaLoader());
+    mVideoLoadManager.setLoader(new VideoCursorLoader());
     mBinding = DataBindingUtil.setContentView(this, R.layout.video_select_layout);
-
-    GridLayoutManager manager = new GridLayoutManager(this, 4);
-    mBinding.videoSelectRecyclerview.addItemDecoration(new SpacesItemDecoration(5));
-    mBinding.videoSelectRecyclerview.setHasFixedSize(true);
-
-    mBinding.videoSelectRecyclerview.setAdapter(mVideoSelectAdapter = new VideoSelectAdapter(this));
-    mBinding.videoSelectRecyclerview.setLayoutManager(manager);
-
     mBinding.videoShoot.setOnClickListener(this);
     mBinding.mBtnBack.setOnClickListener(this);
     mBinding.nextStep.setOnClickListener(this);
@@ -53,21 +41,26 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
     mBinding.nextStep.setTextAppearance(this, R.style.gray_text_18_style);
     mBinding.nextStep.setEnabled(false);
 
-    mVideoSelectAdapter.setItemClickCallback(new SingleCallback<Boolean, VideoInfo>() {
-      @Override public void onSingleCallback(Boolean isSelected, VideoInfo video) {
-        if (video != null) mVideoPath = video.getVideoPath();
-        mBinding.nextStep.setEnabled(isSelected);
-        mBinding.nextStep.setTextAppearance(VideoSelectActivity.this, isSelected ? R.style.blue_text_18_style : R.style.gray_text_18_style);
-      }
-    });
-
     RxPermissions rxPermissions = new RxPermissions(this);
     rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(granted -> {
           if (granted) { // Always true pre-M
             mVideoLoadManager.load(this, new SimpleCallback() {
               @SuppressWarnings("unchecked")
               @Override public void success(Object obj) {
-                mVideoSelectAdapter.setVideoData((List<VideoInfo>) obj);
+                if (mVideoSelectAdapter == null) {
+                  mVideoSelectAdapter = new VideoSelectAdapter(VideoSelectActivity.this, (Cursor)obj);
+                  mVideoSelectAdapter.setItemClickCallback(new SingleCallback<Boolean, Cursor>() {
+                    @Override public void onSingleCallback(Boolean isSelected, Cursor cursor) {
+                      if (cursor != null) mVideoPath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
+                      mBinding.nextStep.setEnabled(isSelected);
+                      mBinding.nextStep.setTextAppearance(VideoSelectActivity.this, isSelected ? R.style.blue_text_18_style : R.style.gray_text_18_style);
+                    }
+                  });
+                }
+                if (mBinding.videoGridview.getAdapter() == null) {
+                  mBinding.videoGridview.setAdapter(mVideoSelectAdapter);
+                }
+                mVideoSelectAdapter.notifyDataSetChanged();
               }
             });
           } else {

@@ -10,10 +10,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import com.iknow.android.models.VideoInfo;
 import iknow.android.utils.callback.SimpleCallback;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * author : J.Chou
@@ -47,22 +44,8 @@ public class VideoCursorLoader implements LoaderManager.LoaderCallbacks<Cursor>,
   }
 
   @Override public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
-    List<VideoInfo> videos = new ArrayList<>();
-    if (cursor != null) {
-      while (cursor.moveToNext()) {
-        VideoInfo videoInfo = new VideoInfo();
-        if (cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)) != 0) {
-          videoInfo.setDuration(cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DURATION)));
-          videoInfo.setVideoPath(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)));
-          videoInfo.setCreateTime(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED)));
-          videoInfo.setVideoName(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME)));
-          videos.add(videoInfo);
-        }
-      }
-      cursor.close();
-    }
     if (mSimpleCallback != null) {
-      mSimpleCallback.success(videos);
+      mSimpleCallback.success(cursor);
     }
   }
 
