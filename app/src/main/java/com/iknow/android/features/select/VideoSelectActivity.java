@@ -5,8 +5,8 @@ import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import com.iknow.android.R;
 import com.iknow.android.databinding.VideoSelectLayoutBinding;
@@ -49,9 +49,9 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
               @Override public void success(Object obj) {
                 if (mVideoSelectAdapter == null) {
                   mVideoSelectAdapter = new VideoSelectAdapter(VideoSelectActivity.this, (Cursor)obj);
-                  mVideoSelectAdapter.setItemClickCallback(new SingleCallback<Boolean, Cursor>() {
-                    @Override public void onSingleCallback(Boolean isSelected, Cursor cursor) {
-                      if (cursor != null) mVideoPath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
+                  mVideoSelectAdapter.setItemClickCallback(new SingleCallback<Boolean, String>() {
+                    @Override public void onSingleCallback(Boolean isSelected, String videoPath) {
+                      if (!TextUtils.isEmpty(videoPath)) mVideoPath = videoPath;
                       mBinding.nextStep.setEnabled(isSelected);
                       mBinding.nextStep.setTextAppearance(VideoSelectActivity.this, isSelected ? R.style.blue_text_18_style : R.style.gray_text_18_style);
                     }

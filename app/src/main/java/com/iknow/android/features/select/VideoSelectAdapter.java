@@ -34,8 +34,8 @@ public class VideoSelectAdapter extends CursorAdapter {
   private int videoCoverSize = DeviceUtil.getDeviceWidth() / 3;
   private Context context;
   private List<VideoInfo> mVideoListData = new ArrayList<>();
-  private SingleCallback<Boolean, Cursor> mSingleCallback;
-  private ArrayList<Cursor> videoSelected = new ArrayList<>();
+  private SingleCallback<Boolean, String> mSingleCallback;
+  private ArrayList<String> videoSelected = new ArrayList<>();
   private ArrayList<ImageView> selectIconList = new ArrayList<>();
   private boolean isSelected = false;
   private MediaMetadataRetriever mMetadataRetriever;
@@ -49,7 +49,7 @@ public class VideoSelectAdapter extends CursorAdapter {
   @Override public View newView(Context context, Cursor cursor, ViewGroup parent) {
     final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
     View itemView = inflater.inflate(R.layout.video_select_gridview_item, null);
-    VideoViewHolder holder = new VideoViewHolder();
+    VideoGridViewHolder holder = new VideoGridViewHolder();
     holder.videoItemView = itemView.findViewById(R.id.video_view);
     holder.videoCover = itemView.findViewById(R.id.cover_image);
     holder.durationTv = itemView.findViewById(R.id.video_duration);
@@ -59,8 +59,8 @@ public class VideoSelectAdapter extends CursorAdapter {
     return itemView;
   }
 
-  @Override public void bindView(View view, Context context, Cursor cursor) {
-    final VideoViewHolder holder = (VideoViewHolder) view.getTag();
+  @Override public void bindView(View view, Context context, final Cursor cursor) {
+    final VideoGridViewHolder holder = (VideoGridViewHolder) view.getTag();
     final String path = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
     if (TextUtils.isEmpty(path) || !new File(path).exists()) {
       return;
@@ -84,33 +84,34 @@ public class VideoSelectAdapter extends CursorAdapter {
     params.width = videoCoverSize;
     params.height = videoCoverSize;
     holder.videoCover.setLayoutParams(params);
+    Glide.with(context)
+        .load(getVideoUri(cursor))
+        .crossFade()
+        .into(holder.videoCover);
+
     holder.videoSelectPanel.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
         if (videoSelected.size() > 0) {
-          if (cursor.equals(videoSelected.get(0))) {
+          if (path.equals(videoSelected.get(0))) {
             holder.selectIcon.setImageResource(R.drawable.icon_video_unselected);
             clearAll();
             isSelected = false;
           } else {
             selectIconList.get(0).setImageResource(R.drawable.icon_video_unselected);
             clearAll();
+            addData(path, holder.selectIcon);
             holder.selectIcon.setImageResource(R.drawable.icon_video_selected);
             isSelected = true;
           }
         } else {
           clearAll();
-          addData(cursor);
+          addData(path, holder.selectIcon);
           holder.selectIcon.setImageResource(R.drawable.icon_video_selected);
           isSelected = true;
         }
-        mSingleCallback.onSingleCallback(isSelected, cursor);
+        mSingleCallback.onSingleCallback(isSelected, path);
       }
     });
-
-    Glide.with(context)
-        .load(getVideoUri(cursor))
-        .crossFade()
-        .into(holder.videoCover);
   }
 
   @Override
@@ -123,23 +124,23 @@ public class VideoSelectAdapter extends CursorAdapter {
     return Uri.withAppendedPath(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id);
   }
 
-  void setItemClickCallback(final SingleCallback<Boolean, Cursor> singleCallback) {
+  void setItemClickCallback(final SingleCallback<Boolean, String> singleCallback) {
     this.mSingleCallback = singleCallback;
   }
 
-  class VideoViewHolder {
-    ImageView videoCover, selectIcon;
-    View videoItemView, videoSelectPanel;
-    TextView durationTv;
-  }
-
-  private void addData(Cursor cursor) {
-    videoSelected.add(cursor);
-    //selectIconList.add(selectIcon);
+  private void addData(String videoPath, ImageView imageView) {
+    videoSelected.add(videoPath);
+    selectIconList.add(imageView);
   }
 
   private void clearAll() {
     videoSelected.clear();
     selectIconList.clear();
+  }
+
+  class VideoGridViewHolder {
+    ImageView videoCover, selectIcon;
+    View videoItemView, videoSelectPanel;
+    TextView durationTv;
   }
 }
