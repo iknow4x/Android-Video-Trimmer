@@ -56,6 +56,8 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
                       mBinding.nextStep.setTextAppearance(VideoSelectActivity.this, isSelected ? R.style.blue_text_18_style : R.style.gray_text_18_style);
                     }
                   });
+                } else {
+                  mVideoSelectAdapter.swapCursor((Cursor)obj);
                 }
                 if (mBinding.videoGridview.getAdapter() == null) {
                   mBinding.videoGridview.setAdapter(mVideoSelectAdapter);

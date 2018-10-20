@@ -47,7 +47,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
   private int mMaxWidth = VIDEO_FRAMES_WIDTH;
   private Context mContext;
   private RelativeLayout mLinearVideo;
-  private VideoView mVideoView;
+  private ZVideoView mVideoView;
   private ImageView mPlayView;
   private RecyclerView mVideoThumbRecyclerView;
   private RangeSeekBarView mRangeSeekBarView;
@@ -130,7 +130,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 
   public void initVideoByURI(final Uri videoURI) {
     mSourceUri = videoURI;
-    mVideoView.setVideoURI(mSourceUri);
+    mVideoView.setVideoURI(videoURI);
     mVideoView.requestFocus();
     mVideoShootTipTv.setText(String.format(mContext.getResources().getString(R.string.video_shoot_tip), VideoTrimmerUtil.VIDEO_MAX_TIME));
   }
@@ -158,16 +158,18 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
     ViewGroup.LayoutParams lp = mVideoView.getLayoutParams();
     int videoWidth = mp.getVideoWidth();
     int videoHeight = mp.getVideoHeight();
+
     float videoProportion = (float) videoWidth / (float) videoHeight;
     int screenWidth = mLinearVideo.getWidth();
     int screenHeight = mLinearVideo.getHeight();
 
     if (videoHeight > videoWidth) {
       lp.width = screenWidth;
-      lp.height = (int) ((float) screenWidth / videoProportion);
-    } else {
-      lp.width = (int) (videoProportion * (float) screenHeight);
       lp.height = screenHeight;
+    } else {
+      lp.width = screenWidth;
+      float r = videoHeight / (float) videoWidth;
+      lp.height = (int) (lp.width * r);
     }
     mVideoView.setLayoutParams(lp);
     mDuration = mVideoView.getDuration();
@@ -230,6 +232,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
     });
     mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
       @Override public void onPrepared(MediaPlayer mp) {
+        mp.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
         videoPrepared(mp);
       }
     });

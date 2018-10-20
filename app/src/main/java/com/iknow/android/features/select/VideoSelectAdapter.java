@@ -15,13 +15,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.iknow.android.R;
-import com.iknow.android.models.VideoInfo;
 import iknow.android.utils.DateUtil;
 import iknow.android.utils.DeviceUtil;
 import iknow.android.utils.callback.SingleCallback;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Author：J.Chou
@@ -32,17 +30,14 @@ import java.util.List;
 public class VideoSelectAdapter extends CursorAdapter {
 
   private int videoCoverSize = DeviceUtil.getDeviceWidth() / 3;
-  private Context context;
-  private List<VideoInfo> mVideoListData = new ArrayList<>();
+  private ArrayList<String> mVideoSelected = new ArrayList<>();
+  private ArrayList<ImageView> mSelectIconList = new ArrayList<>();
   private SingleCallback<Boolean, String> mSingleCallback;
-  private ArrayList<String> videoSelected = new ArrayList<>();
-  private ArrayList<ImageView> selectIconList = new ArrayList<>();
-  private boolean isSelected = false;
   private MediaMetadataRetriever mMetadataRetriever;
+  private boolean isSelected = false;
 
   VideoSelectAdapter(Context context, Cursor c) {
     super(context, c);
-    this.context = context;
     mMetadataRetriever = new MediaMetadataRetriever();
   }
 
@@ -67,19 +62,14 @@ public class VideoSelectAdapter extends CursorAdapter {
     }
     try {
       mMetadataRetriever.setDataSource(path);
-    } catch (Exception e) {
+    } catch (Throwable e) {
       e.printStackTrace();
-      holder.videoSelectPanel.setOnClickListener(null);
       return;
     }
+    final String duration = mMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+    if (TextUtils.isEmpty(duration)) return;
 
-    String duration = mMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-    if (TextUtils.isEmpty(duration) || "null".equals(duration)) {
-      return;
-    }
-    int dur = Integer.parseInt(duration);
-    holder.durationTv.setText(DateUtil.convertSecondsToTime(dur / 1000));
-
+    holder.durationTv.setText(DateUtil.convertSecondsToTime(Integer.parseInt(duration) / 1000));
     FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) holder.videoCover.getLayoutParams();
     params.width = videoCoverSize;
     params.height = videoCoverSize;
@@ -88,16 +78,19 @@ public class VideoSelectAdapter extends CursorAdapter {
         .load(getVideoUri(cursor))
         .crossFade()
         .into(holder.videoCover);
-
+    if(mVideoSelected.size() > 0)
+      holder.selectIcon.setImageResource(path.equals(mVideoSelected.get(0)) ? R.drawable.icon_video_selected : R.drawable.icon_video_unselected);
+    else
+      holder.selectIcon.setImageResource(R.drawable.icon_video_unselected);
     holder.videoSelectPanel.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
-        if (videoSelected.size() > 0) {
-          if (path.equals(videoSelected.get(0))) {
+        if (mVideoSelected.size() > 0) {
+          if (path.equals(mVideoSelected.get(0))) {
             holder.selectIcon.setImageResource(R.drawable.icon_video_unselected);
             clearAll();
             isSelected = false;
           } else {
-            selectIconList.get(0).setImageResource(R.drawable.icon_video_unselected);
+            mSelectIconList.get(0).setImageResource(R.drawable.icon_video_unselected);
             clearAll();
             addData(path, holder.selectIcon);
             holder.selectIcon.setImageResource(R.drawable.icon_video_selected);
@@ -129,16 +122,16 @@ public class VideoSelectAdapter extends CursorAdapter {
   }
 
   private void addData(String videoPath, ImageView imageView) {
-    videoSelected.add(videoPath);
-    selectIconList.add(imageView);
+    mVideoSelected.add(videoPath);
+    mSelectIconList.add(imageView);
   }
 
   private void clearAll() {
-    videoSelected.clear();
-    selectIconList.clear();
+    mVideoSelected.clear();
+    mSelectIconList.clear();
   }
 
-  class VideoGridViewHolder {
+  private static class VideoGridViewHolder {
     ImageView videoCover, selectIcon;
     View videoItemView, videoSelectPanel;
     TextView durationTv;

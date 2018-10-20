@@ -15,7 +15,7 @@
       android:gravity="center"
       >
 
-    <VideoView
+    <com.iknow.android.widget.ZVideoView
         android:id="@+id/video_loader"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

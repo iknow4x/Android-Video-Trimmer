@@ -44,7 +44,7 @@ public class VideoCursorLoader implements LoaderManager.LoaderCallbacks<Cursor>,
   }
 
   @Override public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
-    if (mSimpleCallback != null) {
+    if (mSimpleCallback != null && cursor != null) {
       mSimpleCallback.success(cursor);
     }
   }
