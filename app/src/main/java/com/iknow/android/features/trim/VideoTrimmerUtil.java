@@ -93,6 +93,7 @@ public class VideoTrimmerUtil {
           for (long i = 0; i < totalThumbsCount; ++i) {
             long frameTime = startPosition + interval * i;
             Bitmap bitmap = mediaMetadataRetriever.getFrameAtTime(frameTime * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+            if(bitmap == null) continue;
             try {
               bitmap = Bitmap.createScaledBitmap(bitmap, THUMB_WIDTH, THUMB_HEIGHT, false);
             } catch (final Throwable t) {
