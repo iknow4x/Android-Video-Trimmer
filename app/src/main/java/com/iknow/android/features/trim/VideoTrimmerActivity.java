@@ -10,11 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import com.iknow.android.R;
 import com.iknow.android.databinding.ActivityTrimmerLayoutBinding;
-import com.iknow.android.interfaces.VideoCompressListener;
 import com.iknow.android.interfaces.VideoTrimListener;
-import com.iknow.android.features.compress.VideoCompressor;
-import com.iknow.android.utils.FileUtil;
-import java.io.File;
 
 /**
  * Author：J.Chou
@@ -75,7 +71,7 @@ public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrim
   @Override public void onFinishTrim(String in) {
     if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
     //TODO: please handle your trimmed video url here!!!
-    //String out = FileUtil.getCacheDir() + File.separator + COMPRESSED_VIDEO_FILE_NAME;
+    //String out = StorageUtil.getCacheDir() + File.separator + COMPRESSED_VIDEO_FILE_NAME;
     //buildDialog(getResources().getString(R.string.compressing)).show();
     //VideoCompressor.compress(this, in, out, new VideoCompressListener() {
     //  @Override public void onSuccess(String message) {

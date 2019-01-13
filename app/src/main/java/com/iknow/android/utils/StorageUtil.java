@@ -19,9 +19,9 @@ import java.util.Locale;
  * description:
  */
 @SuppressWarnings({ "ResultOfMethodCallIgnored", "FieldCanBeLocal" })
-public class FileUtil {
+public class StorageUtil {
 
-  private static final String TAG = "FileUtil";
+  private static final String TAG = "StorageUtil";
   private static String APP_DATA_PATH = "/Android/data/" + BuildConfig.APPLICATION_ID;
   private static String sDataDir;
 

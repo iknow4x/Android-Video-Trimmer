@@ -26,11 +26,10 @@ import com.iknow.android.features.trim.VideoTrimmerAdapter;
 import com.iknow.android.interfaces.IVideoTrimmerView;
 import com.iknow.android.interfaces.VideoTrimListener;
 import com.iknow.android.features.trim.VideoTrimmerUtil;
-import com.iknow.android.utils.FileUtil;
+import com.iknow.android.utils.StorageUtil;
 import iknow.android.utils.callback.SingleCallback;
 import iknow.android.utils.thread.BackgroundExecutor;
 import iknow.android.utils.thread.UiThreadExecutor;
-import java.io.File;
 
 import static com.iknow.android.features.trim.VideoTrimmerUtil.VIDEO_FRAMES_WIDTH;
 
@@ -254,7 +253,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
       mVideoView.pause();
       VideoTrimmerUtil.trim(mContext,
           mSourceUri.getPath(),
-          FileUtil.getCacheDir().getAbsolutePath(),
+          StorageUtil.getCacheDir().getAbsolutePath(),
           mLeftProgressPos,
           mRightProgressPos,
           mOnTrimVideoListener);
