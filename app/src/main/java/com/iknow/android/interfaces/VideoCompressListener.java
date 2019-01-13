@@ -1,6 +1,6 @@
 package com.iknow.android.interfaces;
 
-import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
+import nl.bravobit.ffmpeg.ExecuteBinaryResponseHandler;
 
 public class VideoCompressListener extends ExecuteBinaryResponseHandler {
 

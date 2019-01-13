@@ -2,10 +2,9 @@ package com.iknow.android;
 
 import android.app.Application;
 import android.content.Context;
-import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
-import com.github.hiteshsondhi88.libffmpeg.LoadBinaryResponseHandler;
-import com.github.hiteshsondhi88.libffmpeg.exceptions.FFmpegNotSupportedException;
+import android.util.Log;
 import iknow.android.utils.BaseUtils;
+import nl.bravobit.ffmpeg.FFmpeg;
 
 /**
  * Author：J.Chou
@@ -14,6 +13,7 @@ import iknow.android.utils.BaseUtils;
  * Describe:
  */
 public class ZApplication extends Application {
+
   @Override public void onCreate() {
     super.onCreate();
     BaseUtils.init(this);
@@ -21,14 +21,8 @@ public class ZApplication extends Application {
   }
 
   private void initFFmpegBinary(Context context) {
-
-    try {
-      FFmpeg.getInstance(context).loadBinary(new LoadBinaryResponseHandler() {
-        @Override public void onFailure() {
-        }
-      });
-    } catch (FFmpegNotSupportedException e) {
-      e.printStackTrace();
+    if (!FFmpeg.getInstance(context).isSupported()) {
+      Log.e("ZApplication","Android cup arch not supported!");
     }
   }
 }

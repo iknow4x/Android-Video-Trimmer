@@ -1,9 +1,9 @@
 package com.iknow.android.features.compress;
 
 import android.content.Context;
-import com.github.hiteshsondhi88.libffmpeg.ExecuteBinaryResponseHandler;
-import com.github.hiteshsondhi88.libffmpeg.FFmpeg;
 import com.iknow.android.interfaces.VideoCompressListener;
+import nl.bravobit.ffmpeg.ExecuteBinaryResponseHandler;
+import nl.bravobit.ffmpeg.FFmpeg;
 
 /**
  * author : J.Chou

@@ -21,12 +21,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 import com.iknow.android.R;
 import com.iknow.android.features.trim.VideoTrimmerAdapter;
 import com.iknow.android.interfaces.IVideoTrimmerView;
 import com.iknow.android.interfaces.VideoTrimListener;
 import com.iknow.android.features.trim.VideoTrimmerUtil;
+import com.iknow.android.utils.FileUtil;
 import iknow.android.utils.callback.SingleCallback;
 import iknow.android.utils.thread.BackgroundExecutor;
 import iknow.android.utils.thread.UiThreadExecutor;
@@ -57,7 +57,6 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
   private float mAverageMsPx;//每毫秒所占的px
   private float averagePxMs;//每px所占用的ms毫秒
   private Uri mSourceUri;
-  private String mFinalPath;
   private VideoTrimListener mOnTrimVideoListener;
   private int mDuration = 0;
   private VideoTrimmerAdapter mVideoThumbAdapter;
@@ -253,16 +252,13 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
       Toast.makeText(mContext, "视频长不足3秒,无法上传", Toast.LENGTH_SHORT).show();
     } else {
       mVideoView.pause();
-      VideoTrimmerUtil.trim(mContext, mSourceUri.getPath(), getTrimmedVideoPath(), mLeftProgressPos, mRightProgressPos, mOnTrimVideoListener);
+      VideoTrimmerUtil.trim(mContext,
+          mSourceUri.getPath(),
+          FileUtil.getCacheDir().getAbsolutePath(),
+          mLeftProgressPos,
+          mRightProgressPos,
+          mOnTrimVideoListener);
     }
-  }
-
-  private String getTrimmedVideoPath() {
-    if (mFinalPath == null) {
-      File file = mContext.getExternalCacheDir();
-      if (file != null) mFinalPath = file.getAbsolutePath();
-    }
-    return mFinalPath;
   }
 
   private void seekTo(long msec) {

@@ -13,6 +13,8 @@ import com.iknow.android.databinding.ActivityTrimmerLayoutBinding;
 import com.iknow.android.interfaces.VideoCompressListener;
 import com.iknow.android.interfaces.VideoTrimListener;
 import com.iknow.android.features.compress.VideoCompressor;
+import com.iknow.android.utils.FileUtil;
+import java.io.File;
 
 /**
  * Author：J.Chou
@@ -24,6 +26,7 @@ public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrim
 
   private static final String TAG = "jason";
   private static final String VIDEO_PATH_KEY = "video-file-path";
+  private static final String COMPRESSED_VIDEO_FILE_NAME = "compress.mp4";
   public static final int VIDEO_TRIM_REQUEST_CODE = 0x001;
   private ActivityTrimmerLayoutBinding mBinding;
   private ProgressDialog mProgressDialog;
@@ -70,21 +73,22 @@ public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrim
   }
 
   @Override public void onFinishTrim(String in) {
+    if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
     //TODO: please handle your trimmed video url here!!!
-    String out = "/storage/emulated/0/Android/data/com.iknow.android/cache/compress.mp4";
-    buildDialog(getResources().getString(R.string.compressing)).show();
-    VideoCompressor.compress(this, in, out, new VideoCompressListener() {
-      @Override public void onSuccess(String message) {
-      }
-
-      @Override public void onFailure(String message) {
-      }
-
-      @Override public void onFinish() {
-        if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
-        finish();
-      }
-    });
+    //String out = FileUtil.getCacheDir() + File.separator + COMPRESSED_VIDEO_FILE_NAME;
+    //buildDialog(getResources().getString(R.string.compressing)).show();
+    //VideoCompressor.compress(this, in, out, new VideoCompressListener() {
+    //  @Override public void onSuccess(String message) {
+    //  }
+    //
+    //  @Override public void onFailure(String message) {
+    //  }
+    //
+    //  @Override public void onFinish() {
+    //    if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
+    //    finish();
+    //  }
+    //});
   }
 
   @Override public void onCancel() {
