@@ -253,7 +253,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
       mVideoView.pause();
       VideoTrimmerUtil.trim(mContext,
           mSourceUri.getPath(),
-          StorageUtil.getCacheDir().getAbsolutePath(),
+          StorageUtil.getCacheDir(),
           mLeftProgressPos,
           mRightProgressPos,
           mOnTrimVideoListener);

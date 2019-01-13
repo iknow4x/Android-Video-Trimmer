@@ -24,6 +24,7 @@ public class StorageUtil {
   private static final String TAG = "StorageUtil";
   private static String APP_DATA_PATH = "/Android/data/" + BuildConfig.APPLICATION_ID;
   private static String sDataDir;
+  private static String sCacheDir;
 
   @SuppressWarnings("ResultOfMethodCallIgnored")
   public static String getAppDataDir() {
@@ -49,33 +50,29 @@ public class StorageUtil {
     return sDataDir;
   }
 
-  public static File getCacheDir() {
-    Context context = BaseUtils.getContext();
-    File file = null;
-    try {
-      if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-        file = context.getExternalCacheDir();
-        if (file == null || !file.exists()) {
-          file = getExternalCacheDirManual(context);
+  public static String getCacheDir() {
+    if (TextUtils.isEmpty(sCacheDir)) {
+      File file = null;
+      Context context = BaseUtils.getContext();
+      try {
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+          file = context.getExternalCacheDir();
+          if (file == null || !file.exists()) {
+            file = getExternalCacheDirManual(context);
+          }
         }
+        if (file == null) {
+          file = context.getCacheDir();
+          if (file == null || !file.exists()) {
+            file = getCacheDirManual(context);
+          }
+        }
+        Log.w(TAG, "cache dir = " + file.getAbsolutePath());
+        sCacheDir = file.getAbsolutePath();
+      } catch (Throwable ignored) {
       }
-    } catch (Throwable ignored) {
     }
-
-    if (file == null) {
-      file = context.getCacheDir();
-      if (file == null || !file.exists()) {
-        file = getCacheDirManual(context);
-      }
-    }
-    Log.w(TAG, "cache dir = " + file.getAbsolutePath());
-    return file;
-  }
-
-  @SuppressLint("SdCardPath")
-  private static File getCacheDirManual(Context context) {
-    String cacheDirPath = "/data/data/" + context.getPackageName() + "/cache";
-    return new File(cacheDirPath);
+    return sCacheDir;
   }
 
   private static File getExternalCacheDirManual(Context context) {
@@ -93,6 +90,12 @@ public class StorageUtil {
       }
     }
     return appCacheDir;
+  }
+
+  @SuppressLint("SdCardPath")
+  private static File getCacheDirManual(Context context) {
+    String cacheDirPath = "/data/data/" + context.getPackageName() + "/cache";
+    return new File(cacheDirPath);
   }
 
   // 功能描述:删除文件夹下所有文件和文件夹
