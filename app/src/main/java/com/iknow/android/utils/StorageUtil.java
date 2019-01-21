@@ -26,7 +26,6 @@ public class StorageUtil {
   private static String sDataDir;
   private static String sCacheDir;
 
-  @SuppressWarnings("ResultOfMethodCallIgnored")
   public static String getAppDataDir() {
     if (TextUtils.isEmpty(sDataDir)) {
       try {

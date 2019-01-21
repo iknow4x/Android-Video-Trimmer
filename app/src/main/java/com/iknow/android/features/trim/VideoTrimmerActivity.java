@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import com.iknow.android.R;
 import com.iknow.android.databinding.ActivityTrimmerLayoutBinding;
 import com.iknow.android.interfaces.VideoTrimListener;
+import com.iknow.android.utils.ToastUtil;
 
 /**
  * Author：J.Chou
@@ -70,6 +71,8 @@ public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrim
 
   @Override public void onFinishTrim(String in) {
     if (mProgressDialog.isShowing()) mProgressDialog.dismiss();
+    ToastUtil.longShow(this, getString(R.string.trimmed_done));
+    finish();
     //TODO: please handle your trimmed video url here!!!
     //String out = StorageUtil.getCacheDir() + File.separator + COMPRESSED_VIDEO_FILE_NAME;
     //buildDialog(getResources().getString(R.string.compressing)).show();
