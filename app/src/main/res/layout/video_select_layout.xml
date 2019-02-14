@@ -2,11 +2,11 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
-
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:background="#cc222222"
+      android:fitsSystemWindows="true"
+      android:background="#282828"
       android:orientation="vertical"
       >
 
@@ -18,16 +18,14 @@
 
       <ImageView
           android:id="@+id/mBtnBack"
-          android:layout_width="50dp"
-          android:layout_height="50dp"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
           android:layout_alignParentLeft="true"
-          android:layout_centerVertical="true"
+          android:layout_centerInParent="true"
           android:contentDescription="@null"
-          android:paddingBottom="14dp"
-          android:paddingLeft="10dp"
-          android:paddingRight="5dp"
-          android:paddingTop="14dp"
-          android:src="@drawable/icon_back_drawable"
+          android:paddingLeft="20dp"
+          android:paddingRight="20dp"
+          android:src="@drawable/icon_back"
           />
     </RelativeLayout>
 
@@ -38,13 +36,18 @@
         android:orientation="vertical"
         >
       <RelativeLayout
+          android:id="@+id/cameraPreviewLy"
           android:layout_width="match_parent"
-          android:layout_height="100dp"
+          android:layout_height="150dp"
           >
         <SurfaceView
-            android:id="@+id/capture_preview"
+            android:id="@+id/capturePreview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/icon_preview_mask"/>
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -54,11 +57,11 @@
 
       </RelativeLayout>
       <LinearLayout
+          android:id="@+id/openCameraPermissionLy"
           android:layout_width="match_parent"
           android:layout_height="150dp"
           android:gravity="center"
           android:orientation="vertical"
-          android:visibility="gone"
           >
         <TextView
             android:layout_width="wrap_content"

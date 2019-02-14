@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="decode" type="id" />
+    <item name="decode_failed" type="id" />
+    <item name="decode_succeeded" type="id" />
+    <item name="restart_preview" type="id" />
+    <item name="quit" type="id" />
+    <item name="return_scan_result" type="id" />
+    <item name="detail_behavior_content_padding_done" type="id" />
+    <item name="recycle_tag" type="id" />
+</resources>
