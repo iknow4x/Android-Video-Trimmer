@@ -14,23 +14,6 @@
         android:scaleType="fitXY" />
 
     <RelativeLayout
-        android:id="@+id/video_select_panel"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:gravity="center"
-        android:layout_gravity="top|right"
-        >
-        <ImageView
-            android:id="@+id/select"
-            android:layout_width="20dip"
-            android:layout_height="20dip"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:contentDescription="@null"
-            android:src="@drawable/icon_video_unselected" />
-    </RelativeLayout>
-
-    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="20dp"
         android:background="#7F000000"

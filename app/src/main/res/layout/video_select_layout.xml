@@ -1,84 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
-    <LinearLayout
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="#cc222222"
+      android:orientation="vertical"
+      >
+
+    <RelativeLayout
+        android:id="@+id/title_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="50dp"
+        >
 
-        <RelativeLayout
-            android:id="@+id/title_layout"
+      <ImageView
+          android:id="@+id/mBtnBack"
+          android:layout_width="50dp"
+          android:layout_height="50dp"
+          android:layout_alignParentLeft="true"
+          android:layout_centerVertical="true"
+          android:contentDescription="@null"
+          android:paddingBottom="14dp"
+          android:paddingLeft="10dp"
+          android:paddingRight="5dp"
+          android:paddingTop="14dp"
+          android:src="@drawable/icon_back_drawable"
+          />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        >
+      <RelativeLayout
+          android:layout_width="match_parent"
+          android:layout_height="100dp"
+          >
+        <SurfaceView
+            android:id="@+id/capture_preview"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@android:color/white">
+            android:layout_height="match_parent"/>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:src="@drawable/icon_recoder"
+            />
 
-            <ImageView
-                android:id="@+id/mBtnBack"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:contentDescription="@null"
-                android:paddingBottom="14dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="5dp"
-                android:paddingTop="14dp"
-                android:src="@drawable/icon_back_drawable"/>
-
-            <TextView
-                android:id="@+id/mTitlebarText"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_toLeftOf="@+id/video_shoot"
-                android:layout_toRightOf="@+id/mBtnBack"
-                android:ellipsize="end"
-                android:gravity="center"
-                android:maxLines="1"
-                android:text="所有视频"
-                android:textColor="#666666"
-                android:textSize="18dp"
-                android:textStyle="bold"/>
-
-            <ImageView
-                android:id="@+id/video_shoot"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="10dp"
-                android:contentDescription="@null"
-                android:paddingBottom="8dp"
-                android:paddingLeft="8dp"
-                android:paddingTop="8dp"
-                android:src="@drawable/icon_recoder"
-                android:visibility="visible"/>
-        </RelativeLayout>
-
-        <GridView
-            android:id="@+id/video_gridview"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:numColumns="3"
-            android:horizontalSpacing="2dp"
-            android:verticalSpacing="2dp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="#999999"/>
+      </RelativeLayout>
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="150dp"
+          android:gravity="center"
+          android:orientation="vertical"
+          android:visibility="gone"
+          >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="要录制视频，需要授予相机和麦克风使用权."
+            android:textColor="@android:color/white"
+            android:textSize="14dp"
+            />
 
         <TextView
-            android:id="@+id/next_step"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_centerInParent="true"
-            android:background="@android:color/white"
+            android:id="@+id/mOpenCameraPermission"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="15dp"
+            android:background="@color/colorPrimary"
             android:gravity="center"
+            android:paddingBottom="7dp"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
-            android:text="下一步"
-            android:textSize="16dp"/>
-    </LinearLayout>
+            android:paddingTop="7dp"
+            android:text="开启权限"
+            android:textColor="@android:color/white"
+            android:textSize="14dp"
+            />
+      </LinearLayout>
+    </FrameLayout>
+
+    <GridView
+        android:id="@+id/video_gridview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/background_dark"
+        android:horizontalSpacing="4dp"
+        android:numColumns="3"
+        android:verticalSpacing="4dp"
+        />
+  </LinearLayout>
 </layout>

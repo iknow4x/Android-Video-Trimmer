@@ -5,8 +5,8 @@ import android.database.Cursor;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,15 +15,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.iknow.android.R;
+import com.iknow.android.features.trim.VideoTrimmerActivity;
 import iknow.android.utils.DateUtil;
 import iknow.android.utils.DeviceUtil;
-import iknow.android.utils.callback.SingleCallback;
 import java.io.File;
-import java.util.ArrayList;
 
 /**
  * Author：J.Chou
@@ -34,14 +30,12 @@ import java.util.ArrayList;
 public class VideoSelectAdapter extends CursorAdapter {
 
   private int videoCoverSize = DeviceUtil.getDeviceWidth() / 3;
-  private ArrayList<String> mVideoSelected = new ArrayList<>();
-  private ArrayList<ImageView> mSelectIconList = new ArrayList<>();
-  private SingleCallback<Boolean, String> mSingleCallback;
   private MediaMetadataRetriever mMetadataRetriever;
-  private boolean isSelected = false;
+  private Context mContext;
 
   VideoSelectAdapter(Context context, Cursor c) {
     super(context, c);
+    this.mContext = context;
     mMetadataRetriever = new MediaMetadataRetriever();
   }
 
@@ -52,8 +46,6 @@ public class VideoSelectAdapter extends CursorAdapter {
     holder.videoItemView = itemView.findViewById(R.id.video_view);
     holder.videoCover = itemView.findViewById(R.id.cover_image);
     holder.durationTv = itemView.findViewById(R.id.video_duration);
-    holder.videoSelectPanel = itemView.findViewById(R.id.video_select_panel);
-    holder.selectIcon = itemView.findViewById(R.id.select);
     itemView.setTag(holder);
     return itemView;
   }
@@ -72,33 +64,12 @@ public class VideoSelectAdapter extends CursorAdapter {
     holder.videoCover.setLayoutParams(params);
     Glide.with(context)
         .load(getVideoUri(cursor))
-        .crossFade()
+        .centerCrop()
+        .override(videoCoverSize, videoCoverSize)
         .into(holder.videoCover);
-    if(mVideoSelected.size() > 0)
-      holder.selectIcon.setImageResource(path.equals(mVideoSelected.get(0)) ? R.drawable.icon_video_selected : R.drawable.icon_video_unselected);
-    else
-      holder.selectIcon.setImageResource(R.drawable.icon_video_unselected);
-    holder.videoSelectPanel.setOnClickListener(new View.OnClickListener() {
+    holder.videoItemView.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
-        if (mVideoSelected.size() > 0) {
-          if (path.equals(mVideoSelected.get(0))) {
-            holder.selectIcon.setImageResource(R.drawable.icon_video_unselected);
-            clearAll();
-            isSelected = false;
-          } else {
-            mSelectIconList.get(0).setImageResource(R.drawable.icon_video_unselected);
-            clearAll();
-            addData(path, holder.selectIcon);
-            holder.selectIcon.setImageResource(R.drawable.icon_video_selected);
-            isSelected = true;
-          }
-        } else {
-          clearAll();
-          addData(path, holder.selectIcon);
-          holder.selectIcon.setImageResource(R.drawable.icon_video_selected);
-          isSelected = true;
-        }
-        mSingleCallback.onSingleCallback(isSelected, path);
+        VideoTrimmerActivity.call((FragmentActivity) mContext, path);
       }
     });
   }
@@ -123,23 +94,9 @@ public class VideoSelectAdapter extends CursorAdapter {
     return Uri.withAppendedPath(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id);
   }
 
-  void setItemClickCallback(final SingleCallback<Boolean, String> singleCallback) {
-    this.mSingleCallback = singleCallback;
-  }
-
-  private void addData(String videoPath, ImageView imageView) {
-    mVideoSelected.add(videoPath);
-    mSelectIconList.add(imageView);
-  }
-
-  private void clearAll() {
-    mVideoSelected.clear();
-    mSelectIconList.clear();
-  }
-
   private static class VideoGridViewHolder {
-    ImageView videoCover, selectIcon;
-    View videoItemView, videoSelectPanel;
+    ImageView videoCover;
+    View videoItemView;
     TextView durationTv;
   }
 }

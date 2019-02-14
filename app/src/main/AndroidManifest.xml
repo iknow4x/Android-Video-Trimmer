@@ -4,6 +4,7 @@
     package="com.iknow.android">
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA"/>
     <application
         android:name=".ZApplication"
         android:icon="@drawable/ic_launcher"
@@ -12,7 +13,8 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning"
         android:allowBackup="false">
-        <activity android:name=".features.select.VideoSelectActivity">
+        <activity android:name=".features.select.VideoSelectActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
