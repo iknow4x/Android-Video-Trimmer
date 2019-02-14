@@ -262,6 +262,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 
   private void seekTo(long msec) {
     mVideoView.seekTo((int) msec);
+    Log.d(TAG, "seekTo = " + msec);
   }
 
   private boolean getRestoreState() {
@@ -331,7 +332,6 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
         mLeftProgressPos = mRangeSeekBarView.getSelectedMinValue() + scrollPos;
         mRightProgressPos = mRangeSeekBarView.getSelectedMaxValue() + scrollPos;
         Log.d(TAG, "onScrolled >>>> mLeftProgressPos = " + mLeftProgressPos);
-        Log.d(TAG, "onScrolled >>>> mRightProgressPos = " + mRightProgressPos);
         mRedProgressBarPos = mLeftProgressPos;
         if (mVideoView.isPlaying()) {
           mVideoView.pause();

@@ -6,6 +6,7 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.iknow.android.R;
 import iknow.android.utils.DateUtil;
 import iknow.android.utils.DeviceUtil;
@@ -57,18 +61,10 @@ public class VideoSelectAdapter extends CursorAdapter {
   @Override public void bindView(View view, Context context, final Cursor cursor) {
     final VideoGridViewHolder holder = (VideoGridViewHolder) view.getTag();
     final String path = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
-    if (TextUtils.isEmpty(path) || !new File(path).exists()) {
-      return;
-    }
-    try {
-      mMetadataRetriever.setDataSource(path);
-    } catch (Throwable e) {
-      e.printStackTrace();
+    if (!checkDataValid(cursor)) {
       return;
     }
     final String duration = mMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-    if (TextUtils.isEmpty(duration)) return;
-
     holder.durationTv.setText(DateUtil.convertSecondsToTime(Integer.parseInt(duration) / 1000));
     FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) holder.videoCover.getLayoutParams();
     params.width = videoCoverSize;
@@ -107,9 +103,19 @@ public class VideoSelectAdapter extends CursorAdapter {
     });
   }
 
-  @Override
-  public Object getItem(int position) {
-    return super.getItem(position);
+  private boolean checkDataValid(final Cursor cursor) {
+    final String path = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
+    if (TextUtils.isEmpty(path) || !new File(path).exists()) {
+      return false;
+    }
+    try {
+      mMetadataRetriever.setDataSource(path);
+    } catch (Throwable e) {
+      e.printStackTrace();
+      return false;
+    }
+    final String duration = mMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+    return !TextUtils.isEmpty(duration);
   }
 
   private Uri getVideoUri(Cursor cursor) {

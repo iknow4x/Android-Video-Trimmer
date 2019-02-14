@@ -31,15 +31,13 @@ public class VideoCursorLoader implements LoaderManager.LoaderCallbacks<Cursor>,
   }
 
   @NonNull @Override public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
-    String columnBucketId = MediaStore.Video.Media.BUCKET_ID;
-    String selection = columnBucketId + " is not null and " + MediaStore.Video.Media.MIME_TYPE + " in (?, ?, ?, ?) ) group by ( " + columnBucketId;
     return new CursorLoader(
         mContext,
         MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-        null,
-        null,
-        null,
-        MediaStore.Video.Media.DATE_MODIFIED + " desc"
+        PROJECTION,
+        SELECTION,
+        SELECTION_ARGS,
+        ORDER_BY
     );
   }
 

@@ -45,7 +45,6 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
     rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(granted -> {
           if (granted) { // Always true pre-M
             mVideoLoadManager.load(this, new SimpleCallback() {
-              @SuppressWarnings("unchecked")
               @Override public void success(Object obj) {
                 if (mVideoSelectAdapter == null) {
                   mVideoSelectAdapter = new VideoSelectAdapter(VideoSelectActivity.this, (Cursor)obj);
