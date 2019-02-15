@@ -11,6 +11,7 @@ import com.iknow.android.R;
 import com.iknow.android.databinding.VideoSelectLayoutBinding;
 import com.iknow.android.features.camera.view.CameraPreviewLayout;
 import com.iknow.android.features.camera.view.CameraPreviewSurfaceView;
+import com.iknow.android.utils.ToastUtil;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import iknow.android.utils.callback.SimpleCallback;
 
@@ -82,6 +83,11 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
     mBinding.openCameraPermissionLy.setVisibility(View.GONE);
     cameraPreviewLayout.show(mSurfaceView);
     mSurfaceView.startPreview();
+    mBinding.cameraPreviewLy.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        ToastUtil.show(VideoSelectActivity.this, "功能开发中...");
+      }
+    });
   }
 
   @Override protected void onResume() {
