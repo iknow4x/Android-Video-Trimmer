@@ -130,7 +130,7 @@
           android:layout_height="match_parent"
           android:layout_gravity="center"
           android:padding="12dp"
-          android:src="@drawable/icon_video_play_black"
+          android:src="@drawable/ic_video_play_black"
           />
 
       <TextView

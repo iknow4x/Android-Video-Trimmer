@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     >
   <LinearLayout
       android:layout_width="match_parent"
@@ -23,9 +22,9 @@
           android:layout_alignParentLeft="true"
           android:layout_centerInParent="true"
           android:contentDescription="@null"
-          android:paddingLeft="20dp"
-          android:paddingRight="20dp"
-          android:src="@drawable/icon_back"
+          android:paddingLeft="5dp"
+          android:paddingRight="5dp"
+          android:src="@drawable/ic_close"
           />
     </RelativeLayout>
 
@@ -44,13 +43,26 @@
             android:id="@+id/capturePreview"
             android:layout_width="match_parent"
             android:layout_height="150dp"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:src="@drawable/icon_recoder"
-            />
-
+            android:orientation="vertical"
+            >
+          <ImageView
+              android:layout_width="match_parent"
+              android:layout_height="60dp"
+              android:src="@drawable/ic_videocam_white_48"
+              />
+          <TextView
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="center"
+              android:textColor="@android:color/white"
+              android:textSize="14dp"
+              android:text="录制"
+              />
+        </LinearLayout>
       </RelativeLayout>
       <LinearLayout
           android:id="@+id/openCameraPermissionLy"

@@ -88,7 +88,7 @@ public class RangeSeekBarView extends View {
 
   private void init() {
     mScaledTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
-    thumbImageLeft = BitmapFactory.decodeResource(getResources(), R.drawable.icon_video_thumb_handle);
+    thumbImageLeft = BitmapFactory.decodeResource(getResources(), R.drawable.ic_video_thumb_handle);
 
     int width = thumbImageLeft.getWidth();
     int height = thumbImageLeft.getHeight();
