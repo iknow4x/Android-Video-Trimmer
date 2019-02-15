@@ -28,7 +28,6 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
   private VideoLoadManager mVideoLoadManager;
   private CameraPreviewSurfaceView mSurfaceView;
   private CameraPreviewLayout cameraPreviewLayout;
-  private boolean isHasSurface = false;
 
   @SuppressLint("CheckResult")
   @Override protected void onCreate(Bundle bundle) {
@@ -39,7 +38,6 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
     cameraPreviewLayout = findViewById(R.id.capturePreview);
 
     mBinding.mBtnBack.setOnClickListener(this);
-    mSurfaceView = new CameraPreviewSurfaceView(this);
 
     RxPermissions rxPermissions = new RxPermissions(this);
     rxPermissions.request(Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(granted -> {
@@ -62,7 +60,7 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
       }
     });
     if (rxPermissions.isGranted(Manifest.permission.CAMERA)) {
-      initCameraManager();
+      initCameraPreview();
     } else {
       mBinding.cameraPreviewLy.setVisibility(View.GONE);
       mBinding.openCameraPermissionLy.setVisibility(View.VISIBLE);
@@ -70,7 +68,7 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
         @Override public void onClick(View v) {
           rxPermissions.request(Manifest.permission.CAMERA).subscribe(granted -> {
             if (granted) {
-              initCameraManager();
+              initCameraPreview();
             }
           });
         }
@@ -78,7 +76,8 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
     }
   }
 
-  private void initCameraManager() {
+  private void initCameraPreview() {
+    mSurfaceView = new CameraPreviewSurfaceView(this);
     mBinding.cameraPreviewLy.setVisibility(View.VISIBLE);
     mBinding.openCameraPermissionLy.setVisibility(View.GONE);
     cameraPreviewLayout.show(mSurfaceView);

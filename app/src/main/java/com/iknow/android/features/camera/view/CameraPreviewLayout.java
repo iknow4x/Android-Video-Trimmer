@@ -18,8 +18,6 @@ import iknow.android.utils.DeviceUtil;
 public class CameraPreviewLayout extends RelativeLayout {
 
   private Context mContext;
-  private int circleWidth = 0;//指定半径
-  private int borderWidth = 0;//指定边框
 
   public CameraPreviewLayout(Context context) {
     super(context);
@@ -41,23 +39,23 @@ public class CameraPreviewLayout extends RelativeLayout {
   }
 
   public void show(CameraPreviewSurfaceView surfaceView) {
-    circleWidth = DeviceUtil.getDeviceWidth();
+    int previewWith = DeviceUtil.getDeviceWidth();
     RelativeLayout cameraRoot = new RelativeLayout(mContext);
     RelativeLayout.LayoutParams rootParams = new RelativeLayout.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT, 1300);
+        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     rootParams.addRule(CENTER_IN_PARENT, TRUE);
     cameraRoot.setClipChildren(false);
 
     FrameLayout cameraLayout = new FrameLayout(mContext);
     Camera.Size preSize = surfaceView.getCameraSize();
-    int cameraHeight = (int) ((float) preSize.width / (float) preSize.height * circleWidth);
-    RelativeLayout.LayoutParams cameraParams = new RelativeLayout.LayoutParams(circleWidth, cameraHeight);
+    int cameraHeight = (int) ((float) preSize.width / (float) preSize.height * previewWith);
+    RelativeLayout.LayoutParams cameraParams = new RelativeLayout.LayoutParams(previewWith, cameraHeight);
     cameraParams.addRule(CENTER_IN_PARENT, TRUE);
     cameraLayout.setLayoutParams(cameraParams);
     cameraLayout.addView(surfaceView);
     CameraPreviewMaskView maskView = new CameraPreviewMaskView(mContext);
 
-    int margin = (cameraHeight - circleWidth) / 2 - borderWidth / 2;
+    int margin = (cameraHeight - previewWith) / 2;
     rootParams.setMargins(0, -margin, 0, -margin);
     cameraRoot.setLayoutParams(rootParams);
     cameraRoot.addView(cameraLayout);

@@ -2,16 +2,18 @@
 
 buildscript {
     repositories {
+        google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath 'com.android.tools.build:gradle:3.3.1'
         classpath 'me.tatarka:gradle-retrolambda:3.3.1'
     }
 }
 
 allprojects {
     repositories {
+        google()
         jcenter()
     }
 }
