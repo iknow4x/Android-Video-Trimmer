@@ -40,14 +40,10 @@
           android:layout_width="match_parent"
           android:layout_height="150dp"
           >
-        <SurfaceView
+        <com.iknow.android.features.camera.view.CameraPreviewLayout
             android:id="@+id/capturePreview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/icon_preview_mask"/>
+            android:layout_height="150dp"/>
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
