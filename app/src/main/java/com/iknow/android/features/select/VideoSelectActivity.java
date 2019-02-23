@@ -4,14 +4,13 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import com.iknow.android.R;
 import com.iknow.android.databinding.VideoSelectLayoutBinding;
+import com.iknow.android.features.camera.record.RecordingActivity;
 import com.iknow.android.features.camera.view.CameraPreviewLayout;
 import com.iknow.android.features.camera.view.CameraPreviewSurfaceView;
-import com.iknow.android.utils.ToastUtil;
+import com.iknow.android.features.common.ui.BaseActivity;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import iknow.android.utils.callback.SimpleCallback;
 
@@ -22,7 +21,7 @@ import iknow.android.utils.callback.SimpleCallback;
  * Describe:
  */
 @SuppressWarnings("ResultOfMethodCallIgnored")
-public class VideoSelectActivity extends AppCompatActivity implements View.OnClickListener{
+public class VideoSelectActivity extends BaseActivity implements View.OnClickListener{
 
   private VideoSelectLayoutBinding mBinding;
   private VideoSelectAdapter mVideoSelectAdapter;
@@ -31,8 +30,8 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
   private CameraPreviewLayout cameraPreviewLayout;
 
   @SuppressLint("CheckResult")
-  @Override protected void onCreate(Bundle bundle) {
-    super.onCreate(bundle);
+  @Override public void initUI() {
+    super.initUI();
     mVideoLoadManager = new VideoLoadManager();
     mVideoLoadManager.setLoader(new VideoCursorLoader());
     mBinding = DataBindingUtil.setContentView(this, R.layout.video_select_layout);
@@ -85,7 +84,7 @@ public class VideoSelectActivity extends AppCompatActivity implements View.OnCli
     mSurfaceView.startPreview();
     mBinding.cameraPreviewLy.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
-        ToastUtil.show(VideoSelectActivity.this, "功能开发中...");
+        RecordingActivity.call(VideoSelectActivity.this);
       }
     });
   }

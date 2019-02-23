@@ -6,10 +6,10 @@ import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import com.iknow.android.R;
 import com.iknow.android.databinding.ActivityTrimmerLayoutBinding;
+import com.iknow.android.features.common.ui.BaseActivity;
 import com.iknow.android.interfaces.VideoTrimListener;
 import com.iknow.android.utils.ToastUtil;
 
@@ -19,7 +19,7 @@ import com.iknow.android.utils.ToastUtil;
  * Email： who_know_me@163.com
  * Describe:
  */
-public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrimListener {
+public class VideoTrimmerActivity extends BaseActivity implements VideoTrimListener {
 
   private static final String TAG = "jason";
   private static final String VIDEO_PATH_KEY = "video-file-path";
@@ -38,8 +38,8 @@ public class VideoTrimmerActivity extends AppCompatActivity implements VideoTrim
     }
   }
 
-  @Override protected void onCreate(Bundle bundle) {
-    super.onCreate(bundle);
+  @Override public void initUI() {
+    super.initUI();
     mBinding = DataBindingUtil.setContentView(this, R.layout.activity_trimmer_layout);
     Bundle bd = getIntent().getExtras();
     String path = "";
