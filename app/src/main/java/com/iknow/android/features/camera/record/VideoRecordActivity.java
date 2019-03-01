@@ -14,16 +14,16 @@ import com.iknow.android.features.common.ui.BaseActivity;
  * version: 1.0
  * description:
  */
-public class RecordingActivity extends BaseActivity {
+public class VideoRecordActivity extends BaseActivity {
 
   private ActivityRecordingLayoutBinding mBinding;
 
   public static void call(Context context) {
-    context.startActivity(new Intent(context, RecordingActivity.class));
+    context.startActivity(new Intent(context, VideoRecordActivity.class));
   }
 
   @Override public void initUI() {
     super.initUI();
-    DataBindingUtil.setContentView(this, R.layout.activity_recording_layout);
+    mBinding = DataBindingUtil.setContentView(this, R.layout.activity_video_recording_layout);
   }
 }

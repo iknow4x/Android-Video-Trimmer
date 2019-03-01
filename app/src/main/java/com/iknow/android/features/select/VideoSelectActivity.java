@@ -7,7 +7,7 @@ import android.databinding.DataBindingUtil;
 import android.view.View;
 import com.iknow.android.R;
 import com.iknow.android.databinding.VideoSelectLayoutBinding;
-import com.iknow.android.features.camera.record.RecordingActivity;
+import com.iknow.android.features.camera.record.VideoRecordActivity;
 import com.iknow.android.features.camera.view.CameraPreviewLayout;
 import com.iknow.android.features.camera.view.CameraPreviewSurfaceView;
 import com.iknow.android.features.common.ui.BaseActivity;
@@ -84,7 +84,7 @@ public class VideoSelectActivity extends BaseActivity implements View.OnClickLis
     mSurfaceView.startPreview();
     mBinding.cameraPreviewLy.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
-        RecordingActivity.call(VideoSelectActivity.this);
+        VideoRecordActivity.call(VideoSelectActivity.this);
       }
     });
   }
