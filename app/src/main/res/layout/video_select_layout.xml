@@ -60,7 +60,7 @@
               android:gravity="center"
               android:textColor="@android:color/white"
               android:textSize="14dp"
-              android:text="录制"
+              android:text="@string/recording"
               />
         </LinearLayout>
       </RelativeLayout>
@@ -76,7 +76,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="要录制视频，需要授予相机和麦克风使用权."
+            android:text="@string/video_record_des"
             android:textColor="@android:color/white"
             android:textSize="14dp"
             />
@@ -93,7 +93,7 @@
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
             android:paddingTop="7dp"
-            android:text="开启权限"
+            android:text="@string/open_permission"
             android:textColor="@android:color/white"
             android:textSize="14dp"
             />

@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">视频裁剪</string>
+    <string name="trimmed_done">视频裁剪完成！</string>
+    <string name="trimming">正在裁剪视频...</string>
+    <string name="compressing">正在压缩视频...</string>
+    <string name="compressed_done">视频压缩完成！</string>
+    <string name="video_shoot_tip">拖动选择你要发表的%d秒以内片段！</string>
+    <string name="open_permission">开启权限</string>
+    <string name="video_record_des">要录制视频，需要授予相机和麦克风使用权.</string>
+    <string name="recording">录制</string>
+    <string name="back">返回</string>
+    <string name="finish">完成</string>
+</resources>

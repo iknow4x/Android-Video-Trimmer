@@ -119,7 +119,7 @@
           android:layout_gravity="left"
           android:gravity="center"
           android:padding="10dp"
-          android:text="返回"
+          android:text="@string/back"
           android:textColor="@android:color/white"
           android:textSize="16dp"
           />
@@ -140,7 +140,7 @@
           android:layout_gravity="right"
           android:gravity="center"
           android:padding="10dp"
-          android:text="完成"
+          android:text="@string/finish"
           android:textColor="@android:color/holo_green_dark"
           android:textSize="16dp"
           />

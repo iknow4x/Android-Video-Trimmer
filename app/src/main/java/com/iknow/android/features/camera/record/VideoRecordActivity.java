@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import com.iknow.android.R;
-import com.iknow.android.databinding.ActivityRecordingLayoutBinding;
 import com.iknow.android.features.common.ui.BaseActivity;
 
 /**
@@ -16,7 +15,6 @@ import com.iknow.android.features.common.ui.BaseActivity;
  */
 public class VideoRecordActivity extends BaseActivity {
 
-  private ActivityRecordingLayoutBinding mBinding;
 
   public static void call(Context context) {
     context.startActivity(new Intent(context, VideoRecordActivity.class));
@@ -24,6 +22,6 @@ public class VideoRecordActivity extends BaseActivity {
 
   @Override public void initUI() {
     super.initUI();
-    mBinding = DataBindingUtil.setContentView(this, R.layout.activity_video_recording_layout);
+    DataBindingUtil.setContentView(this, R.layout.activity_video_recording_layout);
   }
 }
