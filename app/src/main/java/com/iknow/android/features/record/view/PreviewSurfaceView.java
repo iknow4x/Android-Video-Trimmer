@@ -1,4 +1,4 @@
-package com.iknow.android.features.camera.view;
+package com.iknow.android.features.record.view;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -20,7 +20,7 @@ import java.util.List;
  */
 
 @SuppressLint("ViewConstructor")
-public class CameraPreviewSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
+public class PreviewSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
   private static final String TAG = "PreviewSurfaceView";
 
   private Camera mCamera;
@@ -29,7 +29,7 @@ public class CameraPreviewSurfaceView extends SurfaceView implements SurfaceHold
   private int cameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
   private int displayDegree = 90;
 
-  public CameraPreviewSurfaceView(Activity context) {
+  public PreviewSurfaceView(Activity context) {
     super(context);
     mContext = context;
     mCamera = Camera.open(cameraId);

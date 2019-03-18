@@ -39,7 +39,7 @@
           android:layout_width="match_parent"
           android:layout_height="150dp"
           >
-        <com.iknow.android.features.camera.view.CameraPreviewLayout
+        <com.iknow.android.features.record.view.CameraPreviewLayout
             android:id="@+id/capturePreview"
             android:layout_width="match_parent"
             android:layout_height="150dp"/>

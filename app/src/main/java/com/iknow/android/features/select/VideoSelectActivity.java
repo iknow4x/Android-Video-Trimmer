@@ -6,10 +6,10 @@ import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.view.View;
 import com.iknow.android.R;
-import com.iknow.android.databinding.VideoSelectLayoutBinding;
-import com.iknow.android.features.camera.record.VideoRecordActivity;
-import com.iknow.android.features.camera.view.CameraPreviewLayout;
-import com.iknow.android.features.camera.view.CameraPreviewSurfaceView;
+import com.iknow.android.databinding.ActivityVideoSelectBinding;
+import com.iknow.android.features.record.VideoRecordActivity;
+import com.iknow.android.features.record.view.CameraPreviewLayout;
+import com.iknow.android.features.record.view.PreviewSurfaceView;
 import com.iknow.android.features.common.ui.BaseActivity;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import iknow.android.utils.callback.SimpleCallback;
@@ -23,10 +23,10 @@ import iknow.android.utils.callback.SimpleCallback;
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class VideoSelectActivity extends BaseActivity implements View.OnClickListener{
 
-  private VideoSelectLayoutBinding mBinding;
+  private ActivityVideoSelectBinding mBinding;
   private VideoSelectAdapter mVideoSelectAdapter;
   private VideoLoadManager mVideoLoadManager;
-  private CameraPreviewSurfaceView mSurfaceView;
+  private PreviewSurfaceView mSurfaceView;
   private CameraPreviewLayout cameraPreviewLayout;
 
   @SuppressLint("CheckResult")
@@ -34,7 +34,7 @@ public class VideoSelectActivity extends BaseActivity implements View.OnClickLis
     super.initUI();
     mVideoLoadManager = new VideoLoadManager();
     mVideoLoadManager.setLoader(new VideoCursorLoader());
-    mBinding = DataBindingUtil.setContentView(this, R.layout.video_select_layout);
+    mBinding = DataBindingUtil.setContentView(this, R.layout.activity_video_select);
     cameraPreviewLayout = findViewById(R.id.capturePreview);
 
     mBinding.mBtnBack.setOnClickListener(this);
@@ -77,7 +77,7 @@ public class VideoSelectActivity extends BaseActivity implements View.OnClickLis
   }
 
   private void initCameraPreview() {
-    mSurfaceView = new CameraPreviewSurfaceView(this);
+    mSurfaceView = new PreviewSurfaceView(this);
     mBinding.cameraPreviewLy.setVisibility(View.VISIBLE);
     mBinding.openCameraPermissionLy.setVisibility(View.GONE);
     cameraPreviewLayout.show(mSurfaceView);

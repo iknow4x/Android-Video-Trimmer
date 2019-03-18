@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import com.iknow.android.R;
-import com.iknow.android.databinding.ActivityTrimmerLayoutBinding;
+import com.iknow.android.databinding.ActivityVideoTrimBinding;
 import com.iknow.android.features.common.ui.BaseActivity;
 import com.iknow.android.interfaces.VideoTrimListener;
 import com.iknow.android.utils.ToastUtil;
@@ -25,7 +25,7 @@ public class VideoTrimmerActivity extends BaseActivity implements VideoTrimListe
   private static final String VIDEO_PATH_KEY = "video-file-path";
   private static final String COMPRESSED_VIDEO_FILE_NAME = "compress.mp4";
   public static final int VIDEO_TRIM_REQUEST_CODE = 0x001;
-  private ActivityTrimmerLayoutBinding mBinding;
+  private ActivityVideoTrimBinding mBinding;
   private ProgressDialog mProgressDialog;
 
   public static void call(FragmentActivity from, String videoPath) {
@@ -40,7 +40,7 @@ public class VideoTrimmerActivity extends BaseActivity implements VideoTrimListe
 
   @Override public void initUI() {
     super.initUI();
-    mBinding = DataBindingUtil.setContentView(this, R.layout.activity_trimmer_layout);
+    mBinding = DataBindingUtil.setContentView(this, R.layout.activity_video_trim);
     Bundle bd = getIntent().getExtras();
     String path = "";
     if (bd != null) path = bd.getString(VIDEO_PATH_KEY);

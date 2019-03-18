@@ -1,4 +1,4 @@
-package com.iknow.android.features.camera.view;
+package com.iknow.android.features.record.view;
 
 import android.content.Context;
 import android.hardware.Camera;
@@ -38,7 +38,7 @@ public class CameraPreviewLayout extends RelativeLayout {
     mContext = context;
   }
 
-  public void show(CameraPreviewSurfaceView surfaceView) {
+  public void show(PreviewSurfaceView surfaceView) {
     int previewWith = DeviceUtil.getDeviceWidth();
     RelativeLayout cameraRoot = new RelativeLayout(mContext);
     RelativeLayout.LayoutParams rootParams = new RelativeLayout.LayoutParams(

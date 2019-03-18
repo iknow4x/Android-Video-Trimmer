@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+  <RelativeLayout
+      android:id="@+id/toolbar"
+      android:layout_width="match_parent"
+      android:layout_height="50dp"
+      android:gravity="center|left"
+      android:background="#282828"
+      android:orientation="horizontal"
+      >
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:src="@drawable/ic_arrow_back_white_24"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+        android:text="00:00"
+        />
+
+  </RelativeLayout>
+
+  <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_below="@+id/toolbar"
+      android:gravity="center"
+      android:orientation="vertical"
+      >
+
+    <com.iknow.android.features.record.view.RecordGLSurfaceView
+        android:id="@+id/glView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        >
+      <ImageView
+          android:id="@+id/ivSwitch"
+          android:layout_width="20dp"
+          android:layout_height="20dp"
+          android:contentDescription="@null"
+          android:layout_marginBottom="20dp"
+          android:src="@drawable/ic_switch_camera"
+          />
+
+      <ImageView
+          android:id="@+id/ivRecord"
+          android:layout_width="50dp"
+          android:layout_height="50dp"
+          android:contentDescription="@null"
+          android:src="@drawable/ic_record_start"
+          />
+    </LinearLayout>
+  </RelativeLayout>
+</RelativeLayout>
