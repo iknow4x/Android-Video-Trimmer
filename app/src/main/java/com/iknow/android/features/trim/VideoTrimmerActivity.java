@@ -39,7 +39,6 @@ public class VideoTrimmerActivity extends BaseActivity implements VideoTrimListe
   }
 
   @Override public void initUI() {
-    super.initUI();
     mBinding = DataBindingUtil.setContentView(this, R.layout.activity_video_trim);
     Bundle bd = getIntent().getExtras();
     String path = "";

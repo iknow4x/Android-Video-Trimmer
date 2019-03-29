@@ -2,7 +2,9 @@ package com.iknow.android.features.record.view;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.hardware.Camera;
+import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Surface;
@@ -25,13 +27,23 @@ public class PreviewSurfaceView extends SurfaceView implements SurfaceHolder.Cal
 
   private Camera mCamera;
   private SurfaceHolder mHolder;
-  private Activity mContext;
+  private Context mContext;
   private int cameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
   private int displayDegree = 90;
 
-  public PreviewSurfaceView(Activity context) {
+  public PreviewSurfaceView(Context context) {
     super(context);
     mContext = context;
+    init();
+  }
+
+  public PreviewSurfaceView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+    this.mContext = context;
+    init();
+  }
+
+  private void init() {
     mCamera = Camera.open(cameraId);
     mHolder = getHolder();
     mHolder.addCallback(this);
@@ -69,7 +81,7 @@ public class PreviewSurfaceView extends SurfaceView implements SurfaceHolder.Cal
 
   private void startCamera(SurfaceHolder holder) throws IOException {
     mCamera.setPreviewDisplay(holder);
-    setCameraDisplayOrientation(mContext, cameraId, mCamera);
+    setCameraDisplayOrientation((Activity) mContext, cameraId, mCamera);
 
     Camera.Size preSize = getCameraSize();
 

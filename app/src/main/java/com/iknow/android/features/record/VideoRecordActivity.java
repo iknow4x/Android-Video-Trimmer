@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import com.iknow.android.R;
 import com.iknow.android.features.common.ui.BaseActivity;
-import com.iknow.android.features.record.view.RecordGLSurfaceView;
+import com.iknow.android.features.record.view.PreviewSurfaceView;
 
 /**
  * author : J.Chou
@@ -16,7 +16,7 @@ import com.iknow.android.features.record.view.RecordGLSurfaceView;
  * description:
  */
 public class VideoRecordActivity extends BaseActivity implements View.OnClickListener {
-  private RecordGLSurfaceView mGLView;
+  private PreviewSurfaceView mGLView;
   private ImageView mIvRecordBtn, mIvSwitchCameraBtn;
 
   public static void call(Context context) {
@@ -24,16 +24,18 @@ public class VideoRecordActivity extends BaseActivity implements View.OnClickLis
   }
 
   @Override public void initUI() {
-    super.initUI();
     setContentView(R.layout.activity_video_recording);
     mGLView = this.findViewById(R.id.glView);
     mIvRecordBtn = this.findViewById(R.id.ivRecord);
     mIvSwitchCameraBtn = this.findViewById(R.id.ivSwitch);
     mIvRecordBtn.setOnClickListener(this);
     mIvSwitchCameraBtn.setOnClickListener(this);
+    mGLView.startPreview();
   }
 
   @Override public void onClick(View view) {
-
+    if (R.id.ivRecord == view.getId()) {
+      mGLView.startPreview();
+    }
   }
 }

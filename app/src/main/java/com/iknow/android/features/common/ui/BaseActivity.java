@@ -12,24 +12,27 @@ import com.iknow.android.interfaces.IBaseUI;
  * e-mail : who_know_me@163.com
  * time   : 2019/02/22 4:38 PM
  * version: 1.0
- * description:
+ * description:模板设计模式：
+ * 定义算法骨架，将一些步骤延时到子类，可定义钩子函数。
  */
 @SuppressLint("Registered")
-public class BaseActivity extends AppCompatActivity implements IBaseUI {
+public abstract class BaseActivity extends AppCompatActivity{
+
+  protected abstract void initUI();
+  protected void loadData() {
+  }
 
   @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     try {
-      initUI();
+      render();
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-  @CallSuper
-  @Override public void initUI() {
-  }
-
-  @Override public void loadData() {
+  private void render() {
+    initUI();
+    loadData();
   }
 }

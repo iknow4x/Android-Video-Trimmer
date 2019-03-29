@@ -31,7 +31,6 @@ public class VideoSelectActivity extends BaseActivity implements View.OnClickLis
 
   @SuppressLint("CheckResult")
   @Override public void initUI() {
-    super.initUI();
     mVideoLoadManager = new VideoLoadManager();
     mVideoLoadManager.setLoader(new VideoCursorLoader());
     mBinding = DataBindingUtil.setContentView(this, R.layout.activity_video_select);

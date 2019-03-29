@@ -41,7 +41,7 @@
       android:orientation="vertical"
       >
 
-    <com.iknow.android.features.record.view.RecordGLSurfaceView
+    <com.iknow.android.features.record.view.PreviewSurfaceView
         android:id="@+id/glView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -59,8 +59,8 @@
         >
       <ImageView
           android:id="@+id/ivSwitch"
-          android:layout_width="20dp"
-          android:layout_height="20dp"
+          android:layout_width="40dp"
+          android:layout_height="40dp"
           android:contentDescription="@null"
           android:layout_marginBottom="20dp"
           android:src="@drawable/ic_switch_camera"
@@ -68,8 +68,8 @@
 
       <ImageView
           android:id="@+id/ivRecord"
-          android:layout_width="50dp"
-          android:layout_height="50dp"
+          android:layout_width="70dp"
+          android:layout_height="70dp"
           android:contentDescription="@null"
           android:src="@drawable/ic_record_start"
           />
