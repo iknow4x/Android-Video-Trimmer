@@ -2,8 +2,10 @@ package com.iknow.android.features.record;
 
 import android.content.Context;
 import android.content.Intent;
-import android.view.View;
 import android.widget.ImageView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.iknow.android.R;
 import com.iknow.android.features.common.ui.BaseActivity;
 import com.iknow.android.features.record.view.PreviewSurfaceView;
@@ -15,9 +17,18 @@ import com.iknow.android.features.record.view.PreviewSurfaceView;
  * version: 1.0
  * description:
  */
-public class VideoRecordActivity extends BaseActivity implements View.OnClickListener {
-  private PreviewSurfaceView mGLView;
-  private ImageView mIvRecordBtn, mIvSwitchCameraBtn;
+public class VideoRecordActivity extends BaseActivity{
+  @BindView(R.id.glView) PreviewSurfaceView mGLView;
+  @BindView(R.id.ivRecord) ImageView mIvRecordBtn;
+  @BindView(R.id.ivSwitch) ImageView mIvSwitchCameraBtn;
+
+  @OnClick(R.id.ivRecord) void onRecord() {
+    mGLView.startRecord();
+  }
+
+  @OnClick(R.id.ivSwitch) void onSwitchCamera() {
+
+  }
 
   public static void call(Context context) {
     context.startActivity(new Intent(context, VideoRecordActivity.class));
@@ -25,17 +36,7 @@ public class VideoRecordActivity extends BaseActivity implements View.OnClickLis
 
   @Override public void initUI() {
     setContentView(R.layout.activity_video_recording);
-    mGLView = this.findViewById(R.id.glView);
-    mIvRecordBtn = this.findViewById(R.id.ivRecord);
-    mIvSwitchCameraBtn = this.findViewById(R.id.ivSwitch);
-    mIvRecordBtn.setOnClickListener(this);
-    mIvSwitchCameraBtn.setOnClickListener(this);
+    ButterKnife.bind(this);
     mGLView.startPreview();
-  }
-
-  @Override public void onClick(View view) {
-    if (R.id.ivRecord == view.getId()) {
-      mGLView.startRecord();
-    }
   }
 }
