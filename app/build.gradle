@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+//apply plugin: 'com.jakewharton.butterknife'
 
 android {
     compileSdkVersion 27
@@ -33,8 +34,11 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.github.iknow4:android-utils-sdk:1.1.2'
     implementation 'nl.bravobit:android-ffmpeg:1.1.5'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.2'
     implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar'
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+
+//    implementation 'com.jakewharton:butterknife:10.1.0'
+//    annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
 }

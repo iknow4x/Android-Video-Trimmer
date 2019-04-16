@@ -59,8 +59,8 @@
         >
       <ImageView
           android:id="@+id/ivSwitch"
-          android:layout_width="40dp"
-          android:layout_height="40dp"
+          android:layout_width="35dp"
+          android:layout_height="35dp"
           android:contentDescription="@null"
           android:layout_marginBottom="20dp"
           android:src="@drawable/ic_switch_camera"
@@ -68,8 +68,8 @@
 
       <ImageView
           android:id="@+id/ivRecord"
-          android:layout_width="70dp"
-          android:layout_height="70dp"
+          android:layout_width="65dp"
+          android:layout_height="65dp"
           android:contentDescription="@null"
           android:src="@drawable/ic_record_start"
           />

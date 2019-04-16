@@ -65,7 +65,7 @@ public class VideoSelectActivity extends BaseActivity implements View.OnClickLis
       mBinding.openCameraPermissionLy.setVisibility(View.VISIBLE);
       mBinding.mOpenCameraPermission.setOnClickListener(new View.OnClickListener() {
         @Override public void onClick(View v) {
-          rxPermissions.request(Manifest.permission.CAMERA).subscribe(granted -> {
+          rxPermissions.request(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO).subscribe(granted -> {
             if (granted) {
               initCameraPreview();
             }

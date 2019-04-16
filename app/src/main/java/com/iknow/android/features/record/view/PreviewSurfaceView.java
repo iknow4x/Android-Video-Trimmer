@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.Camera;
+import android.media.CamcorderProfile;
+import android.media.MediaRecorder;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -51,6 +53,12 @@ public class PreviewSurfaceView extends SurfaceView implements SurfaceHolder.Cal
 
   public void startPreview() {
     mCamera.startPreview();
+  }
+
+  public void startRecord() {
+    if (prepareVideoRecorder()) {
+      mMediaRecorder.start();
+    }
   }
 
   @Override
@@ -189,5 +197,48 @@ public class PreviewSurfaceView extends SurfaceView implements SurfaceHolder.Cal
       }
     }
     return retSize;
+  }
+
+  private MediaRecorder mMediaRecorder;
+  private boolean prepareVideoRecorder(){
+    try {
+      mMediaRecorder = new MediaRecorder();
+      // Step 1: Unlock and set camera to MediaRecorder
+      mCamera.unlock();
+      mMediaRecorder.setCamera(mCamera);
+      // Step 2: Set sources
+      mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+      mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+      //编码格式
+      //mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
+      //mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+      //mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+      // Step 3: Set a CamcorderProfile (requires API Level 8 or higher)
+      //mMediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
+      // Step 4: Set output file
+      //mMediaRecorder.setOutputFile(getOutputMediaFile(MEDIA_TYPE_VIDEO).toString());
+      // Step 5: Set the preview output
+      mMediaRecorder.setPreviewDisplay(mHolder.getSurface());
+      // Step 6: Prepare configured MediaRecorder
+      mMediaRecorder.prepare();
+    } catch (IllegalStateException e) {
+      Log.d(TAG, "IllegalStateException preparing MediaRecorder: " + e.getMessage());
+      releaseMediaRecorder();
+      return false;
+    } catch (IOException e) {
+      Log.d(TAG, "IOException preparing MediaRecorder: " + e.getMessage());
+      releaseMediaRecorder();
+      return false;
+    }
+    return true;
+  }
+
+  private void releaseMediaRecorder(){
+    if (mMediaRecorder != null) {
+      mMediaRecorder.reset();   // clear recorder configuration
+      mMediaRecorder.release(); // release the recorder object
+      mMediaRecorder = null;
+      mCamera.lock();
+    }
   }
 }

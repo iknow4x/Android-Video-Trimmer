@@ -64,8 +64,6 @@ public class VideoSelectAdapter extends CursorAdapter {
     holder.videoCover.setLayoutParams(params);
     Glide.with(context)
         .load(getVideoUri(cursor))
-        .centerCrop()
-        .override(videoCoverSize, videoCoverSize)
         .into(holder.videoCover);
     holder.videoItemView.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {

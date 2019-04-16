@@ -35,7 +35,7 @@ public class VideoRecordActivity extends BaseActivity implements View.OnClickLis
 
   @Override public void onClick(View view) {
     if (R.id.ivRecord == view.getId()) {
-      mGLView.startPreview();
+      mGLView.startRecord();
     }
   }
 }
