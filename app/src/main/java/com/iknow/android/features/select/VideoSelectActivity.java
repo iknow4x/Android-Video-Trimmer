@@ -3,7 +3,7 @@ package com.iknow.android.features.select;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.database.Cursor;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.view.View;
 import com.iknow.android.R;
 import com.iknow.android.databinding.ActivityVideoSelectBinding;

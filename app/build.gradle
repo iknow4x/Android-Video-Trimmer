@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
-//apply plugin: 'com.jakewharton.butterknife'
+apply plugin: 'com.jakewharton.butterknife'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.iknow.android"
         minSdkVersion 16
@@ -30,8 +30,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha04'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-alpha04'
     implementation 'com.github.iknow4:android-utils-sdk:1.1.2'
     implementation 'nl.bravobit:android-ffmpeg:1.1.5'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
@@ -39,6 +39,6 @@ dependencies {
     implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar'
     implementation 'com.github.bumptech.glide:glide:4.8.0'
 
-//    implementation 'com.jakewharton:butterknife:10.1.0'
-//    annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
+    implementation 'com.jakewharton:butterknife:10.1.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
 }
