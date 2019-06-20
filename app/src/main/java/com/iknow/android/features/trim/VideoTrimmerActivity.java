@@ -51,12 +51,13 @@ public class VideoTrimmerActivity extends BaseActivity implements VideoTrimListe
 
   @Override public void onResume() {
     super.onResume();
+    mBinding.trimmerView.onResume();
   }
 
   @Override public void onPause() {
     super.onPause();
     mBinding.trimmerView.onVideoPause();
-    mBinding.trimmerView.setRestoreState(true);
+    mBinding.trimmerView.onPause();
   }
 
   @Override protected void onDestroy() {

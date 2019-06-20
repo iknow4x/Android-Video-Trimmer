@@ -6,6 +6,7 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.text.TextUtils;
 import com.iknow.android.interfaces.VideoTrimListener;
+import com.iknow.android.utils.TimeUtil;
 import iknow.android.utils.DeviceUtil;
 import iknow.android.utils.UnitConverter;
 import iknow.android.utils.callback.SingleCallback;
@@ -41,8 +42,8 @@ public class VideoTrimmerUtil {
     final String outputName = "trimmedVideo_" + timeStamp + ".mp4";
     outputFile = outputFile + "/" + outputName;
 
-    String start = convertSecondsToTime(startMs / 1000);
-    String duration = convertSecondsToTime((endMs - startMs) / 1000);
+    String start = TimeUtil.convertSecondsToTime(startMs / 1000);
+    String duration = TimeUtil.convertSecondsToTime((endMs - startMs) / 1000);
     //String start = String.valueOf(startMs);
     //String duration = String.valueOf(endMs - startMs);
 
@@ -118,38 +119,5 @@ public class VideoTrimmerUtil {
     }
 
     return url;
-  }
-
-  private static String convertSecondsToTime(long seconds) {
-    String timeStr = null;
-    int hour = 0;
-    int minute = 0;
-    int second = 0;
-    if (seconds <= 0) {
-      return "00:00";
-    } else {
-      minute = (int) seconds / 60;
-      if (minute < 60) {
-        second = (int) seconds % 60;
-        timeStr = "00:" + unitFormat(minute) + ":" + unitFormat(second);
-      } else {
-        hour = minute / 60;
-        if (hour > 99) return "99:59:59";
-        minute = minute % 60;
-        second = (int) (seconds - hour * 3600 - minute * 60);
-        timeStr = unitFormat(hour) + ":" + unitFormat(minute) + ":" + unitFormat(second);
-      }
-    }
-    return timeStr;
-  }
-
-  private static String unitFormat(int i) {
-    String retStr = null;
-    if (i >= 0 && i < 10) {
-      retStr = "0" + Integer.toString(i);
-    } else {
-      retStr = "" + i;
-    }
-    return retStr;
   }
 }

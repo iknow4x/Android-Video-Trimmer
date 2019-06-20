@@ -109,6 +109,7 @@
         android:horizontalSpacing="4dp"
         android:numColumns="3"
         android:verticalSpacing="4dp"
+        android:scrollbars="vertical"
         />
   </LinearLayout>
 </layout>

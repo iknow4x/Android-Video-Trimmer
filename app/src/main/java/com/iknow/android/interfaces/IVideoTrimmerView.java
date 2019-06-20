@@ -8,5 +8,7 @@ package com.iknow.android.interfaces;
  * description:
  */
 public interface IVideoTrimmerView {
+  void onPause();
+  void onResume();
   void onDestroy();
 }

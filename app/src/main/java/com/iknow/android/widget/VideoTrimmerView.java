@@ -171,12 +171,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
     }
     mVideoView.setLayoutParams(lp);
     mDuration = mVideoView.getDuration();
-    if (!getRestoreState()) {
-      seekTo((int) mRedProgressBarPos);
-    } else {
-      setRestoreState(false);
-      seekTo((int) mRedProgressBarPos);
-    }
+    seekTo((int) mRedProgressBarPos);
     initRangeSeekBarView();
     startShootVideoThumbs(mContext, mSourceUri, mThumbsTotalCount, 0, mDuration);
   }
@@ -230,6 +225,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
     });
     mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
       @Override public void onPrepared(MediaPlayer mp) {
+        if (isFromRestore) return;
         mp.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
         videoPrepared(mp);
       }
@@ -261,16 +257,18 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
   }
 
   private void seekTo(long msec) {
-    mVideoView.seekTo((int) msec);
-    Log.d(TAG, "seekTo = " + msec);
+    if (mVideoView != null) {
+      mVideoView.seekTo((int) msec);
+      Log.d(TAG, "seekTo = " + msec);
+    }
   }
 
-  private boolean getRestoreState() {
-    return isFromRestore;
+  @Override public void onPause() {
+    isFromRestore = true;
   }
 
-  public void setRestoreState(boolean fromRestore) {
-    isFromRestore = fromRestore;
+  @Override public void onResume() {
+    seekTo(mRedProgressBarPos);
   }
 
   private void setPlayPauseViewIcon(boolean isPlaying) {
