@@ -122,8 +122,11 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
     mRangeSeekBarView.setNotifyWhileDragging(true);
     mRangeSeekBarView.setOnRangeSeekBarChangeListener(mOnRangeSeekBarChangeListener);
     mSeekBarLayout.addView(mRangeSeekBarView);
-
-    mAverageMsPx = (mDuration - MAX_SHOOT_DURATION) / (float)(mThumbsTotalCount - MAX_COUNT_RANGE);
+    if(mThumbsTotalCount - MAX_COUNT_RANGE>0) {
+      mAverageMsPx = (mDuration - MAX_SHOOT_DURATION) / (float) (mThumbsTotalCount - MAX_COUNT_RANGE);
+    }else{
+      mAverageMsPx = 0f;
+    }
     averagePxMs = (mMaxWidth * 1.0f / (mRightProgressPos - mLeftProgressPos));
   }
 
