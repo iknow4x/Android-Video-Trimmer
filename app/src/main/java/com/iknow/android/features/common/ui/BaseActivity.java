@@ -2,10 +2,8 @@ package com.iknow.android.features.common.ui;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import com.iknow.android.interfaces.IBaseUI;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * author : J.Chou
@@ -16,7 +14,7 @@ import com.iknow.android.interfaces.IBaseUI;
  * 定义算法骨架，将一些步骤延时到子类，可定义钩子函数。
  */
 @SuppressLint("Registered")
-public abstract class BaseActivity extends AppCompatActivity{
+public abstract class BaseActivity extends AppCompatActivity {
 
   protected abstract void initUI();
   protected void loadData() {

@@ -51,7 +51,7 @@
         android:layout_below="@+id/video_shoot_tip"
         >
 
-      <android.support.v7.widget.RecyclerView
+      <androidx.recyclerview.widget.RecyclerView
           android:id="@+id/video_frames_recyclerView"
           android:layout_width="match_parent"
           android:layout_height="50dp"
