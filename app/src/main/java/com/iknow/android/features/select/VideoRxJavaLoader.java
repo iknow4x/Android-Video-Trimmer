@@ -27,9 +27,9 @@ public class VideoRxJavaLoader implements ILoader {
       try {
         ContentResolver contentResolver = mContext.getContentResolver();
         Cursor cursors = contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-            PROJECTION,
+            MEDIA_PROJECTION,
             SELECTION,
-            SELECTION_ARGS,
+            null/*SELECTION_ARGS*/,
             ORDER_BY);
         emitter.onNext(cursors);
       } catch (Throwable t) {

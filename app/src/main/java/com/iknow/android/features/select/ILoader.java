@@ -12,16 +12,9 @@ import iknow.android.utils.callback.SimpleCallback;
  * description:
  */
 public interface ILoader {
-  String SELECTION =
-      MediaStore.Video.Media.MIME_TYPE + "=? or "
-          + MediaStore.Video.Media.MIME_TYPE + "=? or "
-          + MediaStore.Video.Media.MIME_TYPE + "=? or "
-          + MediaStore.Video.Media.MIME_TYPE + "=? or "
-          + MediaStore.Video.Media.MIME_TYPE + "=? or "
-          + MediaStore.Video.Media.MIME_TYPE + "=? or "
-          + MediaStore.Video.Media.MIME_TYPE + "=? or "
-          + MediaStore.Video.Media.MIME_TYPE + "=? or "
-          + MediaStore.Video.Media.MIME_TYPE + "=?";
+  String SELECTION = MediaStore.Files.FileColumns.MEDIA_TYPE
+      + "=" + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
+
   String[] SELECTION_ARGS = {
       "video/mp4",
       "video/3gp",
@@ -33,14 +26,18 @@ public interface ILoader {
       "video/mov",
       "video/mpg"
   };
-  String[] PROJECTION = {
-      MediaStore.Video.VideoColumns._ID,
-      MediaStore.Video.VideoColumns.DATE_ADDED,
-      MediaStore.Video.VideoColumns.DATA,
-      MediaStore.Video.VideoColumns.DISPLAY_NAME,
-      MediaStore.Video.VideoColumns.DURATION
+
+  String ORDER_BY = MediaStore.Files.FileColumns.DATE_ADDED + " DESC";
+
+  String[] MEDIA_PROJECTION = {
+      MediaStore.Files.FileColumns.DATA,
+      MediaStore.Files.FileColumns.DISPLAY_NAME,
+      MediaStore.Files.FileColumns.DATE_ADDED,
+      MediaStore.Files.FileColumns.MEDIA_TYPE,
+      MediaStore.Files.FileColumns.SIZE,
+      MediaStore.Files.FileColumns._ID,
+      MediaStore.Files.FileColumns.PARENT
   };
-  String ORDER_BY = MediaStore.Images.Media.DATE_MODIFIED + " DESC";
 
   void load(final Context mContext, final SimpleCallback listener);
 }

@@ -33,10 +33,10 @@ public class VideoCursorLoader implements LoaderManager.LoaderCallbacks<Cursor>,
   @NonNull @Override public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
     return new CursorLoader(
         mContext,
-        MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-        PROJECTION,
+        MediaStore.Files.getContentUri("external"),
+        MEDIA_PROJECTION,
         SELECTION,
-        SELECTION_ARGS,
+        null,
         ORDER_BY
     );
   }
