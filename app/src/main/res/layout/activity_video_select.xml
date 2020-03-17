@@ -1,114 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    >
-  <LinearLayout
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+  <FrameLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:fitsSystemWindows="true"
-      android:background="#282828"
-      android:orientation="vertical"
       >
 
-    <RelativeLayout
-        android:id="@+id/title_layout"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        >
+    <include
+        android:id="@+id/real_camera_preview_ly"
+        layout="@layout/activity_video_recording"
+        />
 
-      <ImageView
-          android:id="@+id/mBtnBack"
-          android:layout_width="wrap_content"
-          android:layout_height="match_parent"
-          android:layout_alignParentLeft="true"
-          android:layout_centerInParent="true"
-          android:contentDescription="@null"
-          android:paddingLeft="5dp"
-          android:paddingRight="5dp"
-          android:src="@drawable/ic_close"
-          />
-    </RelativeLayout>
-
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
         android:orientation="vertical"
         >
+
       <RelativeLayout
-          android:id="@+id/cameraPreviewLy"
+          android:id="@+id/title_layout"
           android:layout_width="match_parent"
-          android:layout_height="150dp"
+          android:layout_height="50dp"
+          android:background="#282828"
           >
-        <com.iknow.android.features.record.view.CameraPreviewLayout
-            android:id="@+id/capturePreview"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"/>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+
+        <ImageView
+            android:id="@+id/mBtnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
             android:layout_centerInParent="true"
-            android:orientation="vertical"
-            >
-          <ImageView
-              android:layout_width="match_parent"
-              android:layout_height="60dp"
-              android:src="@drawable/ic_videocam_white_48"
-              />
-          <TextView
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="center"
-              android:textColor="@android:color/white"
-              android:textSize="14dp"
-              android:text="@string/recording"
-              />
-        </LinearLayout>
+            android:contentDescription="@null"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:src="@drawable/ic_close"
+            />
       </RelativeLayout>
-      <LinearLayout
-          android:id="@+id/openCameraPermissionLy"
+
+      <FrameLayout
           android:layout_width="match_parent"
-          android:layout_height="150dp"
+          android:layout_height="wrap_content"
           android:gravity="center"
           android:orientation="vertical"
           >
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+        <RelativeLayout
+            android:id="@+id/cameraPreviewLy"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:background="#99000000"
+            >
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_centerInParent="true"
+              android:orientation="vertical"
+              >
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:src="@drawable/ic_videocam_white_48"
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/recording"
+                android:textColor="@android:color/white"
+                android:textSize="14dp"
+                />
+          </LinearLayout>
+        </RelativeLayout>
+        <LinearLayout
+            android:id="@+id/openCameraPermissionLy"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:background="#282828"
             android:gravity="center"
-            android:text="@string/video_record_des"
-            android:textColor="@android:color/white"
-            android:textSize="14dp"
-            />
+            android:orientation="vertical"
+            >
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:gravity="center"
+              android:text="@string/video_record_des"
+              android:textColor="@android:color/white"
+              android:textSize="14dp"
+              />
 
-        <TextView
-            android:id="@+id/mOpenCameraPermission"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="15dp"
-            android:background="@color/colorPrimary"
-            android:gravity="center"
-            android:paddingBottom="7dp"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:paddingTop="7dp"
-            android:text="@string/open_permission"
-            android:textColor="@android:color/white"
-            android:textSize="14dp"
-            />
-      </LinearLayout>
-    </FrameLayout>
+          <TextView
+              android:id="@+id/mOpenCameraPermission"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:layout_marginTop="15dp"
+              android:background="@color/colorPrimary"
+              android:gravity="center"
+              android:paddingLeft="15dp"
+              android:paddingTop="7dp"
+              android:paddingRight="15dp"
+              android:paddingBottom="7dp"
+              android:text="@string/open_permission"
+              android:textColor="@android:color/white"
+              android:textSize="14dp"
+              />
+        </LinearLayout>
+      </FrameLayout>
 
-    <GridView
-        android:id="@+id/video_gridview"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@android:color/background_dark"
-        android:horizontalSpacing="4dp"
-        android:numColumns="3"
-        android:verticalSpacing="4dp"
-        />
-  </LinearLayout>
+      <GridView
+          android:id="@+id/video_gridview"
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:layout_weight="1"
+          android:background="#282828"
+          android:horizontalSpacing="4dp"
+          android:numColumns="3"
+          android:verticalSpacing="4dp"
+          />
+    </LinearLayout>
+  </FrameLayout>
 </layout>

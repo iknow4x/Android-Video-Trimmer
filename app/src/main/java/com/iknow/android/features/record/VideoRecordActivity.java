@@ -17,7 +17,8 @@ import com.iknow.android.features.record.view.PreviewSurfaceView;
  */
 public class VideoRecordActivity extends BaseActivity implements View.OnClickListener {
   private PreviewSurfaceView mGLView;
-  private ImageView mIvRecordBtn, mIvSwitchCameraBtn;
+  private ImageView mIvRecordBtn;
+  private ImageView mIvSwitchCameraBtn;
 
   public static void call(Context context) {
     context.startActivity(new Intent(context, VideoRecordActivity.class));
@@ -25,17 +26,21 @@ public class VideoRecordActivity extends BaseActivity implements View.OnClickLis
 
   @Override public void initUI() {
     setContentView(R.layout.activity_video_recording);
-    mGLView = this.findViewById(R.id.glView);
+    //mGLView = this.findViewById(R.id.glView);
     mIvRecordBtn = this.findViewById(R.id.ivRecord);
     mIvSwitchCameraBtn = this.findViewById(R.id.ivSwitch);
+    ImageView ivBack = this.findViewById(R.id.iv_back);
     mIvRecordBtn.setOnClickListener(this);
     mIvSwitchCameraBtn.setOnClickListener(this);
+    ivBack.setOnClickListener(this);
     mGLView.startPreview();
   }
 
   @Override public void onClick(View view) {
     if (R.id.ivRecord == view.getId()) {
       mGLView.startPreview();
+    } else if (R.id.iv_back == view.getId()) {
+      finish();
     }
   }
 }
