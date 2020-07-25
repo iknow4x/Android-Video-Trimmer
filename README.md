@@ -42,7 +42,7 @@ See the [LICENSE](https://github.com/iknow4/Android-Video-Trimmer/blob/master/LI
 
 ## Contributors
 
-<a href="https://github.com/iknow4"><img width="60" height="60" src="https://github.com/dpproduction.png?size=500"/></a><a href="https://github.com/dpproduction"><img width="60" height="60" src="https://github.com/iknow4.png?size=500"/></a>
+<a href="https://github.com/dpproduction"><img width="60" height="60" src="https://github.com/dpproduction.png?size=500"/></a><a href="https://github.com/iknow4"><img width="60" height="60" src="https://github.com/iknow4.png?size=500"/></a>
 
 Original Author: [iknow4](https://github.com/iknow4)
 
