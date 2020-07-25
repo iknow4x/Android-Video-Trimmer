@@ -35,3 +35,14 @@ See the [LICENSE](https://github.com/iknow4/Android-Video-Trimmer/blob/master/LI
 
 #### 项目重构前的视频截图
 <img src="https://github.com/iknow4/iknow.Images/blob/master/gif/videoTrim.gif?raw=true" width="400" height="700" alt="VideoTrim"/>
+
+## Maintainers
+
+<a href="https://github.com/iknow4"><img width="60" height="60" src="https://github.com/iknow4.png?size=500"/></a>
+
+## Contributors
+
+<a href="https://github.com/iknow4"><img width="60" height="60" src="https://github.com/dpproduction.png?size=500"/></a><a href="https://github.com/dpproduction"><img width="60" height="60" src="https://github.com/iknow4.png?size=500"/></a>
+
+Original Author: [iknow4](https://github.com/iknow4)
+
