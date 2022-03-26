@@ -3,6 +3,7 @@ package com.iknow.android.features.record;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.iknow.android.R;
 import com.iknow.android.features.common.ui.BaseActivity;
@@ -19,6 +20,7 @@ public class VideoRecordActivity extends BaseActivity implements View.OnClickLis
   private PreviewSurfaceView mGLView;
   private ImageView mIvRecordBtn;
   private ImageView mIvSwitchCameraBtn;
+  private ViewGroup mCameraSurfaceViewLy;
 
   public static void call(Context context) {
     context.startActivity(new Intent(context, VideoRecordActivity.class));
@@ -26,13 +28,16 @@ public class VideoRecordActivity extends BaseActivity implements View.OnClickLis
 
   @Override public void initUI() {
     setContentView(R.layout.activity_video_recording);
-    //mGLView = this.findViewById(R.id.glView);
     mIvRecordBtn = this.findViewById(R.id.ivRecord);
     mIvSwitchCameraBtn = this.findViewById(R.id.ivSwitch);
     ImageView ivBack = this.findViewById(R.id.iv_back);
     mIvRecordBtn.setOnClickListener(this);
     mIvSwitchCameraBtn.setOnClickListener(this);
     ivBack.setOnClickListener(this);
+
+    mCameraSurfaceViewLy = findViewById(R.id.layout_surface_view);
+    mGLView = new PreviewSurfaceView(this);
+    mCameraSurfaceViewLy.addView(mGLView);
     mGLView.startPreview();
   }
 
@@ -41,6 +46,12 @@ public class VideoRecordActivity extends BaseActivity implements View.OnClickLis
       mGLView.startPreview();
     } else if (R.id.iv_back == view.getId()) {
       finish();
+    } else if (R.id.ivRecord == view.getId()) {
+
     }
+  }
+
+  @Override public void onBackPressed() {
+    finish();
   }
 }

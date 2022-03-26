@@ -5,10 +5,52 @@
     >
 
   <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:gravity="center"
+      android:orientation="vertical"
+      >
+
+    <FrameLayout
+        android:id="@+id/layout_surface_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:layout_marginBottom="40dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        >
+      <ImageView
+          android:id="@+id/ivSwitch"
+          android:layout_width="35dp"
+          android:layout_height="35dp"
+          android:layout_marginBottom="20dp"
+          android:contentDescription="@null"
+          android:src="@drawable/ic_switch_camera"
+          />
+
+      <ImageView
+          android:id="@+id/ivRecord"
+          android:layout_width="70dp"
+          android:layout_height="70dp"
+          android:contentDescription="@null"
+          android:src="@drawable/ic_record_start"
+          />
+    </LinearLayout>
+  </RelativeLayout>
+
+  <RelativeLayout
       android:id="@+id/toolbar"
       android:layout_width="match_parent"
       android:layout_height="50dp"
-      android:background="#282828"
+      android:background="#99000000"
       android:gravity="center|left"
       android:orientation="horizontal"
       >
@@ -31,48 +73,5 @@
         android:textSize="18dp"
         />
 
-  </RelativeLayout>
-
-  <RelativeLayout
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_below="@+id/toolbar"
-      android:gravity="center"
-      android:orientation="vertical"
-      >
-
-    <FrameLayout
-        android:id="@+id/layout_surface_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:layout_marginBottom="20dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        >
-      <ImageView
-          android:id="@+id/ivSwitch"
-          android:layout_width="40dp"
-          android:layout_height="40dp"
-          android:layout_marginBottom="20dp"
-          android:contentDescription="@null"
-          android:src="@drawable/ic_switch_camera"
-          />
-
-      <ImageView
-          android:id="@+id/ivRecord"
-          android:layout_width="70dp"
-          android:layout_height="70dp"
-          android:contentDescription="@null"
-          android:src="@drawable/ic_record_start"
-          />
-    </LinearLayout>
   </RelativeLayout>
 </RelativeLayout>
