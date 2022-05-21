@@ -1,4 +1,4 @@
-package com.iknow.android.features.select;
+package com.iknow.android.features.select.loader;
 
 import android.content.Context;
 import android.provider.MediaStore;

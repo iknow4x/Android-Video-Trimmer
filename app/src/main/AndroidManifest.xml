@@ -18,16 +18,17 @@
     <activity
         android:name=".features.select.VideoSelectActivity"
         android:screenOrientation="portrait"
+        android:launchMode="singleTop"
         android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
-
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
 
     <activity android:name=".features.trim.VideoTrimmerActivity"
         android:screenOrientation="portrait"/>
+
     <activity android:name=".features.record.VideoRecordActivity"
         android:screenOrientation="portrait"/>
   </application>

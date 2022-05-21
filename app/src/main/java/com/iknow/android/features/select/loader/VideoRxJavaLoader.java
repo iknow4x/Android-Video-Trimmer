@@ -1,4 +1,4 @@
-package com.iknow.android.features.select;
+package com.iknow.android.features.select.loader;
 
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 import android.util.Log;
+import com.iknow.android.features.select.loader.ILoader;
 import iknow.android.utils.callback.SimpleCallback;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;

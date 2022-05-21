@@ -1,4 +1,4 @@
-package com.iknow.android.features.select;
+package com.iknow.android.features.select.loader;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
+import com.iknow.android.features.select.loader.ILoader;
 import iknow.android.utils.callback.SimpleCallback;
 
 /**
