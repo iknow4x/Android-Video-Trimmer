@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import com.iknow.android.R;
 import com.iknow.android.features.common.ui.BaseActivity;
 import com.iknow.android.features.record.view.PreviewSurfaceView;
+import com.iknow.android.utils.ToastUtil;
 
 /**
  * author : J.Chou
@@ -43,11 +44,10 @@ public class VideoRecordActivity extends BaseActivity implements View.OnClickLis
 
   @Override public void onClick(View view) {
     if (R.id.ivRecord == view.getId()) {
-      mGLView.startPreview();
+      ToastUtil.longShow(this, "Features are under development, pls stay tuned...");
+      //mGLView.startPreview();
     } else if (R.id.iv_back == view.getId()) {
-      finish();
-    } else if (R.id.ivRecord == view.getId()) {
-
+      this.finish();
     }
   }
 

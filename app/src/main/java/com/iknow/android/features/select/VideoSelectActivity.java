@@ -13,6 +13,8 @@ import com.iknow.android.databinding.ActivityVideoSelectBinding;
 import com.iknow.android.features.common.ui.BaseActivity;
 import com.iknow.android.features.record.VideoRecordActivity;
 import com.iknow.android.features.record.view.PreviewSurfaceView;
+import com.iknow.android.features.select.loader.VideoCursorLoader;
+import com.iknow.android.features.select.loader.VideoLoadManager;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import iknow.android.utils.callback.SimpleCallback;
 
@@ -83,7 +85,7 @@ public class VideoSelectActivity extends BaseActivity implements View.OnClickLis
     mSurfaceView.startPreview();
 
     mBinding.cameraPreviewLy.setOnClickListener(v -> {
-      mSurfaceView.releaseCamera();
+      mSurfaceView.release();
       VideoRecordActivity.call(this);
     });
   }
@@ -106,7 +108,7 @@ public class VideoSelectActivity extends BaseActivity implements View.OnClickLis
 
   @Override protected void onResume() {
     super.onResume();
-    mSurfaceView.startPreview();
+    if (mSurfaceView != null) mSurfaceView.startPreview();
   }
 
   @Override protected void onPause() {
@@ -115,7 +117,7 @@ public class VideoSelectActivity extends BaseActivity implements View.OnClickLis
 
   @Override protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    mSurfaceView.startPreview();
+    if (mSurfaceView != null) mSurfaceView.startPreview();
   }
 
   @Override public void onClick(View v) {

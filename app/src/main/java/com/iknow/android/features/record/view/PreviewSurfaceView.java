@@ -50,7 +50,7 @@ public class PreviewSurfaceView extends SurfaceView implements SurfaceHolder.Cal
   }
 
   public void startPreview() {
-    mCamera.startPreview();
+    if (mCamera != null) mCamera.startPreview();
   }
 
   @Override
