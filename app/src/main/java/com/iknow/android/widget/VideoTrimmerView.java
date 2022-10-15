@@ -332,6 +332,10 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
       //初始状态,why ? 因为默认的时候有35dp的空白！
       if (scrollX == -RECYCLER_VIEW_PADDING) {
         scrollPos = 0;
+        mLeftProgressPos = mRangeSeekBarView.getSelectedMinValue() + scrollPos;
+        mRightProgressPos = mRangeSeekBarView.getSelectedMaxValue() + scrollPos;
+        Log.d(TAG, "onScrolled >>>> mLeftProgressPos = " + mLeftProgressPos);
+        mRedProgressBarPos = mLeftProgressPos;
       } else {
         isSeeking = true;
         scrollPos = (long) (mAverageMsPx * (RECYCLER_VIEW_PADDING + scrollX) / THUMB_WIDTH);
