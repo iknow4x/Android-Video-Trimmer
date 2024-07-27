@@ -46,3 +46,4 @@ See the [LICENSE](https://github.com/iknow4/Android-Video-Trimmer/blob/master/LI
 
 Original Author: [iknow4](https://github.com/iknow4)
 
+
