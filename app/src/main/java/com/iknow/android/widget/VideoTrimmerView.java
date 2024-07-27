@@ -2,7 +2,6 @@ package com.iknow.android.widget;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -27,7 +26,6 @@ import com.iknow.android.interfaces.IVideoTrimmerView;
 import com.iknow.android.interfaces.VideoTrimListener;
 import com.iknow.android.features.trim.VideoTrimmerUtil;
 import com.iknow.android.utils.StorageUtil;
-import iknow.android.utils.callback.SingleCallback;
 import iknow.android.utils.thread.BackgroundExecutor;
 import iknow.android.utils.thread.UiThreadExecutor;
 
@@ -139,15 +137,13 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 
   private void startShootVideoThumbs(final Context context, final Uri videoUri, int totalThumbsCount, long startPosition, long endPosition) {
     VideoTrimmerUtil.shootVideoThumbInBackground(context, videoUri, totalThumbsCount, startPosition, endPosition,
-        new SingleCallback<Bitmap, Integer>() {
-          @Override public void onSingleCallback(final Bitmap bitmap, final Integer interval) {
-            if (bitmap != null) {
-              UiThreadExecutor.runTask("", new Runnable() {
-                @Override public void run() {
-                  mVideoThumbAdapter.addBitmaps(bitmap);
-                }
-              }, 0L);
-            }
+        (bitmap, interval) -> {
+          if (bitmap != null) {
+            UiThreadExecutor.runTask("", new Runnable() {
+              @Override public void run() {
+                mVideoThumbAdapter.addBitmaps(bitmap);
+              }
+            }, 0L);
           }
         });
   }
@@ -161,7 +157,6 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
     int videoWidth = mp.getVideoWidth();
     int videoHeight = mp.getVideoHeight();
 
-    float videoProportion = (float) videoWidth / (float) videoHeight;
     int screenWidth = mLinearVideo.getWidth();
     int screenHeight = mLinearVideo.getHeight();
 
@@ -221,33 +216,15 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
   }
 
   private void setUpListeners() {
-    findViewById(R.id.cancelBtn).setOnClickListener(new OnClickListener() {
-      @Override public void onClick(View view) {
-        onCancelClicked();
-      }
-    });
+    findViewById(R.id.cancelBtn).setOnClickListener(view -> onCancelClicked());
 
-    findViewById(R.id.finishBtn).setOnClickListener(new OnClickListener() {
-      @Override public void onClick(View view) {
-        onSaveClicked();
-      }
+    findViewById(R.id.finishBtn).setOnClickListener(view -> onSaveClicked());
+    mVideoView.setOnPreparedListener(mp -> {
+      mp.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
+      videoPrepared(mp);
     });
-    mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-      @Override public void onPrepared(MediaPlayer mp) {
-        mp.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
-        videoPrepared(mp);
-      }
-    });
-    mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-      @Override public void onCompletion(MediaPlayer mp) {
-        videoCompleted();
-      }
-    });
-    mPlayView.setOnClickListener(new OnClickListener() {
-      @Override public void onClick(View v) {
-        playVideoOrPause();
-      }
-    });
+    mVideoView.setOnCompletionListener(mp -> videoCompleted());
+    mPlayView.setOnClickListener(v -> playVideoOrPause());
   }
 
   private void onSaveClicked() {
@@ -382,12 +359,10 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
     int end = (int) (RECYCLER_VIEW_PADDING + (mRightProgressPos - scrollPos) * averagePxMs);
     mRedProgressAnimator = ValueAnimator.ofInt(start, end).setDuration((mRightProgressPos - scrollPos) - (mRedProgressBarPos - scrollPos));
     mRedProgressAnimator.setInterpolator(new LinearInterpolator());
-    mRedProgressAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      @Override public void onAnimationUpdate(ValueAnimator animation) {
-        params.leftMargin = (int) animation.getAnimatedValue();
-        mRedProgressIcon.setLayoutParams(params);
-        Log.d(TAG, "----onAnimationUpdate--->>>>>>>" + mRedProgressBarPos);
-      }
+    mRedProgressAnimator.addUpdateListener(animation -> {
+      params.leftMargin = (int) animation.getAnimatedValue();
+      mRedProgressIcon.setLayoutParams(params);
+      Log.d(TAG, "----onAnimationUpdate--->>>>>>>" + mRedProgressBarPos);
     });
     mRedProgressAnimator.start();
   }
