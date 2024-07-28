@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.iknow.android">
 
+  <uses-feature
+      android:name="android.hardware.camera"
+      android:required="false" />
+
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.CAMERA"/>
@@ -19,7 +23,8 @@
         android:name=".features.select.VideoSelectActivity"
         android:screenOrientation="portrait"
         android:launchMode="singleTop"
-        android:exported="true">
+        android:exported="true"
+        tools:ignore="DiscouragedApi">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
@@ -27,10 +32,12 @@
     </activity>
 
     <activity android:name=".features.trim.VideoTrimmerActivity"
-        android:screenOrientation="portrait"/>
+        android:screenOrientation="portrait"
+        tools:ignore="DiscouragedApi" />
 
     <activity android:name=".features.record.VideoRecordActivity"
-        android:screenOrientation="portrait"/>
+        android:screenOrientation="portrait"
+        tools:ignore="DiscouragedApi" />
   </application>
 
 </manifest>
