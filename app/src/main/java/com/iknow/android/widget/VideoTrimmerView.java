@@ -45,7 +45,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
 
   private static final String TAG = VideoTrimmerView.class.getSimpleName();
 
-  private int mMaxWidth = VIDEO_FRAMES_WIDTH;
+  private final int mMaxWidth = VIDEO_FRAMES_WIDTH;
   private Context mContext;
   private RelativeLayout mLinearVideo;
   private ZVideoView mVideoView;
@@ -375,12 +375,7 @@ public class VideoTrimmerView extends FrameLayout implements IVideoTrimmerView {
     }
   }
 
-  private Runnable mAnimationRunnable = new Runnable() {
-
-    @Override public void run() {
-      updateVideoProgress();
-    }
-  };
+  private final Runnable mAnimationRunnable = this::updateVideoProgress;
 
   private void updateVideoProgress() {
     long currentPosition = mVideoView.getCurrentPosition();

@@ -21,9 +21,7 @@ import com.iknow.android.utils.ToastUtil;
  */
 public class VideoTrimmerActivity extends BaseActivity implements VideoTrimListener {
 
-  private static final String TAG = "jason";
   private static final String VIDEO_PATH_KEY = "video-file-path";
-  private static final String COMPRESSED_VIDEO_FILE_NAME = "compress.mp4";
   public static final int VIDEO_TRIM_REQUEST_CODE = 0x001;
   private ActivityVideoTrimBinding mBinding;
   private ProgressDialog mProgressDialog;
@@ -43,10 +41,8 @@ public class VideoTrimmerActivity extends BaseActivity implements VideoTrimListe
     Bundle bd = getIntent().getExtras();
     String path = "";
     if (bd != null) path = bd.getString(VIDEO_PATH_KEY);
-    if (mBinding.trimmerView != null) {
-      mBinding.trimmerView.setOnTrimVideoListener(this);
-      mBinding.trimmerView.initVideoByURI(Uri.parse(path));
-    }
+    mBinding.trimmerView.setOnTrimVideoListener(this);
+    mBinding.trimmerView.initVideoByURI(Uri.parse(path));
   }
 
   @Override public void onResume() {

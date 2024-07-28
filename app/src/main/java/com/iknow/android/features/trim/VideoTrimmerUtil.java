@@ -121,10 +121,10 @@ public class VideoTrimmerUtil {
   }
 
   private static String convertSecondsToTime(long seconds) {
-    String timeStr = null;
-    int hour = 0;
-    int minute = 0;
-    int second = 0;
+    String timeStr;
+    int hour;
+    int minute;
+    int second;
     if (seconds <= 0) {
       return "00:00";
     } else {
@@ -144,9 +144,9 @@ public class VideoTrimmerUtil {
   }
 
   private static String unitFormat(int i) {
-    String retStr = null;
+    String retStr;
     if (i >= 0 && i < 10) {
-      retStr = "0" + Integer.toString(i);
+      retStr = "0" + i;
     } else {
       retStr = "" + i;
     }

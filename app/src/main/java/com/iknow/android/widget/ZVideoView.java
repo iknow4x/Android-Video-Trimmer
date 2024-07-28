@@ -14,6 +14,7 @@ import android.widget.VideoView;
  * description:
  */
 public class ZVideoView extends VideoView {
+
   private int mVideoWidth = 480;
   private int mVideoHeight = 480;
   private int videoRealW = 1;
@@ -22,11 +23,9 @@ public class ZVideoView extends VideoView {
   public ZVideoView(Context context) {
     super(context);
   }
-
   public ZVideoView(Context context, AttributeSet attrs) {
     super(context, attrs);
   }
-
   public ZVideoView(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
   }

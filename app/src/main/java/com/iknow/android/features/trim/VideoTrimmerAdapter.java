@@ -21,12 +21,10 @@ import java.util.List;
  * description:
  */
 public class VideoTrimmerAdapter extends RecyclerView.Adapter {
-  private List<Bitmap> mBitmaps = new ArrayList<>();
-  private LayoutInflater mInflater;
-  private Context context;
+  private final List<Bitmap> mBitmaps = new ArrayList<>();
+  private final LayoutInflater mInflater;
 
   public VideoTrimmerAdapter(Context context) {
-    this.context = context;
     this.mInflater = LayoutInflater.from(context);
   }
 
@@ -47,7 +45,7 @@ public class VideoTrimmerAdapter extends RecyclerView.Adapter {
     notifyDataSetChanged();
   }
 
-  private final class TrimmerViewHolder extends RecyclerView.ViewHolder {
+  private static final class TrimmerViewHolder extends RecyclerView.ViewHolder {
     ImageView thumbImageView;
 
     TrimmerViewHolder(View itemView) {
