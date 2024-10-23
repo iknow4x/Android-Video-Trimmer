@@ -92,7 +92,7 @@ This project is licensed under the MIT License. See the [LICENSE](https://github
 
 <a href="https://github.com/dpproduction"><img width="60" height="60" src="https://github.com/dpproduction.png?size=500"/></a><a href="https://github.com/iknow4x"><img width="60" height="60" src="https://github.com/iknow4x.png?size=500"/></a>
 
-Original Author: [iknow4](https://github.com/iknow4x)
+Original Author: [iknow4x](https://github.com/iknow4x)
 
 </details>
 
@@ -184,6 +184,6 @@ git clone https://github.com/iknow4/Android-Video-Trimmer.git
 
 <a href="https://github.com/dpproduction"><img width="60" height="60" src="https://github.com/dpproduction.png?size=500"/></a><a href="https://github.com/iknow4x"><img width="60" height="60" src="https://github.com/iknow4x.png?size=500"/></a>
 
-Original Author: [iknow4](https://github.com/iknow4x)
+Original Author: [iknow4x](https://github.com/iknow4x)
 
 
