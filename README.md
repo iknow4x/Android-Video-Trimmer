@@ -79,20 +79,20 @@ This project is licensed under the MIT License. See the [LICENSE](https://github
 
 #### Video of this project after reconstruction:
 
-<img src="https://github.com/iknow4/iknow.Images/blob/master/gif/videoTrim2.gif?raw=true" width="400" height="700" alt="videoTrim2"/>
+<img src="https://github.com/iknow4x/iknow.Images/blob/master/gif/videoTrim2.gif?raw=true" width="400" height="700" alt="videoTrim2"/>
 
 #### Old video:
-<img src="https://github.com/iknow4/iknow.Images/blob/master/gif/videoTrim.gif?raw=true" width="400" height="700" alt="VideoTrim"/>
+<img src="https://github.com/iknow4x/iknow.Images/blob/master/gif/videoTrim.gif?raw=true" width="400" height="700" alt="VideoTrim"/>
 
 ## Maintainers
 
-<a href="https://github.com/iknow4"><img width="60" height="60" src="https://github.com/iknow4.png?size=500"/></a>
+<a href="https://github.com/iknow4x"><img width="60" height="60" src="https://github.com/iknow4x.png?size=500"/></a>
 
 ## Contributors
 
-<a href="https://github.com/dpproduction"><img width="60" height="60" src="https://github.com/dpproduction.png?size=500"/></a><a href="https://github.com/iknow4"><img width="60" height="60" src="https://github.com/iknow4.png?size=500"/></a>
+<a href="https://github.com/dpproduction"><img width="60" height="60" src="https://github.com/dpproduction.png?size=500"/></a><a href="https://github.com/iknow4x"><img width="60" height="60" src="https://github.com/iknow4x.png?size=500"/></a>
 
-Original Author: [iknow4](https://github.com/iknow4)
+Original Author: [iknow4](https://github.com/iknow4x)
 
 </details>
 
@@ -171,19 +171,19 @@ git clone https://github.com/iknow4/Android-Video-Trimmer.git
 
 #### 项目重构后的视频效果:
 
-<img src="https://github.com/iknow4/iknow.Images/blob/master/gif/videoTrim2.gif?raw=true" width="400" height="700" alt="videoTrim2"/>
+<img src="https://github.com/iknow4x/iknow.Images/blob/master/gif/videoTrim2.gif?raw=true" width="400" height="700" alt="videoTrim2"/>
 
 #### 项目重构前的视频效果:
-<img src="https://github.com/iknow4/iknow.Images/blob/master/gif/videoTrim.gif?raw=true" width="400" height="700" alt="VideoTrim"/>
+<img src="https://github.com/iknow4x/iknow.Images/blob/master/gif/videoTrim.gif?raw=true" width="400" height="700" alt="VideoTrim"/>
 
 ## Maintainers
 
-<a href="https://github.com/iknow4"><img width="60" height="60" src="https://github.com/iknow4.png?size=500"/></a>
+<a href="https://github.com/iknow4x"><img width="60" height="60" src="https://github.com/iknow4x.png?size=500"/></a>
 
 ## Contributors
 
-<a href="https://github.com/dpproduction"><img width="60" height="60" src="https://github.com/dpproduction.png?size=500"/></a><a href="https://github.com/iknow4"><img width="60" height="60" src="https://github.com/iknow4.png?size=500"/></a>
+<a href="https://github.com/dpproduction"><img width="60" height="60" src="https://github.com/dpproduction.png?size=500"/></a><a href="https://github.com/iknow4x"><img width="60" height="60" src="https://github.com/iknow4x.png?size=500"/></a>
 
-Original Author: [iknow4](https://github.com/iknow4)
+Original Author: [iknow4](https://github.com/iknow4x)
 
 
